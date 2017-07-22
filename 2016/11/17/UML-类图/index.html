@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="UML 类图"/>
+
+
+
+
+  <meta name="keywords" content="JAVA,基础知识," />
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Elvin 的博客">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.4.x" />
+
+
+
+<link rel="canonical" href="http://segmentfault.me/2016/11/17/UML-类图/"/>
+
+
+<meta name="description" content="在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。">
+<meta name="keywords" content="JAVA,基础知识">
+<meta property="og:type" content="article">
+<meta property="og:title" content="UML 类图">
+<meta property="og:url" content="http://segmentfault.me/2016/11/17/UML-类图/index.html">
+<meta property="og:site_name" content="Elvin 的博客">
+<meta property="og:description" content="在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/Person.png">
+<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/generalization.png">
+<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/realization.png">
+<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/dependency.png">
+<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/association.png">
+<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/aggregation.png">
+<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/Multiplicity.png">
+<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/composition.png">
+<meta property="og:updated_time" content="2017-07-22T15:13:34.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="UML 类图">
+<meta name="twitter:description" content="在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。">
+<meta name="twitter:image" content="http://7xlboz.com1.z0.glb.clouddn.com/Person.png">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.4.x" />
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+
+
+
+<script>
+  var CONFIG = {
+    search: true,
+    searchPath: "/search.xml",
+    fancybox: true,
+    toc: true,
+  }
+</script>
+
+
+
+
+  
+
+  <script type="text/javascript">
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-99326171-1', 'auto');
+        ga('send', 'pageview');
+  </script>
+
+
+
+    <title> UML 类图 · Elvin 的博客 </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Elvin 的博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            Home
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            Archives
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            About
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Elvin 的博客</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+      
+        <li class="menu-search">
+          <form>
+            <i class="iconfont icon-search" id="open-search"></i>
+            <input type="text" class="search-input" id="search-input" />
+            <i class="iconfont icon-close" id="close-search"></i>
+          </form>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          UML 类图
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2016年11月17日
+        </span>
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#类本身的表示"><span class="toc-text">类本身的表示</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#类间关系的表示"><span class="toc-text">类间关系的表示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#泛化（Generalization）"><span class="toc-text">泛化（Generalization）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#实现（Realization）"><span class="toc-text">实现（Realization）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#依赖（Dependency）"><span class="toc-text">依赖（Dependency）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#关联（Association）"><span class="toc-text">关联（Association）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#聚合（Aggregation）"><span class="toc-text">聚合（Aggregation）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#组成（Composition）"><span class="toc-text">组成（Composition）</span></a></li></ol></li></ol>
+    </div>
+  </div>
+
+
+    <div class="post-content">
+      
+        <p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
+<a id="more"></a>
+<h2 id="类本身的表示"><a href="#类本身的表示" class="headerlink" title="类本身的表示"></a><a href="#类本身的表示" title="类本身的表示"></a>类本身的表示</h2><p>类是对象的蓝图，封装了数据和行为，它是具有相同属性、方法、关系的对象的集合的总称，下面是一个简单的 Person 类的 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span>  <span class="title">Person</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> String name;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.name = name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.age = age;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>其对应的类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Person.png" alt="Person 类图"></p>
+<p>在上面这个简单的例子中，我们可以看到，从上至下类图分为三个部分，依次为：</p>
+<ul>
+<li>类的名称</li>
+<li>类的属性</li>
+<li>类的方法</li>
+</ul>
+<p>其中，属性部分的格式为 <code>可见性 名称:类型 [=缺省值]</code>，方法部分的格式为 <code>可见性 名称(参数类型):返回类型</code>，可见性的可选项为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">+    public</div><div class="line">-    private</div><div class="line">#    protected</div><div class="line">~    default</div><div class="line">_    static</div></pre></td></tr></table></figure>
+
+<h2 id="类间关系的表示"><a href="#类间关系的表示" class="headerlink" title="类间关系的表示"></a><a href="#类间关系的表示" title="类间关系的表示"></a>类间关系的表示</h2><h3 id="泛化（Generalization）"><a href="#泛化（Generalization）" class="headerlink" title="泛化（Generalization）"></a><a href="#泛化（Generalization）" title="泛化（Generalization）"></a>泛化（Generalization）</h3><p>泛化，可理解为继承，在 Java 中通过关键字 <code>extends</code> 标示，用<strong>带空心三角箭头的实线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/generalization.png" alt="泛化关系示意图"></p>
+<h3 id="实现（Realization）"><a href="#实现（Realization）" class="headerlink" title="实现（Realization）"></a><a href="#实现（Realization）" title="实现（Realization）"></a>实现（Realization）</h3><p>实现，指的是一个类实现接口（可以是多个）的功能，在 Java 中通过关键字 <code>implements</code> 标示，用<strong>带空心三角箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">implements</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/realization.png" alt="实现关系示意图"></p>
+<h3 id="依赖（Dependency）"><a href="#依赖（Dependency）" class="headerlink" title="依赖（Dependency）"></a><a href="#依赖（Dependency）" title="依赖（Dependency）"></a>依赖（Dependency）</h3><p>依赖，可简单的理解为类 A 使用到了另一个类 B，可以用 <em>‘… use a …’</em> 进行判断，这种使用关系是具有偶然性的、临时性的、非常弱的。表现在代码层面，就是类 B 作为参数被类 A 在某个方法中使用，用<strong>带燕尾箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">(A param)</span></span>&#123;</div><div class="line">      <span class="comment">//…</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/dependency.png" alt="依赖关系示意图"></p>
+<h3 id="关联（Association）"><a href="#关联（Association）" class="headerlink" title="关联（Association）"></a><a href="#关联（Association）" title="关联（Association）"></a>关联（Association）</h3><p>关联，体现的是两个类、类与接口或者接口与接口之间的强依赖关系，可以用 <em>‘… has a …’</em> 进行判断，一般来说是一种长期的稳定的关系。表现在代码层面，就是 B 以属性的形式出现在 A 中，关联既可以是单向的，也可以是双向的，用<strong>带燕尾箭头的实线</strong>表示单向关联，<strong>不带箭头的实现</strong>表示双向关联，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> A attribute;</div><div class="line">  </div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/association.png" alt="关联关系示意图"></p>
+<h3 id="聚合（Aggregation）"><a href="#聚合（Aggregation）" class="headerlink" title="聚合（Aggregation）"></a><a href="#聚合（Aggregation）" title="聚合（Aggregation）"></a>聚合（Aggregation）</h3><p>聚合，指整体与部分之间的一类特殊的关联关系，是“弱”的包含关系，可以用 <em>‘… owns a …</em> 进行判断，成分类可以不依靠集合类而单独存在，可以拥有各自的生命周期，用<strong>带空心棱形箭尾的实线</strong>表示，例如教室与教室中的学生间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/aggregation.png" alt="聚合关系示意图"></p>
+<p>有些时候，我们还需要两个对象在数量上的对应关系（Multiplicity），可以<strong>直接在关联直线上用一个数字或者一个数字范围</strong>来表示，例如有一个最多只能容纳 40 个学生的教室，那么教室和这个教室之间的关系可表示为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Multiplicity.png" alt="多重性关联关系示意图"></p>
+<p>数字范围表示方法具体为：</p>
+<ul>
+<li>0..1 没有或者只有一个实例</li>
+<li>1    有且仅有一个实例</li>
+<li>0..* 大于等于 0 个实例</li>
+<li><ul>
+<li>大于等于 0 个实例</li>
+</ul>
+</li>
+<li>1..* 大于等于 1 个实例</li>
+<li>m..n 大于等于 m ，小于等于 n 个实例</li>
+</ul>
+<h3 id="组成（Composition）"><a href="#组成（Composition）" class="headerlink" title="组成（Composition）"></a><a href="#组成（Composition）" title="组成（Composition）"></a>组成（Composition）</h3><p>组成，指整体与部分之间一类“强”的包含关系，可以用 <em>‘… is a part of …’</em> 进行判断，成分类必须依靠集合类而存在，两者是密不可分的，整体类负责创建与销毁成分类，当整体类的生命周期结束时也意味着部分类生命周期的结束，用<strong>带实心棱形箭尾的实线</strong>表示，例如人与其大脑间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/composition.png" alt="组成关系示意图"></p>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>作者: </span>
+      <span>Elvin Peng</span>
+    </p>
+    <p class="copyright-item">
+      <span>来源: </span>
+      <a href="http://segmentfault.me">http://segmentfault.me</a>
+    </p>
+    <p class="copyright-item">
+      <span>链接: </span>
+      <a href="http://segmentfault.me/2016/11/17/UML-类图/">http://segmentfault.me/2016/11/17/UML-类图/</a>
+    </p>
+
+    <p class="copyright-item lincese">
+      
+      本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可。通俗地讲，只要在使用时署名，那么使用者可以对本站所有原创内容进行转载、节选、混编、二次创作，允许商业性使用。
+    </p>
+  </div>
+
+
+
+      
+      
+  <div class="post-reward">
+    <input type="checkbox" name="reward" id="reward" hidden />
+    <label class="reward-button" for="reward">赞赏支持</label>
+    <div class="qr-code">
+      
+      
+        <label class="qr-code-image" for="reward">
+          <img class="image" src="/image/reward/wechat.png" title="wechat">
+        </label>
+      
+      
+        <label class="qr-code-image" for="reward">
+          <img class="image" src="/image/reward/alipay.png" title="alipay">
+        </label>
+      
+    </div>
+  </div>
+
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/JAVA/">JAVA</a>
+            
+              <a href="/tags/基础知识/">基础知识</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+      <a class="prev" href="/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">yield from、asyncio 与 aiohttp 在异步IO中的应用</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
+    
+      <a class="next" href="/2016/11/17/函数作为返回值-闭包/">
+        <span class="next-text nav-default">函数作为返回值--闭包</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+    
+  </div>
+
+
+        </div>  
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:elvin.pjw@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/elvinn" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/peng-leonard/" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2017
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Elvin Peng</span>
+  </span>
+</div>
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+
+  
+  
+  <script>
+    var cloudTieConfig = {
+      url: document.location.href, 
+      sourceId: "",
+      productKey: "5d2790c0a9ad46a997dd0db1dfd3407b",
+      target: "cloud-tie-wrapper"
+    };
+  </script>
+  <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+
+
+
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.4.x"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.4.x"></script>
+
+    
+  <script type="text/html" id="search-result">
+    <article class="post">
+      <header class="post-header">
+        <h1 class="post-title">
+          <a href="$url$" class="post-link">
+            $title$
+          </a>
+        </h1>
+      </header>
+      <div class="post-content">
+        $content$
+        <div class="read-more">
+          <a href="$url$" class="read-more-link">
+            阅读更多
+          </a>
+        </div>
+      </div>
+    </article>
+  </script>
+  <script type="text/html" id="no-search-result">
+    <div class="no-result">
+      <h2>No result found!</h2>
+    </div>
+  </script>
+  <script type="text/javascript" src="/js/src/search.js?v=2.4.x"></script>
+
+  </body>
+</html>
