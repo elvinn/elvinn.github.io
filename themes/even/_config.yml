@@ -1,0 +1,82 @@
+# ===========================================
+# Site Information Settings
+# ===========================================
+
+# Site creation time
+since: 2015
+
+# Custom your favicon.ico in `site/source`
+favicon: /favicon.ico
+
+# Set feed link (false | default | your feed link)
+# false: disable
+# default: use `atom.xml`, generator for `hexo-generator-feed`
+rss: default
+
+# ===========================================
+# Menu Settings
+# ===========================================
+menu:
+  Home: /
+  Archives: /archives/
+  # Tags: /tags
+  # Categories: /categories
+  About: /about
+
+# ===========================================
+# Theme Settings
+# ===========================================
+# theme styling
+# color: Default | Mint Green | Cobalt Blue | Hot Pink | Dark Violet
+theme:
+  color: Default
+  toc: true
+  search: true 
+  fancybox: true 
+
+copyright:
+  enable: true
+  # https://creativecommons.org/
+  license: '本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可。通俗地讲，只要在使用时署名，那么使用者可以对本站所有原创内容进行转载、节选、混编、二次创作，允许商业性使用。'
+
+reward:
+  enable: true
+  qrCode:
+    wechat: /image/reward/wechat.png
+    alipay: /image/reward/alipay.png
+
+# ===========================================
+# Social links Settings
+# ===========================================
+social:
+  email: elvin.pjw@gmail.com
+  stack-overflow:
+  twitter:
+  facebook:
+  linkedin:
+  google:
+  github: https://github.com/elvinn 
+  weibo: 
+  zhihu: https://www.zhihu.com/people/peng-leonard/
+  pocket:
+
+# ===========================================
+# Third Party Services Settings
+# ===========================================
+
+# Baidu Analytics
+baidu_analytics:
+# Google Analytics
+google_analytics: UA-99326171-1
+
+# Duoshuo
+# duoshuo_shortname:
+# Disqus
+# disqus_shortname: elvin-peng
+# netease
+netease_key: 5d2790c0a9ad46a997dd0db1dfd3407b
+
+# ===========================================
+# Version
+# ===========================================
+version: 2.4.x
