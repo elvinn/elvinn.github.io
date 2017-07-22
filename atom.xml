@@ -1,0 +1,689 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Elvin 的博客</title>
+  
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://segmentfault.me/"/>
+  <updated>2017-07-22T15:28:23.000Z</updated>
+  <id>http://segmentfault.me/</id>
+  
+  <author>
+    <name>Elvin Peng</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>深入探究 Node 中的 events.EventEmitter 模块</title>
+    <link href="http://segmentfault.me/2017/07/22/evenEmitter/"/>
+    <id>http://segmentfault.me/2017/07/22/evenEmitter/</id>
+    <published>2017-07-22T15:20:55.000Z</published>
+    <updated>2017-07-22T15:28:23.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Node 中的许多核心 API 都是通过事件驱动的异步架构实现的，具体来说就是当 <code>emitters</code> 发送事件后，相应的响应函数（ <code>listeners</code> ）会被执行。例如：<code>net.Server</code> 会在每次收到连接时发出事件，<code>fs.ReadStram</code> 会在文件打开时发出事件，<code>stram</code>会在有数据可读时发出事件。<br>所有这些对象都是 <code>EventEmitter</code> 的实例，它们通过向外暴露的 <code>eventEmitter.on()</code> 接口从而让不同的事件响应函数得以执行。</p>
+<a id="more"></a>
+<h2 id="基本的使用"><a href="#基本的使用" class="headerlink" title="基本的使用"></a>基本的使用</h2><h3 id="on-和-emit-方法"><a href="#on-和-emit-方法" class="headerlink" title="on 和 emit 方法"></a>on 和 emit 方法</h3><p>events 模块有且只有一个对象 <code>events.EventEmitter</code>，它的核心功能就是事件的触发（<code>emit</code>）和事件的监听（<code>on</code>），一个简单的例子如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>);</div><div class="line"></div><div class="line"><span class="keyword">let</span> emitter = <span class="keyword">new</span> EventEmitter();</div><div class="line"></div><div class="line">emitter.on(<span class="string">'hi'</span>, (name) =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`hi, my name is <span class="subst">$&#123;name&#125;</span>!`</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">emitter.emit(<span class="string">'hi'</span>, <span class="string">'elvin'</span>);</div></pre></td></tr></table></figure></p>
+<p>在上述的例子中，我们通过 <code>emitter.on(&#39;hi&#39;, func)</code> 的方式注册了 hi 事件的监听函数，通过 <code>emitter.emit(&#39;hi&#39;, &#39;elvin&#39;)</code> 的方式触发了 hi 事件，且会向事件处理函数传递参数 ‘elvin’，所以最后的执行结果为 <code>hi, my name is elvin!</code>。<br>这里需要说明的时，EventEmitter 还有一个 <code>addeListener</code> 的方法，它只不过是 <code>on</code> 方法的别名，两者没有任何区别。</p>
+<h3 id="once-方法"><a href="#once-方法" class="headerlink" title="once 方法"></a>once 方法</h3><p>有些时候，我们希望某些事件响应函数只被执行一次，这个时候就可以使用 <code>once()</code> 方法，它会和 <code>on()</code> 一样注册事件的响应函数，不过当响应函数执行一次之后，就会将其移除。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>);</div><div class="line"></div><div class="line"><span class="keyword">let</span> emitter = <span class="keyword">new</span> EventEmitter();</div><div class="line"></div><div class="line">emitter.once(<span class="string">'hi'</span>, (name) =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`hi, my name is <span class="subst">$&#123;name&#125;</span>!`</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">emitter.emit(<span class="string">'hi'</span>, <span class="string">'elvin'</span>);</div><div class="line">emitter.emit(<span class="string">'hi'</span>, <span class="string">'leonard'</span>);</div></pre></td></tr></table></figure></p>
+<p>上面的例子中只会输出 <code>hi, my name is elvin!</code>（leonard 很高冷，不屑于向你打招呼┗( ▔, ▔ )┛）。</p>
+<h3 id="prependListener-方法"><a href="#prependListener-方法" class="headerlink" title="prependListener 方法"></a>prependListener 方法</h3><p>当一个事件绑定了多个响应函数时，会按照函数绑定的顺序依次执行，除非响应函数是通过 <code>prependListener()</code> 方法绑定的，它使用的方式和 <code>on()</code> 类似，不过会将响应函数插到当前该事件处理函数队列的头部，具体的例子如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>);</div><div class="line"></div><div class="line"><span class="keyword">let</span> emitter = <span class="keyword">new</span> EventEmitter();</div><div class="line"></div><div class="line">emitter.on(<span class="string">'hi'</span>, (name) =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`my name is <span class="subst">$&#123;name&#125;</span>!`</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">emitter.on(<span class="string">'hi'</span>, () =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'I\'m from Wuhan.'</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">emitter.prependListener(<span class="string">'hi'</span>, () =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'nice to meet you!'</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">emitter.on(<span class="string">'hi'</span>, () =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">'What\'s your name?'</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">emitter.emit(<span class="string">'hi'</span>, <span class="string">'elvin'</span>);</div><div class="line"></div><div class="line"><span class="comment">// 输出为：</span></div><div class="line"><span class="comment">// nice to meet you!</span></div><div class="line"><span class="comment">// my name is elvin.</span></div><div class="line"><span class="comment">// I'm from Wuhan.</span></div><div class="line"><span class="comment">// What\'s your name?</span></div></pre></td></tr></table></figure></p>
+<h3 id="响应函数的数量"><a href="#响应函数的数量" class="headerlink" title="响应函数的数量"></a>响应函数的数量</h3><p>因为绑定过多的响应函数会消耗大量的内存，所以为了避免内存泄漏，在 <code>Event.EventEmitter</code>中一个事件可以绑定的响应函数数量是存在限制的，相关的属性和方法如下：</p>
+<ul>
+<li><strong>EventEmitter.defaultMaxListeners</strong>： 默认值为10， 表示每个事件的最多可以绑定的响应函数数量。需要注意的是，当修改它时，会影响所有 <code>EventEmitter</code> 的实例。</li>
+<li><strong>emitter.listenerCount(eventName)</strong>：获取事件 <code>eventName</code> 已绑定的响应函数个数。</li>
+<li><strong>emitter.setMaxListeners(n)</strong>：修改 emitter 的每个事件最多可以绑定的响应函数数量，该方法会修改 <code>emitter._maxListeners</code> 的值，其优先级大于 <code>*EventEmitter.defaultMaxListeners</code> 。</li>
+<li><strong>emitter.getMaxListeners()</strong>：获取 emitter 每个事件最多可以绑定的响应函数数量。</li>
+</ul>
+<h3 id="其他相关方法"><a href="#其他相关方法" class="headerlink" title="其他相关方法"></a>其他相关方法</h3><p><code>EventEmitter</code> 还有一些其他的方法和属性，这里就不做具体介绍，简要地说一下。</p>
+<ul>
+<li><strong>emitter.eventNames()</strong>：返回当前已经绑定响应函数的事件名组成的数组。</li>
+<li><strong>emitter.listeners(eventName)</strong>：返回 <code>eventName</code> 事件的响应函数组成的数组。</li>
+<li><strong>emitter.prependOnceListener(eventName, listener)</strong>：类似于 <code>once()</code>，不过会将响应函数插到当前该事件处理函数队列的头部。</li>
+<li><strong>emitter.removeAllListeners([eventName])</strong>：移除 <code>eventName</code> 事件所有的响应函数。当未传入 <code>eventName</code> 参数时，所有事件的响应函数都会被移除。</li>
+<li><strong>emitter.removeListener(eventName, listener)</strong>：移除 <code>eventName</code> 事件的响应函数 <code>listener</code>。</li>
+</ul>
+<h3 id="newListener-和-removeListener-事件"><a href="#newListener-和-removeListener-事件" class="headerlink" title="newListener 和 removeListener 事件"></a>newListener 和 removeListener 事件</h3><p>当 emitter 被注册响应函数时，会触发 <code>newListener</code> 事件；被移除响应函数时，会触发 <code>removeListener</code> 事件。两个事件的响应函数会被传入两个参数：注册的事件名和响应的响应函数。具体的例子如下：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>);</div><div class="line"></div><div class="line"><span class="keyword">let</span> emitter = <span class="keyword">new</span> EventEmitter();</div><div class="line"></div><div class="line"><span class="comment">// 注意：此处使用 emitter.on 方法的话会陷入循环调用，导致栈溢出</span></div><div class="line">emitter.once(<span class="string">'newListener'</span>, (event, listener) =&gt; &#123;</div><div class="line">    <span class="keyword">if</span> (event === <span class="string">'hi'</span>) &#123;</div><div class="line">        emitter.on(<span class="string">'hi'</span>, () =&gt; &#123;</div><div class="line">            <span class="built_in">console</span>.log(<span class="string">'Nice to meet you.'</span>);</div><div class="line">        &#125;);</div><div class="line">    &#125;</div><div class="line">&#125;);</div><div class="line"></div><div class="line">emitter.on(<span class="string">'hi'</span>, (name) =&gt; &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="string">`My name is <span class="subst">$&#123;name&#125;</span>!`</span>);</div><div class="line">&#125;);</div><div class="line"></div><div class="line">emitter.emit(<span class="string">'hi'</span>, <span class="string">'elvin'</span>);</div></pre></td></tr></table></figure></p>
+<p>运行结果为 <code>Nice to meet you. My name is elvin.</code>。实际上， <code>newListener</code> 事件被触发时，响应函数还未被注册至 emitter，因而我们就可以在在目标响应函数之前插入其他响应函数，例如上面的例子中 <code>Nice to meet you.</code> 就在 <code>My name is elvin.</code> 之前进行输出。</p>
+<h2 id="在-Node-源码中的使用"><a href="#在-Node-源码中的使用" class="headerlink" title="在 Node 源码中的使用"></a>在 Node 源码中的使用</h2><p>如在开头所说，<code>net.Server</code>、<code>fs.ReadStram</code>、<code>stream</code> 等 Node 内建对象都是 <code>EventEmitter</code> 的实例，它们通过向外暴露的 <code>eventEmitter.on()</code> 接口从而让不同的事件响应函数得以执行。这里以 <code>stream</code> 的部分源码为例，讲讲 <code>events.EventEmitter</code> 在 Node 中的使用。<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div><div class="line">46</div><div class="line">47</div><div class="line">48</div><div class="line">49</div><div class="line">50</div><div class="line">51</div><div class="line">52</div><div class="line">53</div><div class="line">54</div><div class="line">55</div><div class="line">56</div><div class="line">57</div><div class="line">58</div><div class="line">59</div><div class="line">60</div><div class="line">61</div><div class="line">62</div><div class="line">63</div><div class="line">64</div><div class="line">65</div><div class="line">66</div><div class="line">67</div><div class="line">68</div><div class="line">69</div><div class="line">70</div><div class="line">71</div><div class="line">72</div><div class="line">73</div><div class="line">74</div><div class="line">75</div><div class="line">76</div><div class="line">77</div><div class="line">78</div><div class="line">79</div><div class="line">80</div><div class="line">81</div><div class="line">82</div><div class="line">83</div><div class="line">84</div><div class="line">85</div><div class="line">86</div><div class="line">87</div><div class="line">88</div><div class="line">89</div><div class="line">90</div><div class="line">91</div><div class="line">92</div><div class="line">93</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// stream 部分源码 2017/02/22 版</span></div><div class="line"><span class="comment">// source: https://github.com/nodejs/node/blob/master/lib/internal/streams/legacy.js</span></div><div class="line"><span class="keyword">const</span> EE = <span class="built_in">require</span>(<span class="string">'events'</span>);</div><div class="line"><span class="keyword">const</span> util = <span class="built_in">require</span>(<span class="string">'util'</span>); <span class="comment">// Node 的辅助函数库</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Stream</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  EE.call(<span class="keyword">this</span>);</div><div class="line">&#125;</div><div class="line">util.inherits(Stream, EE);</div><div class="line"></div><div class="line">Stream.prototype.pipe = <span class="function"><span class="keyword">function</span>(<span class="params">dest, options</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> source = <span class="keyword">this</span>;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">ondata</span>(<span class="params">chunk</span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (dest.writable) &#123;</div><div class="line">      <span class="keyword">if</span> (<span class="literal">false</span> === dest.write(chunk) &amp;&amp; source.pause) &#123;</div><div class="line">        source.pause();</div><div class="line">      &#125;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  source.on(<span class="string">'data'</span>, ondata);</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">ondrain</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (source.readable &amp;&amp; source.resume) &#123;</div><div class="line">      source.resume();</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  dest.on(<span class="string">'drain'</span>, ondrain);</div><div class="line"></div><div class="line">  <span class="comment">// If the 'end' option is not supplied, dest.end() will be called when</span></div><div class="line">  <span class="comment">// source gets the 'end' or 'close' events.  Only dest.end() once.</span></div><div class="line">  <span class="keyword">if</span> (!dest._isStdio &amp;&amp; (!options || options.end !== <span class="literal">false</span>)) &#123;</div><div class="line">    source.on(<span class="string">'end'</span>, onend);</div><div class="line">    source.on(<span class="string">'close'</span>, onclose);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="keyword">var</span> didOnEnd = <span class="literal">false</span>;</div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">onend</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (didOnEnd) <span class="keyword">return</span>;</div><div class="line">    didOnEnd = <span class="literal">true</span>;</div><div class="line"></div><div class="line">    dest.end();</div><div class="line">  &#125;</div><div class="line"></div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">onclose</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">if</span> (didOnEnd) <span class="keyword">return</span>;</div><div class="line">    didOnEnd = <span class="literal">true</span>;</div><div class="line"></div><div class="line">    <span class="keyword">if</span> (<span class="keyword">typeof</span> dest.destroy === <span class="string">'function'</span>) dest.destroy();</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="comment">// don't leave dangling pipes when there are errors.</span></div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">onerror</span>(<span class="params">er</span>) </span>&#123;</div><div class="line">    cleanup();</div><div class="line">    <span class="keyword">if</span> (EE.listenerCount(<span class="keyword">this</span>, <span class="string">'error'</span>) === <span class="number">0</span>) &#123;</div><div class="line">      <span class="keyword">throw</span> er; <span class="comment">// Unhandled stream error in pipe.</span></div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  source.on(<span class="string">'error'</span>, onerror);</div><div class="line">  dest.on(<span class="string">'error'</span>, onerror);</div><div class="line"></div><div class="line">  <span class="comment">// remove all the event listeners that were added.</span></div><div class="line">  <span class="function"><span class="keyword">function</span> <span class="title">cleanup</span>(<span class="params"></span>) </span>&#123;</div><div class="line">    source.removeListener(<span class="string">'data'</span>, ondata);</div><div class="line">    dest.removeListener(<span class="string">'drain'</span>, ondrain);</div><div class="line"></div><div class="line">    source.removeListener(<span class="string">'end'</span>, onend);</div><div class="line">    source.removeListener(<span class="string">'close'</span>, onclose);</div><div class="line"></div><div class="line">    source.removeListener(<span class="string">'error'</span>, onerror);</div><div class="line">    dest.removeListener(<span class="string">'error'</span>, onerror);</div><div class="line"></div><div class="line">    source.removeListener(<span class="string">'end'</span>, cleanup);</div><div class="line">    source.removeListener(<span class="string">'close'</span>, cleanup);</div><div class="line"></div><div class="line">    dest.removeListener(<span class="string">'close'</span>, cleanup);</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  source.on(<span class="string">'end'</span>, cleanup);</div><div class="line">  source.on(<span class="string">'close'</span>, cleanup);</div><div class="line"></div><div class="line">  dest.on(<span class="string">'close'</span>, cleanup);</div><div class="line">  dest.emit(<span class="string">'pipe'</span>, source);</div><div class="line"></div><div class="line">  <span class="comment">// Allow for unix-like usage: A.pipe(B).pipe(C)</span></div><div class="line">  <span class="keyword">return</span> dest;</div><div class="line">&#125;;</div><div class="line"></div><div class="line"><span class="built_in">module</span>.exports = Stream;</div></pre></td></tr></table></figure></p>
+<p>上述代码主要完成了三件事情：</p>
+<ol>
+<li>通过在 Stream 的构造函数中调用 <code>EE.call(this)</code> 和利用 <code>util.inherits(Stream, EE);</code> 调用，让 Sever 继承自 EventEmitter;</li>
+<li>通过 on 方法在数据源 sourse 上注册了 data、end、close、error 等事件的响应函数，在数据目的源 dest 上注册了 drain、end、close、error 等事件的响应函数；</li>
+<li>在完成初始化和响应函数注册后，向数据目的源发出 pipe 事件。</li>
+</ol>
+<h2 id="ES6-中的使用方式"><a href="#ES6-中的使用方式" class="headerlink" title="ES6 中的使用方式"></a>ES6 中的使用方式</h2><p>如上节所示，在 Node 中都是通过 <code>util.inherits(Stream, EventEmitter);</code> 来实现继承，但是在 Node 的官方文档中，该种方式已不被推荐。更推荐的做法是通过 ES6 中的 <code>class</code> 和 <code>extends</code> 来实现继承：<br><figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">const</span> EventEmitter = <span class="built_in">require</span>(<span class="string">'events'</span>);</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyStream</span> <span class="keyword">extends</span> <span class="title">EventEmitter</span> </span>&#123;</div><div class="line">  write(data) &#123;</div><div class="line">    <span class="keyword">this</span>.emit(<span class="string">'data'</span>, data);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="keyword">const</span> stream = <span class="keyword">new</span> MyStream();</div><div class="line"></div><div class="line">stream.on(<span class="string">'data'</span>, (data) =&gt; &#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">`Received data: "<span class="subst">$&#123;data&#125;</span>"`</span>);</div><div class="line">&#125;);</div><div class="line">stream.write(<span class="string">'With ES6'</span>);</div><div class="line"></div><div class="line"></div><div class="line"><span class="comment">// output: Received data: "With ES6"</span></div></pre></td></tr></table></figure></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>事件驱动、非异步 I/O 的特点成就了如今的 Node，而 Node 中事件驱动依靠的就是 events.EventEmitter！需要说明的是，events 和 events.EventEmitter 其实指向的都是 EventEmitter，之所以会有 events.EventEmitter 只是为了保持对 Node 0.10.x 版本的兼容。</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://nodejs.org/api/events.html" target="_blank" rel="external">Node.js Documentation - evnets</a></li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Node 中的许多核心 API 都是通过事件驱动的异步架构实现的，具体来说就是当 &lt;code&gt;emitters&lt;/code&gt; 发送事件后，相应的响应函数（ &lt;code&gt;listeners&lt;/code&gt; ）会被执行。例如：&lt;code&gt;net.Server&lt;/code&gt; 会在每次收到连接时发出事件，&lt;code&gt;fs.ReadStram&lt;/code&gt; 会在文件打开时发出事件，&lt;code&gt;stram&lt;/code&gt;会在有数据可读时发出事件。&lt;br&gt;所有这些对象都是 &lt;code&gt;EventEmitter&lt;/code&gt; 的实例，它们通过向外暴露的 &lt;code&gt;eventEmitter.on()&lt;/code&gt; 接口从而让不同的事件响应函数得以执行。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="node" scheme="http://segmentfault.me/tags/node/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>不再是孩子</title>
+    <link href="http://segmentfault.me/2017/06/01/%E4%B8%8D%E5%86%8D%E6%98%AF%E5%AD%A9%E5%AD%90/"/>
+    <id>http://segmentfault.me/2017/06/01/不再是孩子/</id>
+    <published>2017-06-01T05:26:46.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>又是六一儿童节，前几年每次过六一都会去电影院看哆啦A梦的大电影，今年不想去了，一是这次上映的《哆啦A梦：大熊的南极冰冰凉大冒险》不是不二雄亲自执笔的，评价也不怎么好；二是一起去看电影的人也不在了，一个人去的话看电影的乐趣少了太多。</p>
+<a id="more"></a>
+<p>17年年尾的时候，曾写了一篇 <a href="http://segmentfault.me/2016/12/08/%E5%B1%95%E6%9C%9B-2017/">展望2017</a>，尽管文中的计划都按时完成，心愿也已都实现，然而除了实习生录用结果刚出来的那一阵儿的开心外，最近一两个月最大的感觉就是孤独 &amp;&amp; 孤单了。</p>
+<p>五月初的时候因为课程轻松，又刚忙完实习招聘，加上 Dota2 Ti7的小本子出了，所以疯狂的打了一两周的 Dota2，虽然一路上分到了3500，打游戏时五个人一个团队的感觉也很好，但是休息的时候总是抬头不知望向哪儿好，心中一片茫然：感觉自己很闲，想找点事情做又不知做何好，想找人聊天也不知可以找谁。</p>
+<p>这一两周晚上睡觉的时候经常回想起以前的事情：大一大二很开心，高中很开心，初中很开心，小学的事情已经记不太清了，但是应该也是开心的吧。作为孩子的我真是幸福呢，一路无忧无虑这样开开心心地走来。但是一帆风顺似乎也没有那么好，就好比说现在，我能感觉到自己觉得孤单 &amp;&amp; 孤单，时不时也会被这种情绪包围，虽然没那么坏，但也觉得不怎么好，不过就是不知道该怎么去转变它，甚至不知道要不要去转变它，似乎有人说过孤独会极大地促进人的发展，自己也觉得感受孤独乃至享受孤独应该是成长的必经之路吧。</p>
+<p>虽然整个人情绪上有些低落，但是我正处在 22 岁，在我一生的黄金时代，我有好多的欲望，我想一个个的去把它们变成现实：</p>
+<ol>
+<li>之前健身瘦了差不多三十斤，忙实习的事情的时候中断了一个多月，反弹了一些。锻炼还是要继续坚持，不求八块腹肌，但求能做十个引体向上:-D。</li>
+<li>最近也有沉迷动漫，抛开剧情不说，配乐都非常的好听！！想趁着空闲时间能学学日语，不奢望能学多好，到听懂歌词的地步就挺好了，希望今年结束之前能自学完《标准日本语（初级）》的上下两册。</li>
+<li>有时间多看看书吧，学生时代理科的我只知道数理化，都没怎么读过几本老师口中的“闲书”，总感觉自己是不完整的，缺失了一些，不过现在也不算晚:）。</li>
+<li>端午节 4 天拼死拼活写完了一个小项目，尽管很累，不过成就感还是有的。今年暑假实习的时候，希望能克服困难（实习生群里有人经常加班到晚上十点多。。。），争取留用，毕竟在腾讯工作是一直以来的心愿。</li>
+</ol>
+<p>道阻且长，行则将至！</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;又是六一儿童节，前几年每次过六一都会去电影院看哆啦A梦的大电影，今年不想去了，一是这次上映的《哆啦A梦：大熊的南极冰冰凉大冒险》不是不二雄亲自执笔的，评价也不怎么好；二是一起去看电影的人也不在了，一个人去的话看电影的乐趣少了太多。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="生活" scheme="http://segmentfault.me/tags/%E7%94%9F%E6%B4%BB/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>__proto__ 与 prototype 的关系</title>
+    <link href="http://segmentfault.me/2017/01/22/proto%E4%B8%8Eprototype%E7%9A%84%E5%85%B3%E7%B3%BB/"/>
+    <id>http://segmentfault.me/2017/01/22/proto与prototype的关系/</id>
+    <published>2017-01-22T01:21:37.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>之前常听说 JavaScript 的面向对象是构建于原型链（protype chain）上的，通过逐级向上查找直至 Object 的原型为止，但是具体的工作机制不太清楚，今天查阅了资料，才发现原来自己之前把 <code>__proto__</code> 与 <code>prototype</code> 混为一谈了（冏o(╯□╰)o）。</p>
+<a id="more"></a>
+<h2 id="结论"><a href="#结论" class="headerlink" title="结论"></a>结论</h2><p>先抛出来结论：</p>
+<ol>
+<li><code>__proto__</code> 是原型链查询中实际用到的，它总是指向 <code>prototype</code>；</li>
+<li><code>prototype</code> 在定义构造函数时自动创建，它总是被 <code>__proto__</code> 所指。</li>
+</ol>
+<p>从上面两点我们还可以推出 <code>prototype</code> 只能作为构造函数的属性，而 <code>__proto__</code> 可以作为任意对象的属性。</p>
+<h2 id="细探"><a href="#细探" class="headerlink" title="细探"></a>细探</h2><p>接下来通过一段代码具体的研究一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">Foo</span>(<span class="params">y</span>) </span>&#123; <span class="keyword">this</span>.y = y; &#125;;</div><div class="line">Foo.prototype.x = <span class="number">10</span>;</div><div class="line">FOo.prototype.calculate = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123; … &#125;;</div><div class="line"><span class="keyword">let</span> b = <span class="keyword">new</span> Foo(<span class="number">20</span>);</div><div class="line"><span class="keyword">let</span> c = <span class="keyword">new</span> Foo(<span class="number">30</span>);</div></pre></td></tr></table></figure>
+<p>这段代码构建的原型链可以用下面的图来表示：<img src="https://ww3.sinaimg.cn/large/006tKfTcgy1fbyc6irh2aj30hf0aw3z1.jpg" alt="原型链示意图"></p>
+<p>看上去是不是有些晕？ 没关系，看完这篇文章就会觉得很简单了。</p>
+<h3 id="原型链解释"><a href="#原型链解释" class="headerlink" title="原型链解释"></a>原型链解释</h3><p>首先聚焦于图的中央，也就是蓝色和灰色的块。代码的第一行 <code>function Foo(age) { ... };</code> 定义了构造函数 Foo，此时 Foo 的原型便自动创建，它的 constructor 属性指向 Foo，Foo 的 prototype 属性指向刚刚创建的原型：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">Foo.prototype.constructor === Foo; <span class="comment">// true</span></div></pre></td></tr></table></figure>
+<p>接着再看图的左部，也就是黄绿色的块。代码的第四、五行通过 <code>let b = new Foo(20); let c = new Foo(20);</code> 创建了对象 b 和 c，每当我们通过 <code>new Foo(x)</code> 创建对象时，JavaScript 内部会首先创建一个新的对象，将其  <code>__proto__</code> 属性指向 Foo 的原型，也就是 Foo.prototype，然后将构造函数中的 <code>this</code> 指向刚刚创建的新对象，最后再执行构造函数中的代码：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">b.proto === Foo.prototype; <span class="comment">// true</span></div><div class="line">c.proto === Foo.prototype; <span class="comment">// true</span></div></pre></td></tr></table></figure>
+<p>最后来说说剩下的紫色的块。</p>
+<p>既然原型链是一条链，那么它就一定会有起始点。文章的开头就说过原型链查找是逐级向上查找直至 Object 的原型为止，所以说起始点就是 <code>Object.prototype</code>，自然 <code>Object.prototype.__proto__</code> 的值为 null（因为已经到了链头，链结束了）。</p>
+<p>尽管 Foo 是构造函数，但它仍逃不出函数的范畴，所以它的 <code>__proto__</code> 指向函数的原型，也就是 <code>Function.prototype</code>。</p>
+<p>一切原型链的终点都是 <code>Object.prototype</code>，所以 <code>Foo.prototype.__proto__</code> 和 <code>Function.prototype.__proto__</code> 均指向它。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">Foo.proto === <span class="built_in">Function</span>.prototype; <span class="comment">// true</span></div><div class="line">Foo.prototype.proto === <span class="built_in">Object</span>.prototype; <span class="comment">//true</span></div><div class="line"><span class="built_in">Function</span>.prototype.proto === <span class="built_in">Object</span>.prototype; <span class="comment">// true</span></div><div class="line"><span class="built_in">Object</span>.prototype.proto === <span class="literal">null</span>; <span class="comment">// true</span></div></pre></td></tr></table></figure>
+<h3 id="原型链工作原理"><a href="#原型链工作原理" class="headerlink" title="原型链工作原理"></a>原型链工作原理</h3><p>一句话解释就是：原型链查找就是通过__ proto__ 查找，直至 Object.prototype时结束，通过几个具体的例子来说明一下：</p>
+<ol>
+<li><code>b.y</code> 在 b 中找到 y，结果为 20；</li>
+<li><code>b.x</code> 在 b 中未找到 x，接着通过 b.<strong>proto\</strong> 在 Foo.prototype 中找到 x，结果为 10；</li>
+<li><code>b.toString()</code> 在 b 中未找到 toString 方法；接着通过 b.__proto__ 在 Foo.prototype 中寻找，未找到；继续通过 Foo.prototype.__proto__ 在 Object.prototype 中寻找，找到，结果为 <code>[object Object]</code>。</li>
+<li><code>b.noFunc()</code> 依次在 b、Foo.prototype、Object.prototype 中寻找，均未找到，抛出错误。</li>
+</ol>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="http://stackoverflow.com/questions/9959727/proto-vs-prototype-in-javascript" target="_blank" rel="external">StackOverflow - __proto__ vs prototype</a>。</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;之前常听说 JavaScript 的面向对象是构建于原型链（protype chain）上的，通过逐级向上查找直至 Object 的原型为止，但是具体的工作机制不太清楚，今天查阅了资料，才发现原来自己之前把 &lt;code&gt;__proto__&lt;/code&gt; 与 &lt;code&gt;prototype&lt;/code&gt; 混为一谈了（冏o(╯□╰)o）。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="前端" scheme="http://segmentfault.me/tags/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="JavaScript" scheme="http://segmentfault.me/tags/JavaScript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>JavaScript 中创建对象的几种方法</title>
+    <link href="http://segmentfault.me/2017/01/19/JavaScript-%E4%B8%AD%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95/"/>
+    <id>http://segmentfault.me/2017/01/19/JavaScript-中创建对象的几种方法/</id>
+    <published>2017-01-19T05:35:59.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在 JavaScript 中，面向对象编程的概念和 C++，Java 等语言都不太一样。在其他的语言中，面向对象的编程需要区分两个概念：<strong>类</strong>和<strong>实例</strong>，<strong>类</strong>是<strong>实例</strong>的模板，<strong>实例</strong>是根据<strong>类</strong>创建出来的对象。以 C++ 为例，在<code>Student jack = new Student();</code>  中，<code>Student</code> 为类，<code>jack</code> 为实例。不过在 JavaScript 中，不区分类和实例，而是通过 <code>原型（prototype）</code> 实现面向对象的编程。关于原型的介绍不是这篇文章的重点，想要深入了解的朋友可以参考 <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain" target="_blank" rel="external">MDN - 继承与原型链</a>。接下来将主要讲讲 JavaScript 中创建对象的几种方法和其优缺点。</p>
+<a id="more"></a>
+<h2 id="工厂模式"><a href="#工厂模式" class="headerlink" title="工厂模式"></a>工厂模式</h2><p>工厂模式抽象了创建具体对象的过程，将创建的具体逻辑和过程交由工厂函数进行处理，一个简单的例子如下所示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> createPerson = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> o = &#123;&#125;;</div><div class="line">  o.name = name;</div><div class="line">  o.sayName = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(o.name);</div><div class="line">  &#125;;</div><div class="line">  <span class="keyword">return</span> o;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">var</span> jack = createPerson(‘jack’);</div></pre></td></tr></table></figure>
+<p>工厂模式的一个主要问题是我们没有办法判断 <code>jack</code> 的对象类型：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line">jack.constructor === createPerson; <span class="comment">// false</span></div><div class="line">jack <span class="keyword">instanceof</span> createPerson; <span class="comment">// false</span></div></pre></td></tr></table></figure>
+<p>不知道 <code>jack</code> 是一个人，还是一个狗狗的话就是一个大问题了，我们没办法针对性地采取行为，要是一不小心把他当成了小狗，喂给他一根骨头就要友尽了。</p>
+<h2 id="构造函数模式"><a href="#构造函数模式" class="headerlink" title="构造函数模式"></a>构造函数模式</h2><p>既然有了问题我们就要解决它，所以有了构造函数模式：通过自定义构造函数，再使用 <code>new</code> 操作符进行对象创建即可以将 <code>jack</code> 标识为具体的类型：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// 定义构造函数 Person</span></div><div class="line"><span class="keyword">var</span> Person = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.name = name;</div><div class="line">  <span class="keyword">this</span>.sayName = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.name);</div><div class="line">  &#125;;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">var</span> jack = <span class="keyword">new</span> Person(‘jack’);</div></pre></td></tr></table></figure>
+<p>这种方法的关键就是弄清楚 <code>new</code> 具体完成了哪些行为，实际上会经历下面 4 个步骤：</p>
+<ol>
+<li>创建一个新的对象，并将其 <code>[[Prototype]]</code> 指向构造函数的 <code>prototype</code> 属性；</li>
+<li>将构造函数中的 <code>this</code> 指向上一步中创建的对象；</li>
+<li>执行构造函数中的代码；</li>
+<li>如果构造函数返回值是原始数据类型（没有 return 语句时返回值为 <code>undefined</code>)的话，第一步中创建的对象会被返回；如果构造函数返回的是一个对象，则第一步中创建的对象会被抛弃。</li>
+</ol>
+<p>通过上述方法，我们就可以判断 <code>jack</code> 的对象类型了：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">jack.constructor === Person; <span class="comment">// true</span></div><div class="line">jack <span class="keyword">instanceof</span> Person; <span class="comment">// true</span></div><div class="line">jack.proto === Person.prototype; <span class="comment">// true</span></div><div class="line"><span class="built_in">Object</span>.getPrototypeOf(jack) === Person.prototype; <span class="comment">// true</span></div></pre></td></tr></table></figure>
+<p>不过在实际使用构造函数模式的时候，还存在着两个问题：</p>
+<ul>
+<li><p>将构造函数当成了普通函数使用，从而污染了全局作用域：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> jack = Person(‘jack’); <span class="comment">// 没有使用 new</span></div><div class="line"><span class="built_in">window</span>.sayName(); <span class="comment">// 输出 “jack”</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>为了避免出现这种情况，一种解决方法是将构造函数的首字母大写，提醒使用者这是一个构造函数。</p>
+<ul>
+<li><p>每个函数都要在实例上重新创建一遍，既浪费了空间，也减慢了构造函数的执行速度。还是举个例子来说明吧：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> jack = Person(‘jack’); <span class="comment">// 没有使用 new</span></div><div class="line"><span class="built_in">window</span>.sayName(); <span class="comment">// 输出 “jack”</span></div></pre></td></tr></table></figure>
+</li>
+</ul>
+<p>尽管实际上 <code>bob</code> 和 <code>jack</code> 的的函数 <code>sayName</code> 是一样的，但是构造函数模式还是分别为它们分配了空间，这样就造成了不必要的浪费。</p>
+<h2 id="原型模式"><a href="#原型模式" class="headerlink" title="原型模式"></a>原型模式</h2><p>原型模式和构造函数类似，但是通过将对象的函数绑定到其<code>prototype</code> 对象上，从而让所有对象实例共享它所包含的属性，进而解决了刚刚提到的构造函数模式中的第二个问题。一个简单例子如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Person = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.name = name;</div><div class="line">&#125;;</div><div class="line">Person.prototype.sayName = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="keyword">this</span>.name);</div><div class="line">&#125;;</div><div class="line"><span class="keyword">var</span> jack = <span class="keyword">new</span> Person(‘jack’);</div><div class="line"><span class="keyword">var</span> bob = <span class="keyword">new</span> Person(‘bob’);</div></pre></td></tr></table></figure>
+<p>根据刚刚在构造函数模式中介绍的关于 <code>new</code> 执行动作可以知道，所有通过 <code>new Person()</code> 创建出来的对象其原型均指向 <code>Person.prototype</code> 属性所指向的对象。</p>
+<p><img src="http://ww3.sinaimg.cn/large/006tNbRwjw1fasid90p02j30ls0brq3b.jpg" alt="原型模式示意图"></p>
+<p>当我们调用 <code>jack.sayName()</code> 时，执行器会先在 <code>jack</code> 这个对象中进行查找，未查找到后便根据原型链到上一级进行查找，在 <code>某个对象</code>中查找到后就执行函数，这里的 <code>某个对象</code> 就是 <code>Person.prototype</code> 所指向的对象，它的属性 <code>constructor</code> 指向 <code>Person</code> 对象。</p>
+<p>我们来测试一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">jack.sayName === bob.sayName; <span class="comment">// true</span></div></pre></td></tr></table></figure>
+<p>开心，和预期的一样。</p>
+<h2 id="动态原型模式"><a href="#动态原型模式" class="headerlink" title="动态原型模式"></a>动态原型模式</h2><p>不知道大家看到原型模式会不会有些不舒服，反正我是有的：把对象的属性定义和函数定义分开来让我感觉像是把一个完整的对象给割裂了，怎么看怎么不舒服。还好像我这样有强迫症的人不在少数，所以便有了动态原型模式— 将对象的函数定义也包装在构造函数中：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Person = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</div><div class="line">  <span class="keyword">this</span>.name = name;</div><div class="line">  <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="keyword">this</span>.sayName !== “<span class="function"><span class="keyword">function</span>”) </span>&#123;</div><div class="line">    <span class="comment">// 仅会在第一次执行构造函数时运行此段</span></div><div class="line">    Person.prototype.sayName = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">      <span class="built_in">console</span>.log(<span class="keyword">this</span>.name);</div><div class="line">    &#125;;</div><div class="line">  &#125;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">var</span> jack = <span class="keyword">new</span> Person(‘jack’);</div></pre></td></tr></table></figure>
+<p>这样看起来就舒服多了嘛，不过因为会在构造函数中调用 if 进行判断，所以会有一点点的性能损失。</p>
+<h2 id="寄生构造函数模式"><a href="#寄生构造函数模式" class="headerlink" title="寄生构造函数模式"></a>寄生构造函数模式</h2><p>这种模式的基本思想是创建一个函数，该函数的作用是仅封装创建对象的代码，然后再返回新创建的对象，但从表面上来看又像是典型的构造函数，下面是一个例子：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> Person = <span class="function"><span class="keyword">function</span> (<span class="params">name</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> o = &#123;&#125;;</div><div class="line">  o.name = name;</div><div class="line">  o.sayName = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(o.name);</div><div class="line">  &#125;;</div><div class="line">  <span class="keyword">return</span> o;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">var</span> jack = <span class="keyword">new</span> Person(‘jack’);</div></pre></td></tr></table></figure>
+<p>将它和工厂函数进行对比，可以发现它除了使用时通过 <code>new</code> 操作符外，与工厂模式其实是一模一样的，我觉得之所以要加上 <code>new</code> 然后新命名一个名字，只是为了让使用者清楚这是新类型的对象吧。。。。（囧）</p>
+<p>之所以叫做<strong>寄生</strong>构造函数模式，是因为这个模式可以在不方便直接修改已有的对象的前提下，创建与已有对象类似，但是具有额外方法的特殊对象，就像是个寄生虫一样：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> SpecialArray = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="comment">// 创建已有的对象</span></div><div class="line">  <span class="keyword">var</span> values = <span class="keyword">new</span> <span class="built_in">Array</span>(); </div><div class="line">  values.push.apply(values, <span class="built_in">arguments</span>);</div><div class="line">  <span class="comment">// 在已有的对象的基础上进行改造</span></div><div class="line">  values.toPipedString = <span class="function"><span class="keyword">function</span>(<span class="params"></span>)</span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.join(“|”);</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">return</span> values;</div><div class="line">&#125;</div><div class="line"><span class="keyword">var</span> colors = <span class="keyword">new</span> SpecialArray(‘red’, ‘blue’, ‘green’);</div><div class="line">colors.toPipedString(); <span class="comment">// ‘red|blue|green’</span></div></pre></td></tr></table></figure>
+<p>通过上述代码，在不影响其他 <code>Array</code> 对象的前提下，我们创建了一个具有特殊方法 <code>toPipedString</code> 的特殊数组。</p>
+<h2 id="稳妥构造模式"><a href="#稳妥构造模式" class="headerlink" title="稳妥构造模式"></a>稳妥构造模式</h2><p>上面所有的模式都存在一个问题：对象的所有属性可以被外部任意的修改和访问，这个问题在某些安全的环境中会显得格外严重。大名鼎鼎的 Douglas Crockford 因此发明了<strong>稳妥对象（Durable Objects)</strong>这个概念，即没有公共属性，而且其方法也不引用 this 的对象。创建稳妥对象的模式被称之为稳妥构造函数模式，将前面的例子重写如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> createPerson = <span class="function"><span class="keyword">function</span> (<span class="params">p_name</span>) </span>&#123;</div><div class="line">  <span class="keyword">var</span> o = &#123;&#125;;</div><div class="line">  <span class="comment">// 定义外部可访问的变量</span></div><div class="line">  o.type = ‘Person’;</div><div class="line">  <span class="comment">// 定义私有变量</span></div><div class="line">  <span class="keyword">var</span> name = p_name;</div><div class="line">  o.sayName = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(name);</div><div class="line">  &#125;;</div><div class="line">  <span class="keyword">return</span> o;</div><div class="line">&#125;;</div><div class="line"><span class="keyword">var</span> jack = createPerson(“jack”);</div><div class="line">jack.type; <span class="comment">// ‘Person’</span></div><div class="line">jack.name; <span class="comment">// undefined</span></div></pre></td></tr></table></figure>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>在上面提到的各种模式中，原型模式是使用最广泛，认同度最高的一种创建自定义类型的方法，不过其它的模式也有其用物之地，我们应该根据它们的优缺点进行恰当的选择。</p>
+<p>同时，在 ES6 中引入了 <code>class</code> 这个概念，让 JavaScript 也能像我们在开头所示的其它语言一样，通过类似的语法创建类与对象：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</div><div class="line">  <span class="keyword">constructor</span>(name) &#123;</div><div class="line">    <span class="keyword">this</span>.name = name;</div><div class="line">  &#125;</div><div class="line">  </div><div class="line">  sayName() &#123;</div><div class="line">    <span class="built_in">console</span>.log(<span class="keyword">this</span>.name);</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"><span class="keyword">var</span> jack = <span class="keyword">new</span> Person(‘jack’);</div><div class="line">jack.sayName(); <span class="comment">// ‘jack’</span></div></pre></td></tr></table></figure>
+<p>不过尽管写法上同其它面向对象的语言类似，但是本质却还是 JavaScript 通过原型（prototype）来创建对象。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="http://stackoverflow.com/questions/6750880/how-does-the-new-operator-work-in-javascript" target="_blank" rel="external">stack overflow - How does the new operator work in JavaScript?</a>。</li>
+<li>《JavaScript 高级程序设计（第3版）》 6.2 节-创建对象。</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在 JavaScript 中，面向对象编程的概念和 C++，Java 等语言都不太一样。在其他的语言中，面向对象的编程需要区分两个概念：&lt;strong&gt;类&lt;/strong&gt;和&lt;strong&gt;实例&lt;/strong&gt;，&lt;strong&gt;类&lt;/strong&gt;是&lt;strong&gt;实例&lt;/strong&gt;的模板，&lt;strong&gt;实例&lt;/strong&gt;是根据&lt;strong&gt;类&lt;/strong&gt;创建出来的对象。以 C++ 为例，在&lt;code&gt;Student jack = new Student();&lt;/code&gt;  中，&lt;code&gt;Student&lt;/code&gt; 为类，&lt;code&gt;jack&lt;/code&gt; 为实例。不过在 JavaScript 中，不区分类和实例，而是通过 &lt;code&gt;原型（prototype）&lt;/code&gt; 实现面向对象的编程。关于原型的介绍不是这篇文章的重点，想要深入了解的朋友可以参考 &lt;a href=&quot;https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;MDN - 继承与原型链&lt;/a&gt;。接下来将主要讲讲 JavaScript 中创建对象的几种方法和其优缺点。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="读书笔记" scheme="http://segmentfault.me/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+    
+      <category term="前端" scheme="http://segmentfault.me/tags/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="JavaScript" scheme="http://segmentfault.me/tags/JavaScript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>自定义事件</title>
+    <link href="http://segmentfault.me/2016/12/16/%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BA%8B%E4%BB%B6/"/>
+    <id>http://segmentfault.me/2016/12/16/自定义事件/</id>
+    <published>2016-12-16T02:51:35.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p> 首先，我们要弄清楚什么是<strong>事件</strong>。在 W3School 上有这样一句话：</p>
+<blockquote>
+<p>HTML events are <strong>“things”</strong> that happen to HTML elements.</p>
+</blockquote>
+<p>看起来充满了玄学，<strong>things</strong> 是什么鬼，这也太宽泛了把？对，就是这么宽泛：任何行为都可以充当事件！不论是浏览器已经支持的单击、双击、鼠标滑动等行为，还是我们一会儿要实现的自定义的三连击行为，一切的变化都可以充当事件，从而被观察者发现进而做出进一步的反应。</p>
+<a id="more"></a>
+<p>事件是与 DOM 元素交互最常见的方式，通过自定义事件可以实现功能上的扩展，我会首先实现一个基于 DOM 的三连击事件。当然，事件也可以用于与 DOM 无关的代码中，这时候利用自定义事件则是为了通过叫做<strong>观察者</strong>的设计模式创建松散耦合的代码，具体的实现将在第二部分进行说明。</p>
+<h2 id="实现与-DOM-相关的自定义事件"><a href="#实现与-DOM-相关的自定义事件" class="headerlink" title="实现与 DOM 相关的自定义事件"></a>实现与 DOM 相关的自定义事件</h2><p>我们可以通过 <code>Event</code> 构造函数创建自定义对象，它接受如下两个参数：</p>
+<ul>
+<li>表示事件名称的字符串；</li>
+<li><p><code>EventInit</code> 对象，为可选参数，有下列属性：</p>
+</li>
+<li><p><code>bubbles</code>：事件是否应该冒泡，默认值为 <code>false</code>；</p>
+</li>
+<li><code>cancelable</code>：事件是否可以被取消，默认值为 <code>false</code>；</li>
+<li><code>scoped</code>：实验特性，可参考 <a href="https://developer.mozilla.org/en-US/docs/Web/API/Event/scoped" target="_blank" rel="external">MDN Event.scoped</a>。</li>
+</ul>
+<p>因而我们首先通过如下代码创建三连击事件 <code>tripleClick</code>：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> tripleClick = <span class="keyword">new</span> Event(“tripleClick”);</div></pre></td></tr></table></figure>
+<p>然后通过监听 <code>click</code> 事件判断是否已经连续点击三次，若已经点击三次，则通过 <code>elem.dispatchEvent(tripleEvent)</code> 触发事件，这里需要注意的是判断点击之间的间隔，若间隔过长则重新开始计数，具体的代码如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> button = <span class="built_in">document</span>.getElementById(“btn”);</div><div class="line"><span class="keyword">var</span> counter = <span class="number">0</span>;</div><div class="line"><span class="keyword">var</span> lastClickTime = <span class="number">0</span>;</div><div class="line">button.addEventListener(“click”, <span class="function"><span class="keyword">function</span> (<span class="params">event</span>) </span>&#123;</div><div class="line">    event.preventDefault();</div><div class="line">    <span class="keyword">if</span> (counter == <span class="number">0</span>) &#123;</div><div class="line">        counter = <span class="number">1</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (<span class="built_in">Date</span>.now() - lastClickTime &lt; <span class="number">500</span>) &#123;</div><div class="line">        <span class="comment">// check click interval</span></div><div class="line">        counter += <span class="number">1</span>;</div><div class="line">    &#125;</div><div class="line">    <span class="keyword">else</span> &#123;</div><div class="line">        <span class="comment">// interval is too long, count from the beginning</span></div><div class="line">        counter = <span class="number">1</span>;</div><div class="line">    &#125;</div><div class="line">    lastClickTime = <span class="built_in">Date</span>.now();</div><div class="line">    <span class="keyword">if</span> (counter == <span class="number">3</span> ) &#123;</div><div class="line">        event.target.dispatchEvent(tripleClick);</div><div class="line">    &#125;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>最后在 DOM 元素上监听 <code>tripleClick</code> 事件即可：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line">button.addEventListener(“tripleClick”, <span class="function"><span class="keyword">function</span> (<span class="params">event</span>) </span>&#123;</div><div class="line">    alert(“三连击达成！”);</div><div class="line">    counter = <span class="number">0</span>;</div><div class="line">&#125;);</div></pre></td></tr></table></figure>
+<p>完整的例子如下所示：</p>
+<iframe width="100%" height="150" src="//jsfiddle.net/Leonard_Peng/269hc99n/4/embedded/result" allowfullscreen="allowfullscreen" frameborder="0"></iframe>
+
+<h2 id="实现与-DOM-无关的事件"><a href="#实现与-DOM-无关的事件" class="headerlink" title="实现与 DOM 无关的事件"></a>实现与 DOM 无关的事件</h2><p>自定义与 DOM 无关事件的关键在于创建一个观察者，也就是是管理事件的对象，通过它来监听事件。一个基本的模式如下所示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">var</span> EventTarget = <span class="function"><span class="keyword">function</span> (<span class="params"></span>) </span>&#123;</div><div class="line">    <span class="keyword">this</span>.handlers = &#123;&#125;;</div><div class="line">&#125;;</div><div class="line">EventTarget.prototype = &#123;</div><div class="line">    <span class="attr">constructor</span>: EventTarget,</div><div class="line">    <span class="attr">addHandler</span>: <span class="function"><span class="keyword">function</span> (<span class="params">type, handler</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="keyword">this</span>.handlers[type] === ‘<span class="literal">undefined</span>’) &#123;</div><div class="line">            <span class="keyword">this</span>.handlers[type] = [];</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">this</span>.handlers[type].push(handler);</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">removeHandler</span>: <span class="function"><span class="keyword">function</span> (<span class="params">type, handler</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="keyword">this</span>.handlers[type] === ‘<span class="literal">undefined</span>’) <span class="keyword">return</span>;</div><div class="line">        <span class="keyword">var</span> handlers = <span class="keyword">this</span>.handlers[type];</div><div class="line">        <span class="keyword">var</span> i;</div><div class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; handler.length; i++) &#123;</div><div class="line">            <span class="keyword">if</span> (handlers[i] === handler) &#123;</div><div class="line">                <span class="keyword">break</span>;</div><div class="line">            &#125;</div><div class="line">        &#125;</div><div class="line">        handlers.splice(i, <span class="number">1</span>);</div><div class="line">    &#125;,</div><div class="line">    <span class="attr">fire</span>: <span class="function"><span class="keyword">function</span> (<span class="params">event</span>) </span>&#123;</div><div class="line">        <span class="keyword">if</span> (!event.target) &#123;</div><div class="line">            event.target = <span class="keyword">this</span>;</div><div class="line">        &#125;</div><div class="line">        <span class="keyword">if</span> (<span class="keyword">typeof</span> <span class="keyword">this</span>.handlers[event.type] === ‘<span class="literal">undefined</span>’) <span class="keyword">return</span>;</div><div class="line">        <span class="keyword">var</span> handlers = <span class="keyword">this</span>.handlers[event.type];</div><div class="line">        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>; i &lt; handlers.length; i++) &#123;</div><div class="line">            handlersi;</div><div class="line">        &#125;</div><div class="line">    &#125;</div><div class="line">&#125;;</div></pre></td></tr></table></figure>
+<p>这里 <code>EventTarget</code>就是一个管理事件的对象，它的属性 <code>handlers</code> 用于存储事件处理程序，原型中三个方法的作用依次为：</p>
+<ul>
+<li><code>addHandler</code>：注册给定类型的事件处理程序；</li>
+<li><code>removeHandler</code>：移除某个类型的事件处理程序；</li>
+<li><code>fire</code>：触发某个事件。</li>
+</ul>
+<p>具体的使用如下所示：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">handleMessage</span>(<span class="params">event</span>) </span>&#123;</div><div class="line">    <span class="built_in">console</span>.log(“Message received: “ + event.message);</div><div class="line">&#125;</div><div class="line"><span class="comment">// 创建一个新对象</span></div><div class="line"><span class="keyword">var</span> target = <span class="keyword">new</span> EventTarget();</div><div class="line"><span class="comment">// 添加一个事件处理程序</span></div><div class="line">target.addHandler(‘message’, handleMessage);</div><div class="line"><span class="comment">// 触发事件</span></div><div class="line">target.fire(&#123;<span class="attr">type</span>: ‘message’, <span class="attr">message</span>: ‘Hello World!’&#125;);</div><div class="line"><span class="comment">// 移除事件处理程序</span></div><div class="line">target.removeHandler(‘message’, handleMessage);</div><div class="line"><span class="comment">// 再次尝试触发事件处理程序，失败</span></div><div class="line">target.fire(&#123;<span class="attr">type</span>: ‘message’, <span class="attr">message</span>: ‘Hello World, again!’&#125;);</div><div class="line"><span class="comment">// 输出为：</span></div><div class="line"><span class="comment">// Hello World!</span></div></pre></td></tr></table></figure>
+<p>从这段代码中，我们可以看到：触发事件的代码和监听事件的代码相互分离，而且事件具体的处理逻辑也可以封装在某一函数中。这样就可以很好地降低模块之间的耦合度，保持功能的隔离。</p>
+<p>这里运用的是观察者模式，更多信息可以参考 <a href="https://zh.wikipedia.org/wiki/%E8%A7%82%E5%AF%9F%E8%80%85%E6%A8%A1%E5%BC%8F" target="_blank" rel="external">维基百科 - 观察者模式</a>。</p>
+<h2 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h2><ol>
+<li><a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/Events/Creating_and_triggering_events" target="_blank" rel="external">MDN - 创建和触发 events</a>。</li>
+<li>《JavaScript 高级程序设计（第3版）》 22.4 节 - 自定义事件。</li>
+</ol>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt; 首先，我们要弄清楚什么是&lt;strong&gt;事件&lt;/strong&gt;。在 W3School 上有这样一句话：&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;HTML events are &lt;strong&gt;“things”&lt;/strong&gt; that happen to HTML elements.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;看起来充满了玄学，&lt;strong&gt;things&lt;/strong&gt; 是什么鬼，这也太宽泛了把？对，就是这么宽泛：任何行为都可以充当事件！不论是浏览器已经支持的单击、双击、鼠标滑动等行为，还是我们一会儿要实现的自定义的三连击行为，一切的变化都可以充当事件，从而被观察者发现进而做出进一步的反应。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="前端" scheme="http://segmentfault.me/tags/%E5%89%8D%E7%AB%AF/"/>
+    
+      <category term="JavaScript" scheme="http://segmentfault.me/tags/JavaScript/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>展望 2017</title>
+    <link href="http://segmentfault.me/2016/12/08/%E5%B1%95%E6%9C%9B-2017/"/>
+    <id>http://segmentfault.me/2016/12/08/展望-2017/</id>
+    <published>2016-12-08T14:18:55.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>不知不觉，2016年走到了末尾。</p>
+<p>往前看，不久就将迎来实习生面试，然后就是从暑假开始，大概会持续一年的实习工作，这样想想，大学生活也走到了末尾；回首一望，发现大学也才过去了两年半不到，但感觉自己已经鼓捣了不少东西：大一时懵懵懂懂地跟着学长学 PHP、Python、HTML &amp; CSS，还给 MacBook 装过 Arch；大二的时候和基友参加 SDN 的比赛，帮老师用 Flask 写了公选课管理系统，还自己鼓捣了一段时间 Android；大三开学不久从学院那儿接了个外包，用 Vue 在微信公众号上用 H5 复刻了一个简单版的外卖平台。</p>
+<a id="more"></a>
+<p>这段时间我感觉既是兴奋又是忧虑：为几个月后即将开始的新的生活而兴奋，但又担心自己是否有能力找到一份满意的前端实习工作。 现在最大的感觉就是：<strong>尽管之前接触了很多的东西，但是掌握都不太深，尤其是将来想要从事的前端方面</strong>，所以想趁着12月，1月，2月这三个月的时间，努力提升自己，为前端的面试做好充足的准备。</p>
+<p>做了一份简单的计划，大致如下：</p>
+<ol>
+<li>在12月份的时候，好好敦实基础，学习并了解常见的 HTML &amp;&amp; CSS 用法，阅读《JavaScript 语言精粹》和《JavaScript 高级程序设计》并做好笔记。</li>
+<li>在1月份的时候，一边选择两个网站进行模仿，一边学习 JQuery 的用法并阅读其源码。如果有多余时间的话，再学习 SASS，同时在平时大致看看面试题目。</li>
+<li>在2月份的时候，制作个人简历并刷面试题目，学习实习生招聘的应对技巧。</li>
+</ol>
+<p>等到了3月份，再写一篇博文看看计划是不是都圆满完成了😊</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;不知不觉，2016年走到了末尾。&lt;/p&gt;
+&lt;p&gt;往前看，不久就将迎来实习生面试，然后就是从暑假开始，大概会持续一年的实习工作，这样想想，大学生活也走到了末尾；回首一望，发现大学也才过去了两年半不到，但感觉自己已经鼓捣了不少东西：大一时懵懵懂懂地跟着学长学 PHP、Python、HTML &amp;amp; CSS，还给 MacBook 装过 Arch；大二的时候和基友参加 SDN 的比赛，帮老师用 Flask 写了公选课管理系统，还自己鼓捣了一段时间 Android；大三开学不久从学院那儿接了个外包，用 Vue 在微信公众号上用 H5 复刻了一个简单版的外卖平台。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="生活" scheme="http://segmentfault.me/tags/%E7%94%9F%E6%B4%BB/"/>
+    
+      <category term="总结" scheme="http://segmentfault.me/tags/%E6%80%BB%E7%BB%93/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>如何终止消费者线程？</title>
+    <link href="http://segmentfault.me/2016/11/27/%E5%A6%82%E4%BD%95%E7%BB%88%E6%AD%A2%E6%B6%88%E8%B4%B9%E8%80%85%E7%BA%BF%E7%A8%8B%EF%BC%9F/"/>
+    <id>http://segmentfault.me/2016/11/27/如何终止消费者线程？/</id>
+    <published>2016-11-27T14:50:45.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>最近在做 <a href="https://github.com/Leonard-Peng/HungrySpider" target="_blank" rel="external">黄网嗅探器</a> 的时候，因为单线程版实在太慢，大部分时间都用在了网络 IO上，因而想着利用<strong>生产者-消费者模型</strong>做出多线程版，把网址的生成部分当作生产者线程，网址是否为黄网的检测部分当作消费者线程。不过在实现的过程中，碰到了一个问题：当网址的全部组合已生成完毕后，如何由生产者通知消费者，进而待网址检测完成后终止消费者线程呢？</p>
+<a id="more"></a>
+<blockquote>
+<p>生产者-消费者模型中需要注意的一些其他问题可以参考：<a href="http://agiliq.com/blog/2013/10/producer-consumer-problem-in-python/" target="_blank" rel="external">Producer-consumer problem in Python</a> 或者相应的中文翻译 <a href="http://blog.jobbole.com/52412/" target="_blank" rel="external">Python中的生产者-消费者问题</a></p>
+</blockquote>
+<h2 id="终止消费者线程的两种方法"><a href="#终止消费者线程的两种方法" class="headerlink" title="终止消费者线程的两种方法"></a>终止消费者线程的两种方法</h2><p>终止消费者线程有两种方法：</p>
+<ol>
+<li>消费者设置等待时间限制，当一段时间过后消费者未接受到任务时自行结束线程。</li>
+<li>当生产者完成生产后通过设定的标志通知消费者，进而消费者结束线程。</li>
+</ol>
+<p>由于第一种方法较为简单，因而下面先讲解第一种方法，再讲解第二种方法。</p>
+<h2 id="方法一：消费者设置等待时间限制"><a href="#方法一：消费者设置等待时间限制" class="headerlink" title="方法一：消费者设置等待时间限制"></a>方法一：消费者设置等待时间限制</h2><p>在 python 中，<code>Queue.Queue</code> 的 <code>get</code> 方法可以设置等待时长，当超过等待时长后仍无法从队列中获取元素时，会抛出 <code>Queue.Empty</code> 的异常，通过捕捉这个异常就可以判断为生产者的生产已经结束，从而结束消费者线程。</p>
+<p>具体的例子如下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># -*- coding: utf8 -*-</span></div><div class="line"><span class="keyword">from</span> threading <span class="keyword">import</span> Thread</div><div class="line"><span class="keyword">from</span> Queue <span class="keyword">import</span> Queue, Empty</div><div class="line"><span class="keyword">import</span> time</div><div class="line">queue = Queue(<span class="number">10</span>)</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Producer</span><span class="params">(Thread)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">global</span> queue</div><div class="line">        <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">10</span>):</div><div class="line">            queue.put(i)</div><div class="line">            time.sleep(<span class="number">0.1</span>)</div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">Consumer</span><span class="params">(Thread)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">run</span><span class="params">(self)</span>:</span></div><div class="line">        <span class="keyword">global</span> queue</div><div class="line">        <span class="keyword">try</span>:</div><div class="line">            <span class="keyword">while</span> <span class="keyword">True</span>:</div><div class="line">                num = queue.get(timeout=<span class="number">1</span>) <span class="comment"># 设置等待时长为 1 s</span></div><div class="line">                queue.task_done()</div><div class="line">                <span class="keyword">print</span> self.getName(), <span class="string">' Consumed '</span>, num</div><div class="line">                time.sleep(<span class="number">0.05</span>)</div><div class="line">        <span class="keyword">except</span> Empty: </div><div class="line">            <span class="comment"># 捕捉异常，输出结束信息 </span></div><div class="line">            <span class="keyword">print</span> self.getName(), <span class="string">' done.'</span> </div><div class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</div><div class="line">    p1 = Producer()</div><div class="line">    p1.start()</div><div class="line">    c1 = Consumer()</div><div class="line">    c1.start()</div><div class="line">    c2 = Consumer()</div><div class="line">    c2.start()</div><div class="line">    c1.join()</div><div class="line">    p1.join()</div><div class="line">    c2.join()</div><div class="line">    <span class="keyword">print</span> <span class="string">'Ended'</span></div></pre></td></tr></table></figure>
+<h2 id="方法二：生产者结束生产后设定结束标志"><a href="#方法二：生产者结束生产后设定结束标志" class="headerlink" title="方法二：生产者结束生产后设定结束标志"></a>方法二：生产者结束生产后设定结束标志</h2><p>当生产者结束生产后，可以往队列中送入与消费者个数相同的标志（None 是个不错的选择)，当消费者从队列中取到结束标志后，便结束本身的线程。</p>
+<p>当只有一个生产者时，情况比较简单，例子如下：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div></pre></td><td class="code"><pre><div class="line"># -*- coding: utf8 -*-</div><div class="line">from threading import Thread</div><div class="line">from Queue import Queue</div><div class="line">import time</div><div class="line">consumer_num = 2</div><div class="line">queue = Queue(10)</div><div class="line">class Producer(Thread):</div><div class="line">    def run(self):</div><div class="line">        global consumer_num</div><div class="line">        global queue</div><div class="line">        for i in xrange(10):</div><div class="line">            queue.put(i)</div><div class="line">            time.sleep(0.1)</div><div class="line">        for i in xrange(consumer_num):</div><div class="line">            queue.put(None)</div><div class="line">class Consumer(Thread):</div><div class="line">    def run(self):</div><div class="line">        global queue</div><div class="line">        while True:</div><div class="line">            num = queue.get(timeout=1)</div><div class="line">            if num is None:</div><div class="line">                break</div><div class="line">            queue.task_done()</div><div class="line">            print self.getName(), ' Consumed ', num</div><div class="line">            time.sleep(0.05)</div><div class="line">        print self.getName(), ' done.'</div><div class="line">if __name__ == '__main__':</div><div class="line">    p1 = Producer()</div><div class="line">    p1.start()</div><div class="line">    consumer_list = list()</div><div class="line">    for i in xrange(consumer_num):</div><div class="line">        consumer_list.append(Consumer())</div><div class="line">        consumer_list[i].start()</div><div class="line">    p1.join()</div><div class="line">    for i in xrange(consumer_num):</div><div class="line">        consumer_list[i].join()</div><div class="line">    print 'Ended'</div></pre></td></tr></table></figure>
+<p>当有多个生产者时，不能像上面一样，当一个生产者结束生产后就向全部消费者发送终止信息。此时具体有如下两种处理方式：</p>
+<ol>
+<li>纪录全部生产者的生产状况，当全部生产者结束生产后，再往队列中放入终止信息。</li>
+<li>将生产者与消费者进行分组绑定，当一个生产者结束生产之后便向与其一组的消费者发送终止信息。</li>
+</ol>
+<p>下面给出第一种处理方式的例子：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div><div class="line">34</div><div class="line">35</div><div class="line">36</div><div class="line">37</div><div class="line">38</div><div class="line">39</div><div class="line">40</div><div class="line">41</div><div class="line">42</div><div class="line">43</div><div class="line">44</div><div class="line">45</div></pre></td><td class="code"><pre><div class="line"># -*- coding: utf8 -*-</div><div class="line">from threading import Thread</div><div class="line">from Queue import Queue</div><div class="line">import time</div><div class="line">producer_num = 2</div><div class="line">consumer_num = 5</div><div class="line">producers_state = 0</div><div class="line">queue = Queue(10)</div><div class="line">class Producer(Thread):</div><div class="line">    def run(self):</div><div class="line">        global producer_num</div><div class="line">        global consumer_num</div><div class="line">        global producers_state</div><div class="line">        global queue</div><div class="line">        for i in xrange(10):</div><div class="line">            queue.put(i)</div><div class="line">            time.sleep(0.1)</div><div class="line">        producers_state += 1</div><div class="line">        if producers_state == producer_num:</div><div class="line">            for i in xrange(consumer_num):</div><div class="line">                queue.put(None)</div><div class="line">class Consumer(Thread):</div><div class="line">    def run(self):</div><div class="line">        global queue</div><div class="line">        while True:</div><div class="line">            num = queue.get(timeout=1)</div><div class="line">            if num is None:</div><div class="line">                break</div><div class="line">            queue.task_done()</div><div class="line">            time.sleep(0.05)</div><div class="line">    </div><div class="line">if __name__ == '__main__':</div><div class="line">    producer_list = list()</div><div class="line">    for i in xrange(producer_num):</div><div class="line">        producer_list.append(Producer())</div><div class="line">        producer_list[i].start()</div><div class="line">    consumer_list = ist()</div><div class="line">    for i in xrange(consumer_num):</div><div class="line">        consumer_list.append(Consumer())</div><div class="line">        consumer_list[i].start()</div><div class="line">    for i in xrange(producer_num):</div><div class="line">        producer_list[i].join()</div><div class="line">    for i in xrange(consumer_num):</div><div class="line">        consumer_list[i].join()</div><div class="line">    print 'Ended'</div></pre></td></tr></table></figure>
+<blockquote>
+<p>消费者数目较多时，输出比较乱，故删去只留下程序结束的输出。</p>
+</blockquote>
+<h2 id="两种方法的比较"><a href="#两种方法的比较" class="headerlink" title="两种方法的比较"></a>两种方法的比较</h2><p>对于第一种通过设置消费者等待时间限制的方法，其优点为：</p>
+<ol>
+<li>实现简单，无需考虑复杂逻辑，只要自己没事可干便结束自己。</li>
+<li>当生产者的生产速度大于消费者的消费速度时，这种方法完全适用。</li>
+</ol>
+<p>但是它也有明显的缺点：</p>
+<ol>
+<li>等待时间的限制设置需要仔细考虑，避免还未结束生产便将消费者线程终结。</li>
+<li>当生产者的生产速度远大于消费者的消费速度，或者生产者的生产速度分布较为分散时，即等待的时间难以确定时，这种方法便完全丧失了用武之地。</li>
+</ol>
+<p>对于第二种方法，除了实现复杂一点外（其实也没有复杂太多），基本上适用于任何情况，因而在实际运用中往往采用第二种方法–当生产者结束生产后向队列中放入结束标志，我在 <a href="https://github.com/Leonard-Peng/HungrySpider" target="_blank" rel="external">黄网嗅探器 V2.0</a> 中使用的便是这种方法。</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;最近在做 &lt;a href=&quot;https://github.com/Leonard-Peng/HungrySpider&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;黄网嗅探器&lt;/a&gt; 的时候，因为单线程版实在太慢，大部分时间都用在了网络 IO上，因而想着利用&lt;strong&gt;生产者-消费者模型&lt;/strong&gt;做出多线程版，把网址的生成部分当作生产者线程，网址是否为黄网的检测部分当作消费者线程。不过在实现的过程中，碰到了一个问题：当网址的全部组合已生成完毕后，如何由生产者通知消费者，进而待网址检测完成后终止消费者线程呢？&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>yield from、asyncio 与 aiohttp 在异步IO中的应用</title>
+    <link href="http://segmentfault.me/2016/11/17/yield-from%E3%80%81asyncio-%E4%B8%8E-aiohttp-%E5%9C%A8%E5%BC%82%E6%AD%A5IO%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/"/>
+    <id>http://segmentfault.me/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/</id>
+    <published>2016-11-17T14:43:34.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Python3.3 中引入了 <code>yield from</code> 用于定义生成器;Python3.4 中引入了 <code>asyncio</code>标准库， 从而直接内置了对异步IO的支持。<br><a id="more"></a></p>
+<h2 id="yield-from的简单实例"><a href="#yield-from的简单实例" class="headerlink" title="yield from的简单实例"></a><code>yield from</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator1</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator2</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>, <span class="number">20</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator1()</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator2()</div><div class="line">    </div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> generator():</div><div class="line">    print(i)</div></pre></td></tr></table></figure>
+<p>在上面的例子中， 最终会输出0~19。通过<code>yield from</code>的使用，我们可以将不同的生成器组合在一起，形成新的生成器，就如同通过不同函数的调用形成新德函数一样。</p>
+<h2 id="next-amp-amp-send"><a href="#next-amp-amp-send" class="headerlink" title="next &amp;&amp; send"></a><code>next</code> &amp;&amp; <code>send</code></h2><ul>
+<li><code>next</code> 返回生成器的下一个值， 然后生成器挂起。</li>
+<li><code>send</code> 对于一个生成器对象g，如果调用<code>g.send(None)</code>， 那么效果和<code>next(g)</code>一样；如果调用<code>g.send(value)</code>，就相当于yield的返回值。</li>
+</ul>
+<h2 id="asyncio的简单实例"><a href="#asyncio的简单实例" class="headerlink" title="asyncio的简单实例"></a><code>asyncio</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'Hello World!'</span>)</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">1</span>)</div><div class="line">    print(<span class="string">'GoodBye!'</span>)</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">tasks = [hello(), hello(), hello()]</div><div class="line">loop.run_until_complete(asyncio.wait(tasks))</div><div class="line">loop.close()</div></pre></td></tr></table></figure>
+<p>观察运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">(暂停约1秒）</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div></pre></td></tr></table></figure>
+<p>上述例子的运行流程如下：</p>
+<ol>
+<li><code>@asyncio.coroutine</code>把一个生成器（此处是hello())标记为coroutine类型，然后我们把这个coroutine扔到EventLoop中执行。</li>
+<li>通过<code>asyncio.get_event_loop()</code>创建消息循环的列表。</li>
+<li><code>loop.run_until_complete(asyncio.wait(tasks))</code>异步执行消息列表中的事件。</li>
+<li>在<code>hello()</code>函数中，<code>yield from</code>语法可以让我们调用另一个generator。由于<code>asyncio.sleep()</code>也是一个<code>coroutine</code>，所以线程不会等待<code>asyncio.sleep()</code>，而是直接中断并执行下一个消息循环。当<code>asyncio.sleep()</code>返回时，线程就可以从<code>yield from</code>拿到返回值（此处是None），然后接着执行下一行语句。</li>
+<li>最后<code>loop.close()</code>结束消息循环的列表。</li>
+</ol>
+<h2 id="aiohttp的简单实例"><a href="#aiohttp的简单实例" class="headerlink" title="aiohttp的简单实例"></a><code>aiohttp</code>的简单实例</h2><p><code>asyncio</code>实现了TCP、UDP、SSL等协议，<code>aiohttp</code>则是基于asyncio实现的HTTP框架。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Simple HTTP Server</span></div><div class="line"><span class="comment"># coding=utf-8</span></div><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="keyword">from</span> aiohttp <span class="keyword">import</span> web</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">return</span> web.Response(body=<span class="string">b'&lt;h1&gt;Index&lt;/h1&gt;'</span>)</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">0.5</span>)</div><div class="line">    text = <span class="string">'&lt;h1&gt;hello, %s!&lt;/h1&gt;'</span> % request.match_info[<span class="string">'name'</span>]</div><div class="line">    <span class="keyword">return</span> web.Response(body=text.encode(<span class="string">'utf-8'</span>))</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(loop)</span>:</span></div><div class="line">    app = web.Application(loop=loop)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/'</span>, index)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/hello/&#123;name&#125;'</span>, hello)</div><div class="line">    srv = <span class="keyword">yield</span> <span class="keyword">from</span> loop.create_server(app.make_handler(), <span class="string">'127.0.0.1'</span>, <span class="number">8000</span>)</div><div class="line">    print(<span class="string">'Server started at http://127.0.0.1:8000 ...'</span>)</div><div class="line">    <span class="keyword">return</span> srv</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">loop.run_until_complete(init(loop))</div><div class="line">loop.run_forever()</div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Python3.3 中引入了 &lt;code&gt;yield from&lt;/code&gt; 用于定义生成器;Python3.4 中引入了 &lt;code&gt;asyncio&lt;/code&gt;标准库， 从而直接内置了对异步IO的支持。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>python 与 c 的相互调用</title>
+    <link href="http://segmentfault.me/2016/11/17/python%E4%B8%8Ec%E7%9A%84%E7%9B%B8%E4%BA%92%E8%B0%83%E7%94%A8/"/>
+    <id>http://segmentfault.me/2016/11/17/python与c的相互调用/</id>
+    <published>2016-11-17T14:43:34.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
+<p>   若能将两者结合起来，岂不是妙哉？</p>
+<a id="more"></a>
+<h2 id="python-调用-c-程序"><a href="#python-调用-c-程序" class="headerlink" title="python 调用 c 程序"></a>python 调用 c 程序</h2><ol>
+<li><p>首先我们编写一个简单的 c 程序 <code>multi.c</code></p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">multiply</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> n1 * n2;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>接着将写好的 c 程序编译生成动态库 <code>multi.so</code>，便于 python 程序调用。<br><code>gcc -shared -fPIC multi.c -o multi.so</code></p>
+<ul>
+<li>-shared  生成动态库</li>
+<li>-fPIC 生成与位置无关代码(Position-Independent Code)</li>
+<li>-o 指定生成库的名字</li>
+</ul>
+</li>
+<li><p>最后在 <code>multi.so</code> 的同级目录下运行 python 解释器, 调用刚刚编写的 multiply 函数</p>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> ctypes</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi = ctypes.cdll.LoadLibrary(<span class="string">'./multi.so'</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi.multiply(<span class="number">2</span>, <span class="number">4</span>)</div><div class="line"><span class="number">8</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>ctypes</code> 库提供了与c语言一致的数据类型，并且可以用来调用动态链接库中的函数。在这里，我们通过<code>ctypes.cdll.LoadLibrary</code>来读取c库。该库更详细的使用可以参阅<a href="https://docs.python.org/2/library/ctypes.html" target="_blank" rel="external">官方文档 ctypes — A foreign function library for Python</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。&lt;/p&gt;
+&lt;p&gt;   若能将两者结合起来，岂不是妙哉？&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
+    
+      <category term="c" scheme="http://segmentfault.me/tags/c/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>函数作为返回值--闭包</title>
+    <link href="http://segmentfault.me/2016/11/17/%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E8%BF%94%E5%9B%9E%E5%80%BC-%E9%97%AD%E5%8C%85/"/>
+    <id>http://segmentfault.me/2016/11/17/函数作为返回值-闭包/</id>
+    <published>2016-11-17T14:43:34.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>当我们在函数A中又定义了函数B，并且内部函数B可以引用外部函数A的参数和局部变量，当A返回函数B时，相关参数和变量都保存在返回的函数中，这种程序结构称为<strong>“闭包”（Closure）</strong>。</p>
+<a id="more"></a>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#一个简单地例子</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">lazy_sum</span><span class="params">(*args)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sum</span><span class="params">()</span>:</span></div><div class="line">        a = <span class="number">0</span></div><div class="line">        <span class="keyword">for</span> n <span class="keyword">in</span> args:</div><div class="line">            a += n</div><div class="line">        <span class="keyword">return</span> a</div><div class="line">    <span class="keyword">return</span> sum</div></pre></td></tr></table></figure>
+<p>当我们调用的_lazy<em>sum( )</em>时，返回的并不是求和结果，而是求和函数<em>sum( )</em>:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>f = lazy_sum(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>f</div><div class="line">&lt;function sum at <span class="number">0x4c43f0</span>&gt;</div></pre></td></tr></table></figure>
+<p>调用函数<em>f( )</em>时，才真正计算求和的结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>f()</div><div class="line"><span class="number">15</span></div></pre></td></tr></table></figure>
+<p>有一个需要特别注意的问题：返回的函数并没有立刻执行，而是直到调用了<em>f( )</em>才执行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#输出的结果会是多少？</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">square_1</span><span class="params">()</span>:</span></div><div class="line">    result = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">1</span>, <span class="number">4</span>):</div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">()</span>:</span></div><div class="line">            <span class="keyword">return</span> ii</div><div class="line">        result.append(f())</div><div class="line">    <span class="keyword">return</span> result</div><div class="line">    </div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">square_2</span><span class="params">()</span>:</span></div><div class="line">    result = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">1</span>, <span class="number">4</span>):</div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">()</span>:</span></div><div class="line">            <span class="keyword">return</span> ii</div><div class="line">        result.append(f)</div><div class="line">    <span class="keyword">return</span> result</div><div class="line">    </div><div class="line"><span class="keyword">print</span> square_1()</div><div class="line"><span class="keyword">print</span> square_2()</div><div class="line">f1, f2, f3 = square_2()</div><div class="line"><span class="keyword">print</span> f1(), f2(), f3()</div></pre></td></tr></table></figure>
+<p>你可能认为<em>f1( ), f2( ), f3( )</em>的结果应该是<em>1， 4， 9</em>，或者认为_square_1( ), square<em>2( )</em>的返回值相同， 但实际结果是：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> square_1()</div><div class="line">[<span class="number">1</span>, <span class="number">4</span>, <span class="number">9</span>]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> square_2()</div><div class="line">[&lt;function f at <span class="number">0x4c45b0</span>&gt;, &lt;function f at <span class="number">0x4c44f0</span>&gt;, &lt;function f at <span class="number">0x4c4570</span>&gt;]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>f1, f2, f3 = square_2()</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> f1(), f2(), f3()</div><div class="line"><span class="number">9</span> <span class="number">9</span> <span class="number">9</span></div></pre></td></tr></table></figure>
+<p>1._square<em>1( )</em>中<code>result.append(f( ))</code>，<em>f( )</em>立刻被执行，因而返回值直接是计算结果的tuple， _suqre<em>2( )</em>中<code>result.append(f)</code>，因而返回值是函数f()的tuple，两者是完全不同的!<br>2.<em>f1( ), f2( ), f3( )</em>的值全部都是9！原因就在于返回的函数引用了变量i，但它并非立刻执行。等到3个函数都返回时，它们所引用的变量i已经变成了3，因此最终结果为9。</p>
+<p><strong>返回闭包时牢记的一点就是：返回函数不要引用任何循环变量，或者后续会发生变化的变量。</strong> </p>
+<p>如果一定要引用循环变量的话，方法是再创建一个函数，用该函数的参数绑定循环变量当前的值，无论该循环变量后续如何更改，已绑定到函数参数的值不变。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">square_3</span><span class="params">()</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">g</span><span class="params">(j)</span>:</span></div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">()</span>:</span></div><div class="line">            <span class="keyword">return</span> j*j</div><div class="line">        <span class="keyword">return</span> f</div><div class="line">    result = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">1</span>, <span class="number">4</span>):</div><div class="line">        result.append(g(i))</div><div class="line">    <span class="keyword">return</span> result</div></pre></td></tr></table></figure>
+<p>我们来看看结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>f1, f2, f3 = square_3()</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> f1(), f2(), f3()</div><div class="line"><span class="number">1</span> <span class="number">4</span> <span class="number">9</span></div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;当我们在函数A中又定义了函数B，并且内部函数B可以引用外部函数A的参数和局部变量，当A返回函数B时，相关参数和变量都保存在返回的函数中，这种程序结构称为&lt;strong&gt;“闭包”（Closure）&lt;/strong&gt;。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>学一次忘一次的正则表达式</title>
+    <link href="http://segmentfault.me/2016/11/17/%E5%AD%A6%E4%B8%80%E6%AC%A1%E5%BF%98%E4%B8%80%E6%AC%A1%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/"/>
+    <id>http://segmentfault.me/2016/11/17/学一次忘一次的正则表达式/</id>
+    <published>2016-11-17T14:43:34.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>说实话，正则表达式已经看过不下五遍了，然而每次要用的时候，都得再重新学一下才行——实在是记不住呀！！</p>
+<p>今天趁着重新学Python的机会，总结一下正则表达式中基本的内容，更加深入、详细的内容可以移步<a href="http://deerchao.net/tutorials/regex/regex.htm" target="_blank" rel="external">正则表达式30分钟入门</a>。</p>
+<a id="more"></a>
+<ol>
+<li>它是什么？<br>正则表达式是一种用来匹配字符串的强有力的武器，是记录文本规则的代码。</li>
+<li><p>常用元字符</p>
+<ul>
+<li><em>.</em> 匹配除换行符以外的任意字符</li>
+<li><em>\w</em>        匹配字母或数字的或下划线或汉字</li>
+<li><em>\d</em>        匹配数字</li>
+<li><em>\s</em>        匹配任意的空白符</li>
+<li><em>\b</em>        匹配单词的开始或者结束</li>
+<li><em>[xyz]</em>     匹配x, y, z中的一个</li>
+<li><em>^</em>         匹配字符串的开始</li>
+<li><em>$</em>         匹配字符串的结束</li>
+</ul>
+</li>
+<li><p>常用限定符</p>
+<ul>
+<li><em>*</em>        任意个字符（包括0个）</li>
+<li><em>+</em>        至少一个字符</li>
+<li><em>？</em>         0或1个字符</li>
+<li><em>{n}</em>       n个字符</li>
+<li><em>{n,}</em>      大于等于n个字符</li>
+<li><em>{n,m}</em>     n-m个字符</li>
+</ul>
+</li>
+<li><p>常用反义词</p>
+<ul>
+<li><em>\W</em>        匹配任意不是字母，数字，下划线，汉字的字符</li>
+<li><em>\D</em>        匹配任意非数字的字符</li>
+<li><em>\S</em>        匹配任意不是空白符的字符</li>
+<li><em>\B</em>        匹配不是单词开头或结束的位置</li>
+<li><em>[^x]</em>      匹配除了x以外的任意字符</li>
+</ul>
+</li>
+<li><p>简单地例子</p>
+<ul>
+<li><code>00\d</code>可以匹配<strong>‘007’</strong>，但不能匹配<strong>‘00A’</strong></li>
+<li><code>\w\w\d</code>可以匹配<strong>‘py3’</strong></li>
+<li><code>\d{3}</code>可以匹配三个数字，如<strong>‘010’</strong></li>
+<li><code>\s+</code>可以匹配至少一个空白字符，如1个空格或3个空格</li>
+<li><code>\d{3,8}</code>可以匹配3-8个数字，如<strong>‘1234567’</strong></li>
+<li><code>[0-9a-zA-Z\_]+</code>可以匹配至少由一个数字、字母或者下划线组成的字符串，如’a100’，’0_Z’，’Py3000’等等；</li>
+</ul>
+</li>
+<li><p>正则表达式在 Python 中的运用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div><div class="line">26</div><div class="line">27</div><div class="line">28</div><div class="line">29</div><div class="line">30</div><div class="line">31</div><div class="line">32</div><div class="line">33</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> re   <span class="comment"># 引进包含正则表达式功能的模块</span></div><div class="line"><span class="comment"># Example1</span></div><div class="line"><span class="comment"># match()方法判断是否匹配,</span></div><div class="line"><span class="comment"># 如果匹配成功，返回一个Match对象，</span></div><div class="line"><span class="comment"># 否则返回None。</span></div><div class="line">test = <span class="string">'www.google.com'</span></div><div class="line"><span class="keyword">if</span> re.match(<span class="string">r'www.\w+.\w+'</span>, test):</div><div class="line">    print(<span class="string">'OK!'</span>)</div><div class="line"><span class="keyword">else</span>:</div><div class="line">    print(<span class="string">'Failed!'</span>)</div><div class="line"><span class="comment"># Example2   </span></div><div class="line"><span class="comment"># 除了简单地判断是否匹配之外,</span></div><div class="line"><span class="comment"># 正则表达式还有提取子串的强大功能,</span></div><div class="line"><span class="comment"># 用()表示的就是要提取的分组。</span></div><div class="line">test = <span class="string">'www.google.com'</span></div><div class="line">result = re.match(<span class="string">r'www.(\w+).(\w+)'</span>, test)</div><div class="line"><span class="keyword">if</span> :</div><div class="line">    print(result.group(<span class="number">0</span>), result.group(<span class="number">1</span>), result.group(<span class="number">2</span>)</div><div class="line">    print(result.groups())</div><div class="line"><span class="keyword">else</span>:</div><div class="line">    print(<span class="string">'Failed!'</span>)</div><div class="line"><span class="comment"># Example3</span></div><div class="line"><span class="comment"># 正则匹配默认是贪婪匹配，</span></div><div class="line"><span class="comment"># 也就是匹配尽可能多的字符,</span></div><div class="line"><span class="comment"># 通过加'?'采用非贪婪匹配。</span></div><div class="line">print(re.match(<span class="string">r'^(\d+)(0*)$'</span>, <span class="string">'102300'</span>).groups())</div><div class="line">print(re.match(<span class="string">r'^(\d+?)(0*)$'</span>, <span class="string">'102300'</span>).groups())</div><div class="line"><span class="comment"># Example4</span></div><div class="line"><span class="comment"># 如果一个正则表达式要重复使用几千次，</span></div><div class="line"><span class="comment"># 出于效率的考虑，</span></div><div class="line"><span class="comment"># 我们可以预编译该正则表达式。</span></div><div class="line">re_url = re.compile(<span class="string">r'www.(\w+).(\w+)'</span>)</div><div class="line">print(re_url.match(<span class="string">'www.google.com'</span>).groups())</div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p>程序运行结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line">OK!</div><div class="line">(&apos;www.google.com&apos;, &apos;google&apos;, &apos;com&apos;)</div><div class="line">(&apos;google&apos;, &apos;com&apos;)</div><div class="line">(&apos;102300&apos;, &apos;&apos;)</div><div class="line">(&apos;1023&apos;, &apos;00&apos;)</div><div class="line">(&apos;google&apos;, &apos;com&apos;)</div></pre></td></tr></table></figure>
+<p>需要注意的几点：</p>
+<ul>
+<li>正则表达式使用<strong>re</strong>前缀，这样可以不用考虑转义的问题</li>
+<li><code>re.match(r&amp;#39;xxx&amp;#39;, string).group(0)</code> 永远是原始字符串，也就是 string。</li>
+</ul>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;说实话，正则表达式已经看过不下五遍了，然而每次要用的时候，都得再重新学一下才行——实在是记不住呀！！&lt;/p&gt;
+&lt;p&gt;今天趁着重新学Python的机会，总结一下正则表达式中基本的内容，更加深入、详细的内容可以移步&lt;a href=&quot;http://deerchao.net/tutorials/regex/regex.htm&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;正则表达式30分钟入门&lt;/a&gt;。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>UML 类图</title>
+    <link href="http://segmentfault.me/2016/11/17/UML-%E7%B1%BB%E5%9B%BE/"/>
+    <id>http://segmentfault.me/2016/11/17/UML-类图/</id>
+    <published>2016-11-17T14:43:34.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
+<a id="more"></a>
+<h2 id="类本身的表示"><a href="#类本身的表示" class="headerlink" title="类本身的表示"></a><a href="#类本身的表示" title="类本身的表示"></a>类本身的表示</h2><p>类是对象的蓝图，封装了数据和行为，它是具有相同属性、方法、关系的对象的集合的总称，下面是一个简单的 Person 类的 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span>  <span class="title">Person</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> String name;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.name = name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.age = age;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>其对应的类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Person.png" alt="Person 类图"></p>
+<p>在上面这个简单的例子中，我们可以看到，从上至下类图分为三个部分，依次为：</p>
+<ul>
+<li>类的名称</li>
+<li>类的属性</li>
+<li>类的方法</li>
+</ul>
+<p>其中，属性部分的格式为 <code>可见性 名称:类型 [=缺省值]</code>，方法部分的格式为 <code>可见性 名称(参数类型):返回类型</code>，可见性的可选项为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">+    public</div><div class="line">-    private</div><div class="line">#    protected</div><div class="line">~    default</div><div class="line">_    static</div></pre></td></tr></table></figure>
+
+<h2 id="类间关系的表示"><a href="#类间关系的表示" class="headerlink" title="类间关系的表示"></a><a href="#类间关系的表示" title="类间关系的表示"></a>类间关系的表示</h2><h3 id="泛化（Generalization）"><a href="#泛化（Generalization）" class="headerlink" title="泛化（Generalization）"></a><a href="#泛化（Generalization）" title="泛化（Generalization）"></a>泛化（Generalization）</h3><p>泛化，可理解为继承，在 Java 中通过关键字 <code>extends</code> 标示，用<strong>带空心三角箭头的实线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/generalization.png" alt="泛化关系示意图"></p>
+<h3 id="实现（Realization）"><a href="#实现（Realization）" class="headerlink" title="实现（Realization）"></a><a href="#实现（Realization）" title="实现（Realization）"></a>实现（Realization）</h3><p>实现，指的是一个类实现接口（可以是多个）的功能，在 Java 中通过关键字 <code>implements</code> 标示，用<strong>带空心三角箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">implements</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/realization.png" alt="实现关系示意图"></p>
+<h3 id="依赖（Dependency）"><a href="#依赖（Dependency）" class="headerlink" title="依赖（Dependency）"></a><a href="#依赖（Dependency）" title="依赖（Dependency）"></a>依赖（Dependency）</h3><p>依赖，可简单的理解为类 A 使用到了另一个类 B，可以用 <em>‘… use a …’</em> 进行判断，这种使用关系是具有偶然性的、临时性的、非常弱的。表现在代码层面，就是类 B 作为参数被类 A 在某个方法中使用，用<strong>带燕尾箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">(A param)</span></span>&#123;</div><div class="line">      <span class="comment">//…</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/dependency.png" alt="依赖关系示意图"></p>
+<h3 id="关联（Association）"><a href="#关联（Association）" class="headerlink" title="关联（Association）"></a><a href="#关联（Association）" title="关联（Association）"></a>关联（Association）</h3><p>关联，体现的是两个类、类与接口或者接口与接口之间的强依赖关系，可以用 <em>‘… has a …’</em> 进行判断，一般来说是一种长期的稳定的关系。表现在代码层面，就是 B 以属性的形式出现在 A 中，关联既可以是单向的，也可以是双向的，用<strong>带燕尾箭头的实线</strong>表示单向关联，<strong>不带箭头的实现</strong>表示双向关联，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> A attribute;</div><div class="line">  </div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/association.png" alt="关联关系示意图"></p>
+<h3 id="聚合（Aggregation）"><a href="#聚合（Aggregation）" class="headerlink" title="聚合（Aggregation）"></a><a href="#聚合（Aggregation）" title="聚合（Aggregation）"></a>聚合（Aggregation）</h3><p>聚合，指整体与部分之间的一类特殊的关联关系，是“弱”的包含关系，可以用 <em>‘… owns a …</em> 进行判断，成分类可以不依靠集合类而单独存在，可以拥有各自的生命周期，用<strong>带空心棱形箭尾的实线</strong>表示，例如教室与教室中的学生间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/aggregation.png" alt="聚合关系示意图"></p>
+<p>有些时候，我们还需要两个对象在数量上的对应关系（Multiplicity），可以<strong>直接在关联直线上用一个数字或者一个数字范围</strong>来表示，例如有一个最多只能容纳 40 个学生的教室，那么教室和这个教室之间的关系可表示为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Multiplicity.png" alt="多重性关联关系示意图"></p>
+<p>数字范围表示方法具体为：</p>
+<ul>
+<li>0..1 没有或者只有一个实例</li>
+<li>1    有且仅有一个实例</li>
+<li>0..* 大于等于 0 个实例</li>
+<li><ul>
+<li>大于等于 0 个实例</li>
+</ul>
+</li>
+<li>1..* 大于等于 1 个实例</li>
+<li>m..n 大于等于 m ，小于等于 n 个实例</li>
+</ul>
+<h3 id="组成（Composition）"><a href="#组成（Composition）" class="headerlink" title="组成（Composition）"></a><a href="#组成（Composition）" title="组成（Composition）"></a>组成（Composition）</h3><p>组成，指整体与部分之间一类“强”的包含关系，可以用 <em>‘… is a part of …’</em> 进行判断，成分类必须依靠集合类而存在，两者是密不可分的，整体类负责创建与销毁成分类，当整体类的生命周期结束时也意味着部分类生命周期的结束，用<strong>带实心棱形箭尾的实线</strong>表示，例如人与其大脑间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/composition.png" alt="组成关系示意图"></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="JAVA" scheme="http://segmentfault.me/tags/JAVA/"/>
+    
+      <category term="基础知识" scheme="http://segmentfault.me/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>博客的第一天</title>
+    <link href="http://segmentfault.me/2015/06/01/%E5%8D%9A%E5%AE%A2%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9/"/>
+    <id>http://segmentfault.me/2015/06/01/博客的第一天/</id>
+    <published>2015-05-31T16:00:00.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>今天是20岁之前的最后一个六一儿童节了，想想马上就是奔三十的人了，身上肩负的责任也会越来越多了吧。</p>
+<p>在今天，和基友一起鼓捣了很久的SDN大赛初赛算是落下了帷幕；在今天，和量云从五一开始到现在开开心心地走过了一个月；在今天，纠结了很久最终下定决心写的博客也上线了——二十岁前的最后一个六一，对我来说意味着很多^_^<br>希望从今天起，以后能在技术、爱情上能够越来越好，碰到了任何问题都能和基友、她一起共同解决吧。</p>
+<p>期待美好的明天!!</p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;今天是20岁之前的最后一个六一儿童节了，想想马上就是奔三十的人了，身上肩负的责任也会越来越多了吧。&lt;/p&gt;
+&lt;p&gt;在今天，和基友一起鼓捣了很久的SDN大赛初赛算是落下了帷幕；在今天，和量云从五一开始到现在开开心心地走过了一个月；在今天，纠结了很久最终下定决心写的博客也上线了
+    
+    </summary>
+    
+    
+      <category term="生活" scheme="http://segmentfault.me/tags/%E7%94%9F%E6%B4%BB/"/>
+    
+  </entry>
+  
+</feed>
