@@ -116,6 +116,15 @@
         </li>
       </a>
     
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            Tags
+          
+        </li>
+      </a>
+    
       <a href="/about">
         <li class="mobile-menu-item">
           
@@ -151,6 +160,15 @@
             
             
               归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
             
           </a>
         </li>
@@ -211,7 +229,12 @@
           
   <div class="comments" id="comments">
     
-      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
     
   </div>
 
@@ -297,17 +320,23 @@
   
 
   
-  
-  <script>
-    var cloudTieConfig = {
-      url: document.location.href, 
-      sourceId: "",
-      productKey: "5d2790c0a9ad46a997dd0db1dfd3407b",
-      target: "cloud-tie-wrapper"
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'http://segmentfault.me/about/index.html';
+        this.page.identifier = 'about/index.html';
+        this.page.title = 'about';
     };
-  </script>
-  <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+    (function() {
+    var d = document, s = d.createElement('script');
 
+    s.src = '//elvin-peng.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+  
 
 
 

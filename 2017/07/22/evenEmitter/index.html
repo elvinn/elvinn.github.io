@@ -119,6 +119,15 @@
         </li>
       </a>
     
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            Tags
+          
+        </li>
+      </a>
+    
       <a href="/about">
         <li class="mobile-menu-item">
           
@@ -154,6 +163,15 @@
             
             
               归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
             
           </a>
         </li>
@@ -315,6 +333,12 @@
         
   <nav class="post-nav">
     
+      <a class="prev" href="/2017/08/27/css-js主域重试/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">webpack 项目 css/js主域重试</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
     
       <a class="next" href="/2017/06/01/不再是孩子/">
         <span class="next-text nav-default">不再是孩子</span>
@@ -334,7 +358,12 @@
           
   <div class="comments" id="comments">
     
-      <div id="cloud-tie-wrapper" class="cloud-tie-wrapper"></div>
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
     
   </div>
 
@@ -420,17 +449,23 @@
   
 
   
-  
-  <script>
-    var cloudTieConfig = {
-      url: document.location.href, 
-      sourceId: "",
-      productKey: "5d2790c0a9ad46a997dd0db1dfd3407b",
-      target: "cloud-tie-wrapper"
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'http://segmentfault.me/2017/07/22/evenEmitter/';
+        this.page.identifier = '2017/07/22/evenEmitter/';
+        this.page.title = '深入探究 Node 中的 events.EventEmitter 模块';
     };
-  </script>
-  <script src="https://img1.cache.netease.com/f2e/tie/yun/sdk/loader.js"></script>
+    (function() {
+    var d = document, s = d.createElement('script');
 
+    s.src = '//elvin-peng.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+  
 
 
 

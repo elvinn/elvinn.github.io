@@ -3,6 +3,103 @@
   
     
     <entry>
+      <title><![CDATA[webpack 项目 css/js主域重试]]></title>
+      <url>/2017/08/27/css-js%E4%B8%BB%E5%9F%9F%E9%87%8D%E8%AF%95/</url>
+      <content type="html"><![CDATA[<p>为了提高网站的访问速度，现在一般会将静态资源放在 CDN 下，而不是放在网站的域名之下。以腾讯课堂为例，其域名为 ke.qq.com，打开控制台，访问 ke.qq.com，我们可以看到 js 文件放在了 CDN 7.url.cn 下，css 文件放在了 CDN 8.url.cn 下。尽管 CDN 的服务可用性一般宣称 99.9% 甚至 99.999%，然而实际上监测结果比该数值要小一些。为了应对这种情况，需要做到当发现 css 或 js 文件从 CDN 加载失败时，能再次从网站的域名加载。</p>
+<a id="more"></a>
+<p>可以将“发现 css 或 js 文件从 CDN 加载失败时，能再次从网站的域名加载“”这个目标分解成四个问题来解决：</p>
+<ol>
+<li>如何判断 css 文件加载失败？</li>
+<li>如何从主域再次加载 css 文件？</li>
+<li>如何判断 js 文件加载失败？</li>
+<li>如何从主域再次加载 js 文件？</li>
+</ol>
+<p>接下来将会就这四个问题，对使用 webpack 打包的项目进行具体的讨论。</p>
+<p>不过在具体讨论之前，先补充一个知识点：webpack 打包生成所有文件后，会触发 ‘done’ 事件。我们可以通过监听 ‘done’ 事件，然后对 css 和 js 文件做包装，对 html 做 js 代码注入等。</p>
+<h2 id="css-主域重试"><a href="#css-主域重试" class="headerlink" title="css 主域重试"></a>css 主域重试</h2><p>css 的作用就是改变元素的样式，从这一点出发，我们可以想出如下的方案：</p>
+<ol>
+<li>向 css 文件添加一条规则；</li>
+<li>向 html 文件中添加一个元素，然后通过 js 判断第一步中添加的规则是否起作用：<ul>
+<li>若起作用，则说明 css 加载成功；</li>
+<li>若未起作用，则说明 css 加载失败。</li>
+</ul>
+</li>
+</ol>
+<p>这种可以形象地叫做“<strong>埋点</strong>”：向 html 文档中埋入一个检查点。</p>
+<p>通过一个具体的例子来看看如何实现。首先，假设有如下 css 代码：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* old css_example1.css */</span></div><div class="line"><span class="selector-class">.elvin</span> &#123;</div><div class="line">  <span class="attribute">font-size</span>: <span class="number">16px</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>然后，向其中添加一条规则：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* new css_example1.css */</span></div><div class="line"><span class="selector-id">#css_example1</span> &#123;</div><div class="line">  <span class="attribute">display</span>: none;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="selector-class">.elvin</span> &#123;</div><div class="line">  <span class="attribute">font-size</span>: <span class="number">16px</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>最后，向 html 文件中添加一个 id 为 <code>css_example1</code> 的 div，并通过 js 来做判断：</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"example1"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line">  var div = document.getElementById('example1');</div><div class="line">  if (getComputedStyle(div).display !== 'none') &#123;</div><div class="line">    // 说明 css 加载失败</div><div class="line">    var newLink = document.createElement('link');</div><div class="line">    newLink.rel = 'stylesheet';</div><div class="line">    newLink.href = newUrl; // 主域下该 css 对应的地址</div><div class="line">    document.head.appendChild(newLink);</div><div class="line">  &#125;</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<p>插入的 js 逻辑为：当判断出 css 文件加载失败后，创建一个新的 link 标签，然后将其地址指向相应的主域地址，最后将其添加到 html 的头部即可。 </p>
+<blockquote>
+<p>需要说明的是，上述向 css 添加规则和向 html 注入代码都是通过监听 webpack 的 ‘done’ 事件进行的自动操作，并不需要手动的去插入这些代码。</p>
+</blockquote>
+<h2 id="js-主域重试"><a href="#js-主域重试" class="headerlink" title="js 主域重试"></a>js 主域重试</h2><p>js 主域重试比 css 主域重试要复杂很多，因为 js 之间往往会存在依赖关系，所以对 js的执行顺序有着要求。举例来说，假设在 html 中依次引入了 1.js， 2.js， 3.js，那么我们希望最终能实现如下效果：</p>
+<ul>
+<li>若文件1.js，2.js，3.js 正常加载，则每一个 js 加载成功后立即执行；</li>
+<li>若文件1.js，3.js 正常加载， 2.js 加载失败，则 1.js 加载成功后立即执行，待 2.js 重试成功，再按序运行2.js，3.js；</li>
+<li>若文件1.js，2.js，3.js 均加载失败，则全部重试，若都成功，再按序运行 1.js，2.js，3.js。</li>
+</ul>
+<p>也就是说，认为 2.js 是 依赖于 1.js，3.js 是依赖于 1.js 和 2.js，所以必须保证按照 1.js，2.js 和 3.js 的顺序来执行。这一想法是符合用 webpack 打包的项目的实际情况的：使用 webpack 打包的项目每个页面一般最多引入三个 js 文件：</p>
+<ol>
+<li>vendor.js：整个项目的基础库打包成该文件；</li>
+<li>common.js：将多个（大于等于3）项目公用的库打包成该文件；</li>
+<li>xxx.js：页面涉及的不包含在前面两个文件中的代码。</li>
+</ol>
+<p>上述三个文件必须按照 vendor.js，common.js 和 xxx.js 的顺序来执行。</p>
+<h3 id="理想情况"><a href="#理想情况" class="headerlink" title="理想情况"></a>理想情况</h3><p>在不需要考虑兼容性的情况下，js 主域重试其实也很好实现：监听 script 标签的 onerror 事件，假若发现 js 加载失败，则通过 <code>document.write()</code> 方法，立即写入一个新的 script 标签，该标签的 src 指向主域地址。这种方法的神奇之处在于 <code>document.write()</code>，通过它写入的 script 新标签，会阻塞后续 script 脚本的执行，直到新标签加载并执行完毕。</p>
+<p>这种方法简直完美，实现代码也不超过 10行，然而现实是它不仅仅在 IE 上不能正常工作，在 Edge 上也不行：对于 windows 家的浏览器，哪怕 document.readystate 是 loading，在事件响应函数中调用 <code>document.write()</code> 也会造成整个 html 的清空覆盖。所以，必须另寻它法。</p>
+<p>接下来将具体讲一讲我所想到的 webpack 项目中 js 主域重试的解决方案，和大家一起讨论。</p>
+<h4 id="js-加载成功的判断"><a href="#js-加载成功的判断" class="headerlink" title="js 加载成功的判断"></a>js 加载成功的判断</h4><p>网上现有的资料大部分都是通过 script 标签的 onload/onerror 事件来判断 js 的加载成功与否，有时为了兼容低版本的 IE，还需要通过 script 标签的 onreadystatechange 事件来判断。感谢 webpack 提供了在不修改源文件的情况下对打包出来的 js 做注入的功能，所以类似于 css 埋 div 的方法，也可以在 webpack 构建的时候，向 js 文件埋入变量，然后尝试访问该变量，若得到值，则说明 js 文件加载成功；若未得到值，则说明 js 文件加载失败。</p>
+<p>假设有一个 js 文件 js_exampl1.ks 如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// old js_example1</span></div><div class="line"><span class="built_in">console</span>.log(<span class="string">'js_example1'</span>);</div><div class="line">...</div></pre></td></tr></table></figure>
+<p>那么可以根据文件名，埋入一个唯一的变量：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="comment">// new(1) js_example1</span></div><div class="line">IMWEB_WEBPACK.js_example1 = <span class="literal">true</span>;</div><div class="line"><span class="built_in">console</span>.log(<span class="string">'in js_exampl1'</span>);</div><div class="line">...</div></pre></td></tr></table></figure>
+<p>最后，再根据这个变量来进行加载成功与否的判断：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">if</span> (!IMWEB_WEBPACK[<span class="string">'js_example1'</span>]) &#123;</div><div class="line">  <span class="comment">// 说明 js 加载失败</span></div><div class="line">  <span class="keyword">var</span> newScript = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</div><div class="line">  newScript.src = newSrc; <span class="comment">// 主域下该 js 对应的地址</span></div><div class="line">  <span class="built_in">document</span>.body.appendChild(newScript);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<blockquote>
+<p>上述代码有两点需要说明一下：</p>
+<ol>
+<li>之所以用文件名作为变量埋入是因为 webpack 打包后的文件名都含 md5 值，可以保证唯一性；</li>
+<li>埋入的变量都放在 IMWEB_WEBPACK 下是为了避免污染全局变量。</li>
+</ol>
+</blockquote>
+<h4 id="js-避免立即执行"><a href="#js-避免立即执行" class="headerlink" title="js 避免立即执行"></a>js 避免立即执行</h4><p>本节一开始有谈到，假如引入了1.js， 2.js， 3.js，若文件1.js，3.js 正常加载， 2.js 加载失败，则希望 3.js 在2.js 从主域加载成功后再执行。为了实现这个需求，需要 3.js 在加载成功后，原代码不立即执行，我的实现方式是将原来的代码用函数体包裹起来避免立即执行，然后再调用一个事先写好的函数进行判断。</p>
+<p>还是举例来进行具体说明。对于上一小节的 js_example1.js 文件，继续做如下改造：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">// new(2) js_example1</div><div class="line">IMWEB_WEBPACK.js_example1 = true;</div><div class="line">function IMWEB_WEBPACK_js_exampl1() &#123;</div><div class="line">  console.log('in js_exampl1’);</div><div class="line">  …</div><div class="line">&#125;</div><div class="line">IMWEB_WEBPACK_JS_ONLOAD('js_exampl1');</div></pre></td></tr></table></figure>
+<p>原 js_example1 的代码被包裹在函数 IMWEB_WEBPACK_js_exampl1 中从而避免了立即执行。该函数名可在构建时自动生成，具体规则为 <code>IMWEB_WEBPACK_</code> + 文件名。然后将文件名传入 IMWEB_WEBPACK_JS_ONLOAD，做下一步操作。</p>
+<h4 id="js-执行顺序保证"><a href="#js-执行顺序保证" class="headerlink" title="js 执行顺序保证"></a>js 执行顺序保证</h4><p>为了实现 js 主域重试，还需要向 webpack 生成的 html 文件插入两段 js 代码，第一段代码需要插入在所有外联的 js 代码之前，具体如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div><div class="line">23</div><div class="line">24</div><div class="line">25</div></pre></td><td class="code"><pre><div class="line">IMWEB_WEBPACK.JSARRAY = [</div><div class="line">  &#123; <span class="attr">name</span>: <span class="string">'js_example1'</span>, <span class="attr">url</span>: <span class="string">'//7.url.cn/js_example1.js'</span>&#125;,</div><div class="line">  <span class="comment">// ...</span></div><div class="line">];</div><div class="line">IMWEB_WEBPACK.firstLoad = <span class="literal">true</span>; <span class="comment">// 标志是否是从页面本身的 script 标签加载</span></div><div class="line">IMWEB_WEBPACK.jsRunCnt = <span class="number">0</span>; <span class="comment">// 计数器：统计已运行的 JS</span></div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">IMWEB_WEBPACK_JS_ONLOAD</span> (<span class="params">name</span>) </span>&#123;</div><div class="line">  <span class="keyword">if</span> (IMWEB_WEBPACK.firstLoad) &#123;</div><div class="line">    <span class="comment">// 从本有的 script 标签加载的 JS </span></div><div class="line">    <span class="keyword">var</span> jsFile = IMWEB_WEBPACK.JSARRAY[IMWEB_WEBPACK.jsRunCnt];</div><div class="line">    <span class="keyword">if</span> (jsFile.name === name) &#123;</div><div class="line">      jsFile.isLoad = <span class="literal">true</span>;</div><div class="line">      <span class="built_in">window</span>[<span class="string">'IMWEB_WEBPACK_'</span> + jsFile.name]();</div><div class="line">      IMWEB_WEBPACK.jsRunCnt++;</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">else</span> &#123;</div><div class="line">    <span class="comment">// 从新添加的 script 标签加载的 JS</span></div><div class="line">    IMWEB_WEBPACK.jsLoadedCnt++;</div><div class="line">    <span class="keyword">if</span> (IMWEB_WEBPACK.jsLoadedCnt === IMWEB_WEBPACK.JSARRAY.length) &#123;</div><div class="line">      IMWEB_WEBPACK_RunScripts();</div><div class="line">    &#125;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述代码逻辑较为简单，做一点说明：</p>
+<ul>
+<li><code>IMWEB_WEBPACK.JSARRAY</code> 是扫描 html 文件得到的，它记录了该 html 所引入的所有外联 js 的文件名和链接；</li>
+<li><code>IMWEB_WEBPACK.firstLoad</code> 用于记录整个页面的 js 加载状态：当所有外联 script 标签还未解析尝试加载完时，值为 true；当已尝试加载完时（无论成功与否），值为 false；</li>
+<li><code>IMWEB_WEBPACK.jsRunCnt</code> 用于统计已经加载并成功运行的 js 文件个数；</li>
+<li><code>IMWEB_WEBPACK_JS_ONLOAD</code> 每一个外联的 js 加载成功后都会调用这个函数，当所有外联 script 标签还未解析尝试加载完时，若尚未有 js 加载失败，则每一个 js 加载成功后函数体都会立即执行；否则不执行。</li>
+</ul>
+<p>第二段代码需要插入在所有外联的 js 代码之后，具体如下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div><div class="line">22</div></pre></td><td class="code"><pre><div class="line">IMWEB_WEBPACK.firstLoad = <span class="literal">false</span>;</div><div class="line">IMWEB_WEBPACK.jsLoadedCnt = IMWEB_WEBPACK.jsRunCnt; <span class="comment">// 计数器：统计已加载的 JS</span></div><div class="line"></div><div class="line"><span class="keyword">for</span> (<span class="keyword">var</span> i = IMWEB_WEBPACK.jsLoadedCnt; i &lt; IMWEB_WEBPACK.JSARRAY.length; i++) &#123;</div><div class="line">  <span class="keyword">var</span> name = IMWEB_WEBPACK.JSARRAY[i].name;</div><div class="line">  <span class="keyword">if</span> (!IMWEB_WEBPACK[name]) &#123;</div><div class="line">   <span class="keyword">var</span> newScript = <span class="built_in">document</span>.createElement(<span class="string">'script'</span>);</div><div class="line">    newScript.src = newUrl; <span class="comment">// 主域下该 js 对应的地址</span></div><div class="line">    <span class="built_in">document</span>.body.appendChild(newScript);</div><div class="line">  &#125;</div><div class="line">  <span class="keyword">else</span> &#123;</div><div class="line">    IMWEB_WEBPACK.jsLoadedCnt++;</div><div class="line">  &#125;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">IMWEB_WEBPACK_RunScripts</span>(<span class="params"></span>) </span>&#123;</div><div class="line">  <span class="comment">// 所有从 CDN 加载失败的 js 从主域加载成功后调用本函数</span></div><div class="line">  <span class="keyword">for</span> (<span class="keyword">var</span> i = IMWEB_WEBPACK.jsRunCnt; i &lt; IMWEB_WEBPACK.JSARRAY.length; i++) &#123;</div><div class="line">    <span class="keyword">var</span> name = IMWEB_WEBPACK.JSARRAY[i].name; </div><div class="line">    <span class="built_in">window</span>[<span class="string">'IMWEB_WEBPACK_'</span> + name]();</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>上述代码会在所有外联 script 标签尝试加载后（无论成功与否）执行，它主要负责重试从 CDN 加载失败的 js，并在所有主域重试的  js 加载成功后执行尚未执行的 js 脚本。</p>
+<h2 id="效果演示"><a href="#效果演示" class="headerlink" title="效果演示"></a>效果演示</h2><p><img src="http://ww1.sinaimg.cn/large/006b78jTgy1fiye371j4oj30ms04kwf7.jpg" alt="css 主域重试演示"></p>
+<p>在上图中，可以看见 common_md5.css 从 8.url.cn 加载失败后，自动从主域再次尝试拉取。</p>
+<p><img src="http://ww1.sinaimg.cn/large/006b78jTgy1fiye4djme0j30mn06q3zm.jpg" alt="js 主域重试演示"></p>
+<p>在上图中，可以看见 vendor_md5.js 从 7.url.cn 加载失败后，自动从主域再次尝试拉取。需要注意的 vendor_md5.js 从 7.url.cn 尝试拉取了两次，这应该是 Chrome （版本 60）本身的失败重试机制。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>css 主域重试较为简单，核心概念就是 <strong>埋点</strong>；js 主域重试则较为复杂，因为涉及到了依赖的解决问题，核心在于<strong>埋变量</strong>和通过 <code>jsRunCnt</code>、<code>jsLoadedCnt</code> 两个计数器进行相应的判断。</p>
+<p>有说的不清楚的地方或者读者认为有待商榷的地方欢迎在评论区指出，大家一起来进行讨论。</p>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> 前端 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[深入探究 Node 中的 events.EventEmitter 模块]]></title>
       <url>/2017/07/22/evenEmitter/</url>
       <content type="html"><![CDATA[<p>Node 中的许多核心 API 都是通过事件驱动的异步架构实现的，具体来说就是当 <code>emitters</code> 发送事件后，相应的响应函数（ <code>listeners</code> ）会被执行。例如：<code>net.Server</code> 会在每次收到连接时发出事件，<code>fs.ReadStram</code> 会在文件打开时发出事件，<code>stram</code>会在有数据可读时发出事件。<br>所有这些对象都是 <code>EventEmitter</code> 的实例，它们通过向外暴露的 <code>eventEmitter.on()</code> 接口从而让不同的事件响应函数得以执行。</p>
@@ -59,7 +156,7 @@
 <a id="more"></a>
 <p>17年年尾的时候，曾写了一篇 <a href="http://segmentfault.me/2016/12/08/%E5%B1%95%E6%9C%9B-2017/">展望2017</a>，尽管文中的计划都按时完成，心愿也已都实现，然而除了实习生录用结果刚出来的那一阵儿的开心外，最近一两个月最大的感觉就是孤独 &amp;&amp; 孤单了。</p>
 <p>五月初的时候因为课程轻松，又刚忙完实习招聘，加上 Dota2 Ti7的小本子出了，所以疯狂的打了一两周的 Dota2，虽然一路上分到了3500，打游戏时五个人一个团队的感觉也很好，但是休息的时候总是抬头不知望向哪儿好，心中一片茫然：感觉自己很闲，想找点事情做又不知做何好，想找人聊天也不知可以找谁。</p>
-<p>这一两周晚上睡觉的时候经常回想起以前的事情：大一大二很开心，高中很开心，初中很开心，小学的事情已经记不太清了，但是应该也是开心的吧。作为孩子的我真是幸福呢，一路无忧无虑这样开开心心地走来。但是一帆风顺似乎也没有那么好，就好比说现在，我能感觉到自己觉得孤单 &amp;&amp; 孤单，时不时也会被这种情绪包围，虽然没那么坏，但也觉得不怎么好，不过就是不知道该怎么去转变它，甚至不知道要不要去转变它，似乎有人说过孤独会极大地促进人的发展，自己也觉得感受孤独乃至享受孤独应该是成长的必经之路吧。</p>
+<p>这一两周晚上睡觉的时候经常回想起以前的事情：大一大二很开心，高中很开心，初中很开心，小学的事情已经记不太清了，但是应该也是开心的吧。作为孩子的我真是幸福呢，一路无忧无虑这样开开心心地走来。但是一帆风顺似乎也没有那么好，就好比说现在，我能感觉到自己觉得孤独 &amp;&amp; 孤单，时不时也会被这种情绪包围，虽然没那么坏，但也觉得不怎么好，不过就是不知道该怎么去转变它，甚至不知道要不要去转变它，似乎有人说过孤独会极大地促进人的发展，自己也觉得感受孤独乃至享受孤独应该是成长的必经之路吧。</p>
 <p>虽然整个人情绪上有些低落，但是我正处在 22 岁，在我一生的黄金时代，我有好多的欲望，我想一个个的去把它们变成现实：</p>
 <ol>
 <li>之前健身瘦了差不多三十斤，忙实习的事情的时候中断了一个多月，反弹了一些。锻炼还是要继续坚持，不求八块腹肌，但求能做十个引体向上:-D。</li>
@@ -340,6 +437,41 @@
     </entry>
     
     <entry>
+      <title><![CDATA[python 与 c 的相互调用]]></title>
+      <url>/2016/11/17/python%E4%B8%8Ec%E7%9A%84%E7%9B%B8%E4%BA%92%E8%B0%83%E7%94%A8/</url>
+      <content type="html"><![CDATA[<p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
+<p>   若能将两者结合起来，岂不是妙哉？</p>
+<a id="more"></a>
+<h2 id="python-调用-c-程序"><a href="#python-调用-c-程序" class="headerlink" title="python 调用 c 程序"></a>python 调用 c 程序</h2><ol>
+<li><p>首先我们编写一个简单的 c 程序 <code>multi.c</code></p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">multiply</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> n1 * n2;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>接着将写好的 c 程序编译生成动态库 <code>multi.so</code>，便于 python 程序调用。<br><code>gcc -shared -fPIC multi.c -o multi.so</code></p>
+<ul>
+<li>-shared  生成动态库</li>
+<li>-fPIC 生成与位置无关代码(Position-Independent Code)</li>
+<li>-o 指定生成库的名字</li>
+</ul>
+</li>
+<li><p>最后在 <code>multi.so</code> 的同级目录下运行 python 解释器, 调用刚刚编写的 multiply 函数</p>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> ctypes</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi = ctypes.cdll.LoadLibrary(<span class="string">'./multi.so'</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi.multiply(<span class="number">2</span>, <span class="number">4</span>)</div><div class="line"><span class="number">8</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>ctypes</code> 库提供了与c语言一致的数据类型，并且可以用来调用动态链接库中的函数。在这里，我们通过<code>ctypes.cdll.LoadLibrary</code>来读取c库。该库更详细的使用可以参阅<a href="https://docs.python.org/2/library/ctypes.html" target="_blank" rel="external">官方文档 ctypes — A foreign function library for Python</a></p>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> python </tag>
+            
+            <tag> c </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[yield from、asyncio 与 aiohttp 在异步IO中的应用]]></title>
       <url>/2016/11/17/yield-from%E3%80%81asyncio-%E4%B8%8E-aiohttp-%E5%9C%A8%E5%BC%82%E6%AD%A5IO%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</url>
       <content type="html"><![CDATA[<p>Python3.3 中引入了 <code>yield from</code> 用于定义生成器;Python3.4 中引入了 <code>asyncio</code>标准库， 从而直接内置了对异步IO的支持。<br><a id="more"></a></p>
@@ -373,35 +505,62 @@
     </entry>
     
     <entry>
-      <title><![CDATA[python 与 c 的相互调用]]></title>
-      <url>/2016/11/17/python%E4%B8%8Ec%E7%9A%84%E7%9B%B8%E4%BA%92%E8%B0%83%E7%94%A8/</url>
-      <content type="html"><![CDATA[<p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
-<p>   若能将两者结合起来，岂不是妙哉？</p>
+      <title><![CDATA[UML 类图]]></title>
+      <url>/2016/11/17/UML-%E7%B1%BB%E5%9B%BE/</url>
+      <content type="html"><![CDATA[<p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
 <a id="more"></a>
-<h2 id="python-调用-c-程序"><a href="#python-调用-c-程序" class="headerlink" title="python 调用 c 程序"></a>python 调用 c 程序</h2><ol>
-<li><p>首先我们编写一个简单的 c 程序 <code>multi.c</code></p>
- <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">multiply</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> n1 * n2;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>接着将写好的 c 程序编译生成动态库 <code>multi.so</code>，便于 python 程序调用。<br><code>gcc -shared -fPIC multi.c -o multi.so</code></p>
+<h2 id="类本身的表示"><a href="#类本身的表示" class="headerlink" title="类本身的表示"></a><a href="#类本身的表示" title="类本身的表示"></a>类本身的表示</h2><p>类是对象的蓝图，封装了数据和行为，它是具有相同属性、方法、关系的对象的集合的总称，下面是一个简单的 Person 类的 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span>  <span class="title">Person</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> String name;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.name = name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.age = age;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>其对应的类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Person.png" alt="Person 类图"></p>
+<p>在上面这个简单的例子中，我们可以看到，从上至下类图分为三个部分，依次为：</p>
 <ul>
-<li>-shared  生成动态库</li>
-<li>-fPIC 生成与位置无关代码(Position-Independent Code)</li>
-<li>-o 指定生成库的名字</li>
+<li>类的名称</li>
+<li>类的属性</li>
+<li>类的方法</li>
+</ul>
+<p>其中，属性部分的格式为 <code>可见性 名称:类型 [=缺省值]</code>，方法部分的格式为 <code>可见性 名称(参数类型):返回类型</code>，可见性的可选项为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">+    public</div><div class="line">-    private</div><div class="line">#    protected</div><div class="line">~    default</div><div class="line">_    static</div></pre></td></tr></table></figure>
+
+<h2 id="类间关系的表示"><a href="#类间关系的表示" class="headerlink" title="类间关系的表示"></a><a href="#类间关系的表示" title="类间关系的表示"></a>类间关系的表示</h2><h3 id="泛化（Generalization）"><a href="#泛化（Generalization）" class="headerlink" title="泛化（Generalization）"></a><a href="#泛化（Generalization）" title="泛化（Generalization）"></a>泛化（Generalization）</h3><p>泛化，可理解为继承，在 Java 中通过关键字 <code>extends</code> 标示，用<strong>带空心三角箭头的实线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/generalization.png" alt="泛化关系示意图"></p>
+<h3 id="实现（Realization）"><a href="#实现（Realization）" class="headerlink" title="实现（Realization）"></a><a href="#实现（Realization）" title="实现（Realization）"></a>实现（Realization）</h3><p>实现，指的是一个类实现接口（可以是多个）的功能，在 Java 中通过关键字 <code>implements</code> 标示，用<strong>带空心三角箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">implements</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/realization.png" alt="实现关系示意图"></p>
+<h3 id="依赖（Dependency）"><a href="#依赖（Dependency）" class="headerlink" title="依赖（Dependency）"></a><a href="#依赖（Dependency）" title="依赖（Dependency）"></a>依赖（Dependency）</h3><p>依赖，可简单的理解为类 A 使用到了另一个类 B，可以用 <em>‘… use a …’</em> 进行判断，这种使用关系是具有偶然性的、临时性的、非常弱的。表现在代码层面，就是类 B 作为参数被类 A 在某个方法中使用，用<strong>带燕尾箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">(A param)</span></span>&#123;</div><div class="line">      <span class="comment">//…</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/dependency.png" alt="依赖关系示意图"></p>
+<h3 id="关联（Association）"><a href="#关联（Association）" class="headerlink" title="关联（Association）"></a><a href="#关联（Association）" title="关联（Association）"></a>关联（Association）</h3><p>关联，体现的是两个类、类与接口或者接口与接口之间的强依赖关系，可以用 <em>‘… has a …’</em> 进行判断，一般来说是一种长期的稳定的关系。表现在代码层面，就是 B 以属性的形式出现在 A 中，关联既可以是单向的，也可以是双向的，用<strong>带燕尾箭头的实线</strong>表示单向关联，<strong>不带箭头的实现</strong>表示双向关联，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> A attribute;</div><div class="line">  </div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/association.png" alt="关联关系示意图"></p>
+<h3 id="聚合（Aggregation）"><a href="#聚合（Aggregation）" class="headerlink" title="聚合（Aggregation）"></a><a href="#聚合（Aggregation）" title="聚合（Aggregation）"></a>聚合（Aggregation）</h3><p>聚合，指整体与部分之间的一类特殊的关联关系，是“弱”的包含关系，可以用 <em>‘… owns a …</em> 进行判断，成分类可以不依靠集合类而单独存在，可以拥有各自的生命周期，用<strong>带空心棱形箭尾的实线</strong>表示，例如教室与教室中的学生间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/aggregation.png" alt="聚合关系示意图"></p>
+<p>有些时候，我们还需要两个对象在数量上的对应关系（Multiplicity），可以<strong>直接在关联直线上用一个数字或者一个数字范围</strong>来表示，例如有一个最多只能容纳 40 个学生的教室，那么教室和这个教室之间的关系可表示为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Multiplicity.png" alt="多重性关联关系示意图"></p>
+<p>数字范围表示方法具体为：</p>
+<ul>
+<li>0..1 没有或者只有一个实例</li>
+<li>1    有且仅有一个实例</li>
+<li>0..* 大于等于 0 个实例</li>
+<li><ul>
+<li>大于等于 0 个实例</li>
 </ul>
 </li>
-<li><p>最后在 <code>multi.so</code> 的同级目录下运行 python 解释器, 调用刚刚编写的 multiply 函数</p>
-  <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> ctypes</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi = ctypes.cdll.LoadLibrary(<span class="string">'./multi.so'</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi.multiply(<span class="number">2</span>, <span class="number">4</span>)</div><div class="line"><span class="number">8</span></div></pre></td></tr></table></figure>
-</li>
-</ol>
-<p><code>ctypes</code> 库提供了与c语言一致的数据类型，并且可以用来调用动态链接库中的函数。在这里，我们通过<code>ctypes.cdll.LoadLibrary</code>来读取c库。该库更详细的使用可以参阅<a href="https://docs.python.org/2/library/ctypes.html" target="_blank" rel="external">官方文档 ctypes — A foreign function library for Python</a></p>
+<li>1..* 大于等于 1 个实例</li>
+<li>m..n 大于等于 m ，小于等于 n 个实例</li>
+</ul>
+<h3 id="组成（Composition）"><a href="#组成（Composition）" class="headerlink" title="组成（Composition）"></a><a href="#组成（Composition）" title="组成（Composition）"></a>组成（Composition）</h3><p>组成，指整体与部分之间一类“强”的包含关系，可以用 <em>‘… is a part of …’</em> 进行判断，成分类必须依靠集合类而存在，两者是密不可分的，整体类负责创建与销毁成分类，当整体类的生命周期结束时也意味着部分类生命周期的结束，用<strong>带实心棱形箭尾的实线</strong>表示，例如人与其大脑间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/composition.png" alt="组成关系示意图"></p>
 ]]></content>
       
         
         <tags>
             
-            <tag> python </tag>
+            <tag> JAVA </tag>
             
-            <tag> c </tag>
+            <tag> 基础知识 </tag>
             
         </tags>
         
@@ -503,68 +662,6 @@
         <tags>
             
             <tag> python </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[UML 类图]]></title>
-      <url>/2016/11/17/UML-%E7%B1%BB%E5%9B%BE/</url>
-      <content type="html"><![CDATA[<p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
-<a id="more"></a>
-<h2 id="类本身的表示"><a href="#类本身的表示" class="headerlink" title="类本身的表示"></a><a href="#类本身的表示" title="类本身的表示"></a>类本身的表示</h2><p>类是对象的蓝图，封装了数据和行为，它是具有相同属性、方法、关系的对象的集合的总称，下面是一个简单的 Person 类的 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span>  <span class="title">Person</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> String name;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.name = name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.age = age;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>其对应的类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Person.png" alt="Person 类图"></p>
-<p>在上面这个简单的例子中，我们可以看到，从上至下类图分为三个部分，依次为：</p>
-<ul>
-<li>类的名称</li>
-<li>类的属性</li>
-<li>类的方法</li>
-</ul>
-<p>其中，属性部分的格式为 <code>可见性 名称:类型 [=缺省值]</code>，方法部分的格式为 <code>可见性 名称(参数类型):返回类型</code>，可见性的可选项为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">+    public</div><div class="line">-    private</div><div class="line">#    protected</div><div class="line">~    default</div><div class="line">_    static</div></pre></td></tr></table></figure>
-
-<h2 id="类间关系的表示"><a href="#类间关系的表示" class="headerlink" title="类间关系的表示"></a><a href="#类间关系的表示" title="类间关系的表示"></a>类间关系的表示</h2><h3 id="泛化（Generalization）"><a href="#泛化（Generalization）" class="headerlink" title="泛化（Generalization）"></a><a href="#泛化（Generalization）" title="泛化（Generalization）"></a>泛化（Generalization）</h3><p>泛化，可理解为继承，在 Java 中通过关键字 <code>extends</code> 标示，用<strong>带空心三角箭头的实线</strong>表示，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/generalization.png" alt="泛化关系示意图"></p>
-<h3 id="实现（Realization）"><a href="#实现（Realization）" class="headerlink" title="实现（Realization）"></a><a href="#实现（Realization）" title="实现（Realization）"></a>实现（Realization）</h3><p>实现，指的是一个类实现接口（可以是多个）的功能，在 Java 中通过关键字 <code>implements</code> 标示，用<strong>带空心三角箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">implements</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/realization.png" alt="实现关系示意图"></p>
-<h3 id="依赖（Dependency）"><a href="#依赖（Dependency）" class="headerlink" title="依赖（Dependency）"></a><a href="#依赖（Dependency）" title="依赖（Dependency）"></a>依赖（Dependency）</h3><p>依赖，可简单的理解为类 A 使用到了另一个类 B，可以用 <em>‘… use a …’</em> 进行判断，这种使用关系是具有偶然性的、临时性的、非常弱的。表现在代码层面，就是类 B 作为参数被类 A 在某个方法中使用，用<strong>带燕尾箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">(A param)</span></span>&#123;</div><div class="line">      <span class="comment">//…</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/dependency.png" alt="依赖关系示意图"></p>
-<h3 id="关联（Association）"><a href="#关联（Association）" class="headerlink" title="关联（Association）"></a><a href="#关联（Association）" title="关联（Association）"></a>关联（Association）</h3><p>关联，体现的是两个类、类与接口或者接口与接口之间的强依赖关系，可以用 <em>‘… has a …’</em> 进行判断，一般来说是一种长期的稳定的关系。表现在代码层面，就是 B 以属性的形式出现在 A 中，关联既可以是单向的，也可以是双向的，用<strong>带燕尾箭头的实线</strong>表示单向关联，<strong>不带箭头的实现</strong>表示双向关联，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> A attribute;</div><div class="line">  </div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/association.png" alt="关联关系示意图"></p>
-<h3 id="聚合（Aggregation）"><a href="#聚合（Aggregation）" class="headerlink" title="聚合（Aggregation）"></a><a href="#聚合（Aggregation）" title="聚合（Aggregation）"></a>聚合（Aggregation）</h3><p>聚合，指整体与部分之间的一类特殊的关联关系，是“弱”的包含关系，可以用 <em>‘… owns a …</em> 进行判断，成分类可以不依靠集合类而单独存在，可以拥有各自的生命周期，用<strong>带空心棱形箭尾的实线</strong>表示，例如教室与教室中的学生间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/aggregation.png" alt="聚合关系示意图"></p>
-<p>有些时候，我们还需要两个对象在数量上的对应关系（Multiplicity），可以<strong>直接在关联直线上用一个数字或者一个数字范围</strong>来表示，例如有一个最多只能容纳 40 个学生的教室，那么教室和这个教室之间的关系可表示为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Multiplicity.png" alt="多重性关联关系示意图"></p>
-<p>数字范围表示方法具体为：</p>
-<ul>
-<li>0..1 没有或者只有一个实例</li>
-<li>1    有且仅有一个实例</li>
-<li>0..* 大于等于 0 个实例</li>
-<li><ul>
-<li>大于等于 0 个实例</li>
-</ul>
-</li>
-<li>1..* 大于等于 1 个实例</li>
-<li>m..n 大于等于 m ，小于等于 n 个实例</li>
-</ul>
-<h3 id="组成（Composition）"><a href="#组成（Composition）" class="headerlink" title="组成（Composition）"></a><a href="#组成（Composition）" title="组成（Composition）"></a>组成（Composition）</h3><p>组成，指整体与部分之间一类“强”的包含关系，可以用 <em>‘… is a part of …’</em> 进行判断，成分类必须依靠集合类而存在，两者是密不可分的，整体类负责创建与销毁成分类，当整体类的生命周期结束时也意味着部分类生命周期的结束，用<strong>带实心棱形箭尾的实线</strong>表示，例如人与其大脑间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/composition.png" alt="组成关系示意图"></p>
-]]></content>
-      
-        
-        <tags>
-            
-            <tag> JAVA </tag>
-            
-            <tag> 基础知识 </tag>
             
         </tags>
         
