@@ -17,7 +17,7 @@
 
 
 
-  <meta name="keywords" content="前端," />
+  <meta name="keywords" content="前端构建," />
 
 
 
@@ -35,7 +35,7 @@
 
 
 <meta name="description" content="为了提高网站的访问速度，现在一般会将静态资源放在 CDN 下，而不是放在网站的域名之下。以腾讯课堂为例，其域名为 ke.qq.com，打开控制台，访问 ke.qq.com，我们可以看到 js 文件放在了 CDN 7.url.cn 下，css 文件放在了 CDN 8.url.cn 下。尽管 CDN 的服务可用性一般宣称 99.9% 甚至 99.999%，然而实际上监测结果比该数值要小一些。为了应对这">
-<meta name="keywords" content="前端">
+<meta name="keywords" content="前端构建">
 <meta property="og:type" content="article">
 <meta property="og:title" content="webpack 项目 css&#x2F;js主域重试">
 <meta property="og:url" content="http://segmentfault.me/2017/08/27/css-js主域重试/index.html">
@@ -44,7 +44,7 @@
 <meta property="og:locale" content="zh-cn">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/006b78jTgy1fiye371j4oj30ms04kwf7.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/006b78jTgy1fiye4djme0j30mn06q3zm.jpg">
-<meta property="og:updated_time" content="2017-08-27T09:23:09.000Z">
+<meta property="og:updated_time" content="2017-10-03T15:29:47.000Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="webpack 项目 css&#x2F;js主域重试">
 <meta name="twitter:description" content="为了提高网站的访问速度，现在一般会将静态资源放在 CDN 下，而不是放在网站的域名之下。以腾讯课堂为例，其域名为 ke.qq.com，打开控制台，访问 ke.qq.com，我们可以看到 js 文件放在了 CDN 7.url.cn 下，css 文件放在了 CDN 8.url.cn 下。尽管 CDN 的服务可用性一般宣称 99.9% 甚至 99.999%，然而实际上监测结果比该数值要小一些。为了应对这">
@@ -261,7 +261,7 @@
 <p>然后，向其中添加一条规则：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* new css_example1.css */</span></div><div class="line"><span class="selector-id">#css_example1</span> &#123;</div><div class="line">  <span class="attribute">display</span>: none;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="selector-class">.elvin</span> &#123;</div><div class="line">  <span class="attribute">font-size</span>: <span class="number">16px</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>最后，向 html 文件中添加一个 id 为 <code>css_example1</code> 的 div，并通过 js 来做判断：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"example1"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></div><div class="line">  <span class="keyword">var</span> div = <span class="built_in">document</span>.getElementById(<span class="string">'example1'</span>);</div><div class="line">  <span class="keyword">if</span> (getComputedStyle(div).display !== <span class="string">'none'</span>) &#123;</div><div class="line">    <span class="comment">// 说明 css 加载失败</span></div><div class="line">    <span class="keyword">var</span> newLink = <span class="built_in">document</span>.createElement(<span class="string">'link'</span>);</div><div class="line">    newLink.rel = <span class="string">'stylesheet'</span>;</div><div class="line">    newLink.href = newUrl; <span class="comment">// 主域下该 css 对应的地址</span></div><div class="line">    <span class="built_in">document</span>.head.appendChild(newLink);</div><div class="line">  &#125;</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"example1"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line">  var div = document.getElementById('example1');</div><div class="line">  if (getComputedStyle(div).display !== 'none') &#123;</div><div class="line">    // 说明 css 加载失败</div><div class="line">    var newLink = document.createElement('link');</div><div class="line">    newLink.rel = 'stylesheet';</div><div class="line">    newLink.href = newUrl; // 主域下该 css 对应的地址</div><div class="line">    document.head.appendChild(newLink);</div><div class="line">  &#125;</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>插入的 js 逻辑为：当判断出 css 文件加载失败后，创建一个新的 link 标签，然后将其地址指向相应的主域地址，最后将其添加到 html 的头部即可。 </p>
 <blockquote>
 <p>需要说明的是，上述向 css 添加规则和向 html 注入代码都是通过监听 webpack 的 ‘done’ 事件进行的自动操作，并不需要手动的去插入这些代码。</p>
@@ -375,13 +375,19 @@
         
           <div class="post-tags">
             
-              <a href="/tags/前端/">前端</a>
+              <a href="/tags/前端构建/">前端构建</a>
             
           </div>
         
         
         
   <nav class="post-nav">
+    
+      <a class="prev" href="/2017/10/03/ts-jsdoc/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">ts-check 立即上手，JSDoc 添加类型</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
     
     
       <a class="next" href="/2017/07/22/evenEmitter/">

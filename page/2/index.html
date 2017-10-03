@@ -202,13 +202,13 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/11/17/python与c的相互调用/">python 与 c 的相互调用</a>
+          <a class="post-link" href="/2016/11/27/如何终止消费者线程？/">如何终止消费者线程？</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016年11月17日
+          2016年11月27日
         </span>
       </div>
     </header>
@@ -224,10 +224,9 @@
         
 
         
-          <p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
-<p>   若能将两者结合起来，岂不是妙哉？</p>
+          <p>最近在做 <a href="https://github.com/Leonard-Peng/HungrySpider" target="_blank" rel="external">黄网嗅探器</a> 的时候，因为单线程版实在太慢，大部分时间都用在了网络 IO上，因而想着利用<strong>生产者-消费者模型</strong>做出多线程版，把网址的生成部分当作生产者线程，网址是否为黄网的检测部分当作消费者线程。不过在实现的过程中，碰到了一个问题：当网址的全部组合已生成完毕后，如何由生产者通知消费者，进而待网址检测完成后终止消费者线程呢？</p>
           <div class="read-more">
-            <a href="/2016/11/17/python与c的相互调用/" class="read-more-link">阅读更多</a>
+            <a href="/2016/11/27/如何终止消费者线程？/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -287,6 +286,49 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2016/11/17/python与c的相互调用/">python 与 c 的相互调用</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2016年11月17日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
+<p>   若能将两者结合起来，岂不是妙哉？</p>
+          <div class="read-more">
+            <a href="/2016/11/17/python与c的相互调用/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2016/11/17/UML-类图/">UML 类图</a>
         
       </h1>
@@ -312,48 +354,6 @@
           <p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
           <div class="read-more">
             <a href="/2016/11/17/UML-类图/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/11/17/函数作为返回值-闭包/">函数作为返回值--闭包</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2016年11月17日
-        </span>
-      </div>
-    </header>
-
-    
-    
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>当我们在函数A中又定义了函数B，并且内部函数B可以引用外部函数A的参数和局部变量，当A返回函数B时，相关参数和变量都保存在返回的函数中，这种程序结构称为<strong>“闭包”（Closure）</strong>。</p>
-          <div class="read-more">
-            <a href="/2016/11/17/函数作为返回值-闭包/" class="read-more-link">阅读更多</a>
           </div>
         
       
@@ -397,6 +397,48 @@
 <p>今天趁着重新学Python的机会，总结一下正则表达式中基本的内容，更加深入、详细的内容可以移步<a href="http://deerchao.net/tutorials/regex/regex.htm" target="_blank" rel="external">正则表达式30分钟入门</a>。</p>
           <div class="read-more">
             <a href="/2016/11/17/学一次忘一次的正则表达式/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          <a class="post-link" href="/2016/11/17/函数作为返回值-闭包/">函数作为返回值--闭包</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2016年11月17日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>当我们在函数A中又定义了函数B，并且内部函数B可以引用外部函数A的参数和局部变量，当A返回函数B时，相关参数和变量都保存在返回的函数中，这种程序结构称为<strong>“闭包”（Closure）</strong>。</p>
+          <div class="read-more">
+            <a href="/2016/11/17/函数作为返回值-闭包/" class="read-more-link">阅读更多</a>
           </div>
         
       
