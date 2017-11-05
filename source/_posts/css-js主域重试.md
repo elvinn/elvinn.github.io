@@ -197,28 +197,7 @@ function IMWEB_WEBPACK_JS_ONLOAD (name) {
 第二段代码需要插入在所有外联的 js 代码之后，具体如下：
 
 ```javascript
-IMWEB_WEBPACK.firstLoad = false;
-IMWEB_WEBPACK.jsLoadedCnt = IMWEB_WEBPACK.jsRunCnt; // 计数器：统计已加载的 JS
 
-for (var i = IMWEB_WEBPACK.jsLoadedCnt; i < IMWEB_WEBPACK.JSARRAY.length; i++) {
-  var name = IMWEB_WEBPACK.JSARRAY[i].name;
-  if (!IMWEB_WEBPACK[name]) {
-   var newScript = document.createElement('script');
-    newScript.src = newUrl; // 主域下该 js 对应的地址
-    document.body.appendChild(newScript);
-  }
-  else {
-    IMWEB_WEBPACK.jsLoadedCnt++;
-  }
-}
-
-function IMWEB_WEBPACK_RunScripts() {
-  // 所有从 CDN 加载失败的 js 从主域加载成功后调用本函数
-  for (var i = IMWEB_WEBPACK.jsRunCnt; i < IMWEB_WEBPACK.JSARRAY.length; i++) {
-    var name = IMWEB_WEBPACK.JSARRAY[i].name; 
-    window['IMWEB_WEBPACK_' + name]();
-  }
-}
 ```
 
 上述代码会在所有外联 script 标签尝试加载后（无论成功与否）执行，它主要负责重试从 CDN 加载失败的 js，并在所有主域重试的  js 加载成功后执行尚未执行的 js 脚本。
