@@ -78,9 +78,9 @@ word-wrap: unset;
 
 
 
-## word-spacing 大佬
+## white-space 大佬
 
-前面说了这么多 `word-break` 和 `word-wrap`  的值的作用，显得它们很厉害的样子。不过实际上它们受 `word-spacing` 大佬管辖，它的默认值为 `normal` 时可以允许 `word-break` 和 `word-wrap` 发挥作用，不过当它的值设为 `nowrap` 时，就会不允许换行，导致所有的文本都挤在一行之中，如下图所示。 
+前面说了这么多 `word-break` 和 `word-wrap`  的值的作用，显得它们很厉害的样子。不过实际上它们受 `white-space` 大佬管辖，它的默认值为 `normal` 时可以允许 `word-break` 和 `word-wrap` 发挥作用，不过当它的值设为 `nowrap` 时，就会不允许换行，导致所有的文本都挤在一行之中，如下图所示。 
 
 ![word-spacing 示意图](https://ws3.sinaimg.cn/large/006tKfTcgy1fl717d9pngj30oq02c3yo.jpg)
 
