@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://segmentfault.me/"/>
-  <updated>2017-12-03T11:19:37.491Z</updated>
+  <updated>2017-12-03T11:23:16.782Z</updated>
   <id>http://segmentfault.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://segmentfault.me/2017/12/03/transform-effect-side/"/>
     <id>http://segmentfault.me/2017/12/03/transform-effect-side/</id>
     <published>2017-12-03T11:15:53.000Z</published>
-    <updated>2017-12-03T11:19:37.491Z</updated>
+    <updated>2017-12-03T11:23:16.782Z</updated>
     
     <content type="html"><![CDATA[<p><code>transform</code> 想必大家都很熟悉，可以通过其转换（translate）、旋转（rotate）、缩放（scale）、倾斜（skew）等属性来对元素进行变换，不过这篇文章想探讨的不是这些内容，而是 <code>transform</code> 对元素布局、页面渲染方面的影响。例如，你知道它会影响 <code>fixed</code> 元素的位置吗？你有想过它会改变元素的层叠顺序吗？</p>
 <a id="more"></a>
@@ -66,7 +66,7 @@
     <link href="http://segmentfault.me/2017/11/02/word-break-and-word-wrap/"/>
     <id>http://segmentfault.me/2017/11/02/word-break-and-word-wrap/</id>
     <published>2017-11-02T01:48:31.000Z</published>
-    <updated>2017-11-08T00:29:02.000Z</updated>
+    <updated>2017-12-03T11:24:25.511Z</updated>
     
     <content type="html"><![CDATA[<p>本文主要要介绍的是 CSS 中 <code>word-break: break-all</code> 和 <code>word-wrap: break-word</code> 的区别，虽然这两个属性都有使用过，但都是属于使用时查一查文档随手就用，用完了也不会深入去探究的范畴，希望借着这篇文章来深入的探究一下这两者的区别。</p>
 <a id="more"></a>
@@ -96,7 +96,7 @@
 <h2 id="word-break-和-word-wrap-的区别"><a href="#word-break-和-word-wrap-的区别" class="headerlink" title="word-break 和 word-wrap 的区别"></a>word-break 和 word-wrap 的区别</h2><p>终于来到本文的重点了！一开始看到 <code>word-break: break-all</code> 和 <code>word-wrap: word-break</code> 就头大，这也太相像了，一共就四个单词，结果还有三个单词都是一样的，效果看上去也好像没什么区别，也难怪 W3C 要给 <code>word-wrap</code> 换个名字了。那说回正题，区别在哪里呢？？</p>
 <p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fl716uhrnfj30um0fugt1.jpg" alt="对比示意图"></p>
 <p>俗话说的好，一图胜千言。在上图中，我们可以清楚地看到，<code>word-break: break-all</code> 值如其名，断开一切，利用上每一块可以利用的空间来塞下文本，避免铺张浪费；而 <code>word-wrap: word-break</code> 则收敛许多，假如一行文字有可以换行的点，如标点、CJK 文本等，那么就不会在英文单词或者字符中插入断行了，不过从显示效果来说的话则容易一块儿密集、一块儿空白，很不美观。</p>
-<h2 id="word-spacing-大佬"><a href="#word-spacing-大佬" class="headerlink" title="word-spacing 大佬"></a>word-spacing 大佬</h2><p>前面说了这么多 <code>word-break</code> 和 <code>word-wrap</code>  的值的作用，显得它们很厉害的样子。不过实际上它们受 <code>word-spacing</code> 大佬管辖，它的默认值为 <code>normal</code> 时可以允许 <code>word-break</code> 和 <code>word-wrap</code> 发挥作用，不过当它的值设为 <code>nowrap</code> 时，就会不允许换行，导致所有的文本都挤在一行之中，如下图所示。 </p>
+<h2 id="white-space-大佬"><a href="#white-space-大佬" class="headerlink" title="white-space 大佬"></a>white-space 大佬</h2><p>前面说了这么多 <code>word-break</code> 和 <code>word-wrap</code>  的值的作用，显得它们很厉害的样子。不过实际上它们受 <code>white-space</code> 大佬管辖，它的默认值为 <code>normal</code> 时可以允许 <code>word-break</code> 和 <code>word-wrap</code> 发挥作用，不过当它的值设为 <code>nowrap</code> 时，就会不允许换行，导致所有的文本都挤在一行之中，如下图所示。 </p>
 <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fl717d9pngj30oq02c3yo.jpg" alt="word-spacing 示意图"></p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
 <li><a href="http://www.zhangxinxu.com/wordpress/2015/11/diff-word-break-break-all-word-wrap-break-word/" target="_blank" rel="external">张鑫旭 - word-break:break-all和word-wrap:break-word的区别</a></li>
@@ -710,45 +710,6 @@
   </entry>
   
   <entry>
-    <title>yield from、asyncio 与 aiohttp 在异步IO中的应用</title>
-    <link href="http://segmentfault.me/2016/11/17/yield-from%E3%80%81asyncio-%E4%B8%8E-aiohttp-%E5%9C%A8%E5%BC%82%E6%AD%A5IO%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/"/>
-    <id>http://segmentfault.me/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/</id>
-    <published>2016-11-17T14:43:34.000Z</published>
-    <updated>2017-07-22T15:13:34.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>Python3.3 中引入了 <code>yield from</code> 用于定义生成器;Python3.4 中引入了 <code>asyncio</code>标准库， 从而直接内置了对异步IO的支持。<br><a id="more"></a></p>
-<h2 id="yield-from的简单实例"><a href="#yield-from的简单实例" class="headerlink" title="yield from的简单实例"></a><code>yield from</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator1</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator2</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>, <span class="number">20</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator1()</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator2()</div><div class="line">    </div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> generator():</div><div class="line">    print(i)</div></pre></td></tr></table></figure>
-<p>在上面的例子中， 最终会输出0~19。通过<code>yield from</code>的使用，我们可以将不同的生成器组合在一起，形成新的生成器，就如同通过不同函数的调用形成新德函数一样。</p>
-<h2 id="next-amp-amp-send"><a href="#next-amp-amp-send" class="headerlink" title="next &amp;&amp; send"></a><code>next</code> &amp;&amp; <code>send</code></h2><ul>
-<li><code>next</code> 返回生成器的下一个值， 然后生成器挂起。</li>
-<li><code>send</code> 对于一个生成器对象g，如果调用<code>g.send(None)</code>， 那么效果和<code>next(g)</code>一样；如果调用<code>g.send(value)</code>，就相当于yield的返回值。</li>
-</ul>
-<h2 id="asyncio的简单实例"><a href="#asyncio的简单实例" class="headerlink" title="asyncio的简单实例"></a><code>asyncio</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'Hello World!'</span>)</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">1</span>)</div><div class="line">    print(<span class="string">'GoodBye!'</span>)</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">tasks = [hello(), hello(), hello()]</div><div class="line">loop.run_until_complete(asyncio.wait(tasks))</div><div class="line">loop.close()</div></pre></td></tr></table></figure>
-<p>观察运行结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">(暂停约1秒）</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div></pre></td></tr></table></figure>
-<p>上述例子的运行流程如下：</p>
-<ol>
-<li><code>@asyncio.coroutine</code>把一个生成器（此处是hello())标记为coroutine类型，然后我们把这个coroutine扔到EventLoop中执行。</li>
-<li>通过<code>asyncio.get_event_loop()</code>创建消息循环的列表。</li>
-<li><code>loop.run_until_complete(asyncio.wait(tasks))</code>异步执行消息列表中的事件。</li>
-<li>在<code>hello()</code>函数中，<code>yield from</code>语法可以让我们调用另一个generator。由于<code>asyncio.sleep()</code>也是一个<code>coroutine</code>，所以线程不会等待<code>asyncio.sleep()</code>，而是直接中断并执行下一个消息循环。当<code>asyncio.sleep()</code>返回时，线程就可以从<code>yield from</code>拿到返回值（此处是None），然后接着执行下一行语句。</li>
-<li>最后<code>loop.close()</code>结束消息循环的列表。</li>
-</ol>
-<h2 id="aiohttp的简单实例"><a href="#aiohttp的简单实例" class="headerlink" title="aiohttp的简单实例"></a><code>aiohttp</code>的简单实例</h2><p><code>asyncio</code>实现了TCP、UDP、SSL等协议，<code>aiohttp</code>则是基于asyncio实现的HTTP框架。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Simple HTTP Server</span></div><div class="line"><span class="comment"># coding=utf-8</span></div><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="keyword">from</span> aiohttp <span class="keyword">import</span> web</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">return</span> web.Response(body=<span class="string">b'&lt;h1&gt;Index&lt;/h1&gt;'</span>)</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">0.5</span>)</div><div class="line">    text = <span class="string">'&lt;h1&gt;hello, %s!&lt;/h1&gt;'</span> % request.match_info[<span class="string">'name'</span>]</div><div class="line">    <span class="keyword">return</span> web.Response(body=text.encode(<span class="string">'utf-8'</span>))</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(loop)</span>:</span></div><div class="line">    app = web.Application(loop=loop)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/'</span>, index)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/hello/&#123;name&#125;'</span>, hello)</div><div class="line">    srv = <span class="keyword">yield</span> <span class="keyword">from</span> loop.create_server(app.make_handler(), <span class="string">'127.0.0.1'</span>, <span class="number">8000</span>)</div><div class="line">    print(<span class="string">'Server started at http://127.0.0.1:8000 ...'</span>)</div><div class="line">    <span class="keyword">return</span> srv</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">loop.run_until_complete(init(loop))</div><div class="line">loop.run_forever()</div></pre></td></tr></table></figure>]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Python3.3 中引入了 &lt;code&gt;yield from&lt;/code&gt; 用于定义生成器;Python3.4 中引入了 &lt;code&gt;asyncio&lt;/code&gt;标准库， 从而直接内置了对异步IO的支持。&lt;br&gt;
-    
-    </summary>
-    
-    
-      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
     <title>python 与 c 的相互调用</title>
     <link href="http://segmentfault.me/2016/11/17/python%E4%B8%8Ec%E7%9A%84%E7%9B%B8%E4%BA%92%E8%B0%83%E7%94%A8/"/>
     <id>http://segmentfault.me/2016/11/17/python与c的相互调用/</id>
@@ -896,6 +857,45 @@
     
       &lt;p&gt;说实话，正则表达式已经看过不下五遍了，然而每次要用的时候，都得再重新学一下才行——实在是记不住呀！！&lt;/p&gt;
 &lt;p&gt;今天趁着重新学Python的机会，总结一下正则表达式中基本的内容，更加深入、详细的内容可以移步&lt;a href=&quot;http://deerchao.net/tutorials/regex/regex.htm&quot; target=&quot;_blank&quot; rel=&quot;external&quot;&gt;正则表达式30分钟入门&lt;/a&gt;。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>yield from、asyncio 与 aiohttp 在异步IO中的应用</title>
+    <link href="http://segmentfault.me/2016/11/17/yield-from%E3%80%81asyncio-%E4%B8%8E-aiohttp-%E5%9C%A8%E5%BC%82%E6%AD%A5IO%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/"/>
+    <id>http://segmentfault.me/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/</id>
+    <published>2016-11-17T14:43:34.000Z</published>
+    <updated>2017-07-22T15:13:34.000Z</updated>
+    
+    <content type="html"><![CDATA[<p>Python3.3 中引入了 <code>yield from</code> 用于定义生成器;Python3.4 中引入了 <code>asyncio</code>标准库， 从而直接内置了对异步IO的支持。<br><a id="more"></a></p>
+<h2 id="yield-from的简单实例"><a href="#yield-from的简单实例" class="headerlink" title="yield from的简单实例"></a><code>yield from</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator1</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator2</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>, <span class="number">20</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator1()</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator2()</div><div class="line">    </div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> generator():</div><div class="line">    print(i)</div></pre></td></tr></table></figure>
+<p>在上面的例子中， 最终会输出0~19。通过<code>yield from</code>的使用，我们可以将不同的生成器组合在一起，形成新的生成器，就如同通过不同函数的调用形成新德函数一样。</p>
+<h2 id="next-amp-amp-send"><a href="#next-amp-amp-send" class="headerlink" title="next &amp;&amp; send"></a><code>next</code> &amp;&amp; <code>send</code></h2><ul>
+<li><code>next</code> 返回生成器的下一个值， 然后生成器挂起。</li>
+<li><code>send</code> 对于一个生成器对象g，如果调用<code>g.send(None)</code>， 那么效果和<code>next(g)</code>一样；如果调用<code>g.send(value)</code>，就相当于yield的返回值。</li>
+</ul>
+<h2 id="asyncio的简单实例"><a href="#asyncio的简单实例" class="headerlink" title="asyncio的简单实例"></a><code>asyncio</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'Hello World!'</span>)</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">1</span>)</div><div class="line">    print(<span class="string">'GoodBye!'</span>)</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">tasks = [hello(), hello(), hello()]</div><div class="line">loop.run_until_complete(asyncio.wait(tasks))</div><div class="line">loop.close()</div></pre></td></tr></table></figure>
+<p>观察运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">(暂停约1秒）</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div></pre></td></tr></table></figure>
+<p>上述例子的运行流程如下：</p>
+<ol>
+<li><code>@asyncio.coroutine</code>把一个生成器（此处是hello())标记为coroutine类型，然后我们把这个coroutine扔到EventLoop中执行。</li>
+<li>通过<code>asyncio.get_event_loop()</code>创建消息循环的列表。</li>
+<li><code>loop.run_until_complete(asyncio.wait(tasks))</code>异步执行消息列表中的事件。</li>
+<li>在<code>hello()</code>函数中，<code>yield from</code>语法可以让我们调用另一个generator。由于<code>asyncio.sleep()</code>也是一个<code>coroutine</code>，所以线程不会等待<code>asyncio.sleep()</code>，而是直接中断并执行下一个消息循环。当<code>asyncio.sleep()</code>返回时，线程就可以从<code>yield from</code>拿到返回值（此处是None），然后接着执行下一行语句。</li>
+<li>最后<code>loop.close()</code>结束消息循环的列表。</li>
+</ol>
+<h2 id="aiohttp的简单实例"><a href="#aiohttp的简单实例" class="headerlink" title="aiohttp的简单实例"></a><code>aiohttp</code>的简单实例</h2><p><code>asyncio</code>实现了TCP、UDP、SSL等协议，<code>aiohttp</code>则是基于asyncio实现的HTTP框架。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Simple HTTP Server</span></div><div class="line"><span class="comment"># coding=utf-8</span></div><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="keyword">from</span> aiohttp <span class="keyword">import</span> web</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">return</span> web.Response(body=<span class="string">b'&lt;h1&gt;Index&lt;/h1&gt;'</span>)</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">0.5</span>)</div><div class="line">    text = <span class="string">'&lt;h1&gt;hello, %s!&lt;/h1&gt;'</span> % request.match_info[<span class="string">'name'</span>]</div><div class="line">    <span class="keyword">return</span> web.Response(body=text.encode(<span class="string">'utf-8'</span>))</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(loop)</span>:</span></div><div class="line">    app = web.Application(loop=loop)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/'</span>, index)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/hello/&#123;name&#125;'</span>, hello)</div><div class="line">    srv = <span class="keyword">yield</span> <span class="keyword">from</span> loop.create_server(app.make_handler(), <span class="string">'127.0.0.1'</span>, <span class="number">8000</span>)</div><div class="line">    print(<span class="string">'Server started at http://127.0.0.1:8000 ...'</span>)</div><div class="line">    <span class="keyword">return</span> srv</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">loop.run_until_complete(init(loop))</div><div class="line">loop.run_forever()</div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Python3.3 中引入了 &lt;code&gt;yield from&lt;/code&gt; 用于定义生成器;Python3.4 中引入了 &lt;code&gt;asyncio&lt;/code&gt;标准库， 从而直接内置了对异步IO的支持。&lt;br&gt;
     
     </summary>
     

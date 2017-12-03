@@ -47,7 +47,7 @@
 <meta property="og:image" content="https://ws1.sinaimg.cn/large/006tKfTcgy1fl71280p9dj30wq0eegsm.jpg">
 <meta property="og:image" content="https://ws2.sinaimg.cn/large/006tKfTcgy1fl716uhrnfj30um0fugt1.jpg">
 <meta property="og:image" content="https://ws3.sinaimg.cn/large/006tKfTcgy1fl717d9pngj30oq02c3yo.jpg">
-<meta property="og:updated_time" content="2017-11-08T00:29:02.000Z">
+<meta property="og:updated_time" content="2017-12-03T11:24:25.511Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="word-break 和 word-wrap 的区别">
 <meta name="twitter:description" content="本文主要要介绍的是 CSS 中 word-break: break-all 和 word-wrap: break-word 的区别，虽然这两个属性都有使用过，但都是属于使用时查一查文档随手就用，用完了也不会深入去探究的范畴，希望借着这篇文章来深入的探究一下这两者的区别。">
@@ -249,7 +249,7 @@
   <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#word-break"><span class="toc-text">word-break</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#word-wrap"><span class="toc-text">word-wrap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#word-break-和-word-wrap-的区别"><span class="toc-text">word-break 和 word-wrap 的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#word-spacing-大佬"><span class="toc-text">word-spacing 大佬</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考链接"><span class="toc-text">参考链接</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#word-break"><span class="toc-text">word-break</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#word-wrap"><span class="toc-text">word-wrap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#word-break-和-word-wrap-的区别"><span class="toc-text">word-break 和 word-wrap 的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#white-space-大佬"><span class="toc-text">white-space 大佬</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考链接"><span class="toc-text">参考链接</span></a></li></ol>
     </div>
   </div>
 
@@ -284,7 +284,7 @@
 <h2 id="word-break-和-word-wrap-的区别"><a href="#word-break-和-word-wrap-的区别" class="headerlink" title="word-break 和 word-wrap 的区别"></a>word-break 和 word-wrap 的区别</h2><p>终于来到本文的重点了！一开始看到 <code>word-break: break-all</code> 和 <code>word-wrap: word-break</code> 就头大，这也太相像了，一共就四个单词，结果还有三个单词都是一样的，效果看上去也好像没什么区别，也难怪 W3C 要给 <code>word-wrap</code> 换个名字了。那说回正题，区别在哪里呢？？</p>
 <p><img src="https://ws2.sinaimg.cn/large/006tKfTcgy1fl716uhrnfj30um0fugt1.jpg" alt="对比示意图"></p>
 <p>俗话说的好，一图胜千言。在上图中，我们可以清楚地看到，<code>word-break: break-all</code> 值如其名，断开一切，利用上每一块可以利用的空间来塞下文本，避免铺张浪费；而 <code>word-wrap: word-break</code> 则收敛许多，假如一行文字有可以换行的点，如标点、CJK 文本等，那么就不会在英文单词或者字符中插入断行了，不过从显示效果来说的话则容易一块儿密集、一块儿空白，很不美观。</p>
-<h2 id="word-spacing-大佬"><a href="#word-spacing-大佬" class="headerlink" title="word-spacing 大佬"></a>word-spacing 大佬</h2><p>前面说了这么多 <code>word-break</code> 和 <code>word-wrap</code>  的值的作用，显得它们很厉害的样子。不过实际上它们受 <code>word-spacing</code> 大佬管辖，它的默认值为 <code>normal</code> 时可以允许 <code>word-break</code> 和 <code>word-wrap</code> 发挥作用，不过当它的值设为 <code>nowrap</code> 时，就会不允许换行，导致所有的文本都挤在一行之中，如下图所示。 </p>
+<h2 id="white-space-大佬"><a href="#white-space-大佬" class="headerlink" title="white-space 大佬"></a>white-space 大佬</h2><p>前面说了这么多 <code>word-break</code> 和 <code>word-wrap</code>  的值的作用，显得它们很厉害的样子。不过实际上它们受 <code>white-space</code> 大佬管辖，它的默认值为 <code>normal</code> 时可以允许 <code>word-break</code> 和 <code>word-wrap</code> 发挥作用，不过当它的值设为 <code>nowrap</code> 时，就会不允许换行，导致所有的文本都挤在一行之中，如下图所示。 </p>
 <p><img src="https://ws3.sinaimg.cn/large/006tKfTcgy1fl717d9pngj30oq02c3yo.jpg" alt="word-spacing 示意图"></p>
 <h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
 <li><a href="http://www.zhangxinxu.com/wordpress/2015/11/diff-word-break-break-all-word-wrap-break-word/" target="_blank" rel="external">张鑫旭 - word-break:break-all和word-wrap:break-word的区别</a></li>
