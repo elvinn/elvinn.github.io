@@ -3,6 +3,46 @@
   
     
     <entry>
+      <title><![CDATA[transform 的副作用]]></title>
+      <url>/2017/12/03/transform-effect-side/</url>
+      <content type="html"><![CDATA[<p><code>transform</code> 想必大家都很熟悉，可以通过其转换（translate）、旋转（rotate）、缩放（scale）、倾斜（skew）等属性来对元素进行变换，不过这篇文章想探讨的不是这些内容，而是 <code>transform</code> 对元素布局、页面渲染方面的影响。例如，你知道它会影响 <code>fixed</code> 元素的位置吗？你有想过它会改变元素的层叠顺序吗？</p>
+<a id="more"></a>
+<h2 id="tranform-改变-fixed-子元素的定位对象"><a href="#tranform-改变-fixed-子元素的定位对象" class="headerlink" title="tranform 改变 fixed 子元素的定位对象"></a>tranform 改变 fixed 子元素的定位对象</h2><p>首先我们来看一个例子：下面示例中的 fixed 元素设置的是 <code>top:  -50px</code>，按理说我们应该是看不见它的，因为它会相对根元素定位到页面上方的外部。然而事实狠狠打了我们的脸，它是可见的！这是为什么呢？</p>
+<script async src="//jsfiddle.net/elvinn/p38t336r/1/embed/html,css,result/"></script>
+
+<p>关键就在于这个 <code>fixed</code> 元素被拥有 <code>transform</code> 的属性的父 div 包裹着，所以<strong>它会相对于这个 <code>transform</code> 的父元素定位，而不是我们以为的根元素定位</strong>，又由于父元素有 <code>margin-top: 50px</code> 的值，所以两者相抵消（<em>-50px + 50px = 0</em>)，最终导致该元素位于页面起始处。</p>
+<p>至于为什么会这样，就需要从 W3C 规范中去寻找原因了。在 <a href="https://www.w3.org/TR/css-transforms-1/#transform-rendering" target="_blank" rel="external">W3C - transform rendering</a> 中，我找到了这样一段解释：<em>For elements whose layout is governed by the CSS box model, any value other than <code>none</code> for the transform also causes the element to become a containing block, and the object acts as a containing block for fixed positioned descendants</em>，也就是说 transform 值不为 <code>none</code> 的元素会创建一个 <strong>containing block</strong>（作者注：容器块，盒元素定位和大小一般参考容器块进行计算），然后该元素的 <code>fixed</code> 子元素会相对该元素进行定位。</p>
+<h2 id="transform-改变元素层叠顺序"><a href="#transform-改变元素层叠顺序" class="headerlink" title="transform 改变元素层叠顺序"></a>transform 改变元素层叠顺序</h2><p>同样的，我们先来看一个例子：下面示例中第一行为啥都没加的情况下，让第二个元素（蓝色块）通过 <code>margin-left: -40px</code> 向左偏移了 40px，按照<strong>后来居上</strong>的层叠规则，它会盖住第一个元素（黄色块）的一部分。第二行给第一个元素（黄色块）加上了 <code>transform: scale(1)</code> 后一切就变了，它盖住了第二个元素（蓝色块），<strong>后来居上</strong>的规则貌似不起作用了，这是为什么呢？</p>
+<script async src="//jsfiddle.net/elvinn/p9fecmmn/1/embed/html,css,result/"></script>
+
+<p>同样的，还是尝试从 W3C 规范中去寻找原因。在 <a href="https://www.w3.org/TR/css-transforms-1/#transform-rendering" target="_blank" rel="external">W3C - transform rendering</a> 中，我找到了一句和上一节基本一样的一句话：<em>For elements whose layout is governed by the CSS box model, any value other than none for the transform results in the creation of a stacking context</em>，也就是说 transform 值不为 <code>none</code> 的元素会创建一个 <code>stacking context</code>（层叠上下文）。层叠上下文，这是什么鬼？好像只听过块级格式化上下文（BFC）。</p>
+<p>简单说来，层叠上下文与元素在 z 轴上的展示顺序相关，而且层叠上下文元素的层叠水平要比普通元素高，结合上面的例子来说就是：</p>
+<ol>
+<li>根元素是层叠上下文元素，蓝色块和黄色块都是它的子元素；</li>
+<li>蓝色块由于 transform 值不为 <code>none</code> ，所以升级为层叠上下文元素，因而它的层叠水平比黄色块（普通元素）高。</li>
+</ol>
+<p>层叠上下文的内容值得深入地具体探究，这里推荐两个不错内容，一个是 <a href="https://developer.mozilla.org/zh-CN/docs/Web/Guide/CSS/Understanding_z_index/The_stacking_context" target="_blank" rel="external">MDN - 层叠上下文</a>，另外一个则是 <a href="http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/" target="_blank" rel="external">张鑫旭 - 深入理解CSS中的层叠上下文和层叠顺序</a>。</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>当使用 CSS 遇到奇奇怪怪问题的时候，我们既可以在 Google 或者 StackOverflow 上寻找答案，也不要忘了 W3C 的存在。有时真相其实早已静静地躺在标准当中，只要我们肯于寻找、善于寻找，定能找到 ^_^</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><ol>
+<li><a href="https://www.w3.org/TR/css-transforms-1/#intro" target="_blank" rel="external">W3C- CSS Transforms Module Level 1</a></li>
+<li><a href="http://www.zhangxinxu.com/wordpress/2015/05/css3-transform-affect/" target="_blank" rel="external">张鑫旭 - CSS3 transform对普通元素的N多渲染影响</a></li>
+<li><a href="http://www.zhangxinxu.com/wordpress/2016/01/understand-css-stacking-context-order-z-index/" target="_blank" rel="external">张鑫旭 - 深入理解CSS中的层叠上下文和层叠顺序</a></li>
+<li><a href="http://layout.imweb.io/article/visual-formatting-model.html" target="_blank" rel="external">结一老师 - 视觉格式化模型 - 容器块</a></li>
+</ol>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> 前端 </tag>
+            
+            <tag> CSS </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[word-break 和 word-wrap 的区别]]></title>
       <url>/2017/11/02/word-break-and-word-wrap/</url>
       <content type="html"><![CDATA[<p>本文主要要介绍的是 CSS 中 <code>word-break: break-all</code> 和 <code>word-wrap: break-word</code> 的区别，虽然这两个属性都有使用过，但都是属于使用时查一查文档随手就用，用完了也不会深入去探究的范畴，希望借着这篇文章来深入的探究一下这两者的区别。</p>
@@ -112,7 +152,7 @@
 <p>然后，向其中添加一条规则：</p>
 <figure class="highlight css"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">/* new css_example1.css */</span></div><div class="line"><span class="selector-id">#css_example1</span> &#123;</div><div class="line">  <span class="attribute">display</span>: none;</div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="selector-class">.elvin</span> &#123;</div><div class="line">  <span class="attribute">font-size</span>: <span class="number">16px</span>;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
 <p>最后，向 html 文件中添加一个 id 为 <code>css_example1</code> 的 div，并通过 js 来做判断：</p>
-<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"example1"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="undefined"></span></div><div class="line">  var div = document.getElementById('example1');</div><div class="line">  if (getComputedStyle(div).display !== 'none') &#123;</div><div class="line">    // 说明 css 加载失败</div><div class="line">    var newLink = document.createElement('link');</div><div class="line">    newLink.rel = 'stylesheet';</div><div class="line">    newLink.href = newUrl; // 主域下该 css 对应的地址</div><div class="line">    document.head.appendChild(newLink);</div><div class="line">  &#125;</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div></pre></td><td class="code"><pre><div class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">id</span>=<span class="string">"example1"</span>&gt;</span><span class="tag">&lt;/<span class="name">div</span>&gt;</span></div><div class="line"><span class="tag">&lt;<span class="name">script</span>&gt;</span><span class="javascript"></span></div><div class="line">  <span class="keyword">var</span> div = <span class="built_in">document</span>.getElementById(<span class="string">'example1'</span>);</div><div class="line">  <span class="keyword">if</span> (getComputedStyle(div).display !== <span class="string">'none'</span>) &#123;</div><div class="line">    <span class="comment">// 说明 css 加载失败</span></div><div class="line">    <span class="keyword">var</span> newLink = <span class="built_in">document</span>.createElement(<span class="string">'link'</span>);</div><div class="line">    newLink.rel = <span class="string">'stylesheet'</span>;</div><div class="line">    newLink.href = newUrl; <span class="comment">// 主域下该 css 对应的地址</span></div><div class="line">    <span class="built_in">document</span>.head.appendChild(newLink);</div><div class="line">  &#125;</div><div class="line"><span class="tag">&lt;/<span class="name">script</span>&gt;</span></div></pre></td></tr></table></figure>
 <p>插入的 js 逻辑为：当判断出 css 文件加载失败后，创建一个新的 link 标签，然后将其地址指向相应的主域地址，最后将其添加到 html 的头部即可。 </p>
 <blockquote>
 <p>需要说明的是，上述向 css 添加规则和向 html 注入代码都是通过监听 webpack 的 ‘done’ 事件进行的自动操作，并不需要手动的去插入这些代码。</p>
@@ -518,41 +558,6 @@
     </entry>
     
     <entry>
-      <title><![CDATA[python 与 c 的相互调用]]></title>
-      <url>/2016/11/17/python%E4%B8%8Ec%E7%9A%84%E7%9B%B8%E4%BA%92%E8%B0%83%E7%94%A8/</url>
-      <content type="html"><![CDATA[<p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
-<p>   若能将两者结合起来，岂不是妙哉？</p>
-<a id="more"></a>
-<h2 id="python-调用-c-程序"><a href="#python-调用-c-程序" class="headerlink" title="python 调用 c 程序"></a>python 调用 c 程序</h2><ol>
-<li><p>首先我们编写一个简单的 c 程序 <code>multi.c</code></p>
- <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">multiply</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> n1 * n2;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>接着将写好的 c 程序编译生成动态库 <code>multi.so</code>，便于 python 程序调用。<br><code>gcc -shared -fPIC multi.c -o multi.so</code></p>
-<ul>
-<li>-shared  生成动态库</li>
-<li>-fPIC 生成与位置无关代码(Position-Independent Code)</li>
-<li>-o 指定生成库的名字</li>
-</ul>
-</li>
-<li><p>最后在 <code>multi.so</code> 的同级目录下运行 python 解释器, 调用刚刚编写的 multiply 函数</p>
-  <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> ctypes</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi = ctypes.cdll.LoadLibrary(<span class="string">'./multi.so'</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi.multiply(<span class="number">2</span>, <span class="number">4</span>)</div><div class="line"><span class="number">8</span></div></pre></td></tr></table></figure>
-</li>
-</ol>
-<p><code>ctypes</code> 库提供了与c语言一致的数据类型，并且可以用来调用动态链接库中的函数。在这里，我们通过<code>ctypes.cdll.LoadLibrary</code>来读取c库。该库更详细的使用可以参阅<a href="https://docs.python.org/2/library/ctypes.html" target="_blank" rel="external">官方文档 ctypes — A foreign function library for Python</a></p>
-]]></content>
-      
-        
-        <tags>
-            
-            <tag> python </tag>
-            
-            <tag> c </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
       <title><![CDATA[UML 类图]]></title>
       <url>/2016/11/17/UML-%E7%B1%BB%E5%9B%BE/</url>
       <content type="html"><![CDATA[<p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
@@ -609,6 +614,74 @@
             <tag> JAVA </tag>
             
             <tag> 基础知识 </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[yield from、asyncio 与 aiohttp 在异步IO中的应用]]></title>
+      <url>/2016/11/17/yield-from%E3%80%81asyncio-%E4%B8%8E-aiohttp-%E5%9C%A8%E5%BC%82%E6%AD%A5IO%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</url>
+      <content type="html"><![CDATA[<p>Python3.3 中引入了 <code>yield from</code> 用于定义生成器;Python3.4 中引入了 <code>asyncio</code>标准库， 从而直接内置了对异步IO的支持。<br><a id="more"></a></p>
+<h2 id="yield-from的简单实例"><a href="#yield-from的简单实例" class="headerlink" title="yield from的简单实例"></a><code>yield from</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator1</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator2</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>, <span class="number">20</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator1()</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator2()</div><div class="line">    </div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> generator():</div><div class="line">    print(i)</div></pre></td></tr></table></figure>
+<p>在上面的例子中， 最终会输出0~19。通过<code>yield from</code>的使用，我们可以将不同的生成器组合在一起，形成新的生成器，就如同通过不同函数的调用形成新德函数一样。</p>
+<h2 id="next-amp-amp-send"><a href="#next-amp-amp-send" class="headerlink" title="next &amp;&amp; send"></a><code>next</code> &amp;&amp; <code>send</code></h2><ul>
+<li><code>next</code> 返回生成器的下一个值， 然后生成器挂起。</li>
+<li><code>send</code> 对于一个生成器对象g，如果调用<code>g.send(None)</code>， 那么效果和<code>next(g)</code>一样；如果调用<code>g.send(value)</code>，就相当于yield的返回值。</li>
+</ul>
+<h2 id="asyncio的简单实例"><a href="#asyncio的简单实例" class="headerlink" title="asyncio的简单实例"></a><code>asyncio</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'Hello World!'</span>)</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">1</span>)</div><div class="line">    print(<span class="string">'GoodBye!'</span>)</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">tasks = [hello(), hello(), hello()]</div><div class="line">loop.run_until_complete(asyncio.wait(tasks))</div><div class="line">loop.close()</div></pre></td></tr></table></figure>
+<p>观察运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">(暂停约1秒）</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div></pre></td></tr></table></figure>
+<p>上述例子的运行流程如下：</p>
+<ol>
+<li><code>@asyncio.coroutine</code>把一个生成器（此处是hello())标记为coroutine类型，然后我们把这个coroutine扔到EventLoop中执行。</li>
+<li>通过<code>asyncio.get_event_loop()</code>创建消息循环的列表。</li>
+<li><code>loop.run_until_complete(asyncio.wait(tasks))</code>异步执行消息列表中的事件。</li>
+<li>在<code>hello()</code>函数中，<code>yield from</code>语法可以让我们调用另一个generator。由于<code>asyncio.sleep()</code>也是一个<code>coroutine</code>，所以线程不会等待<code>asyncio.sleep()</code>，而是直接中断并执行下一个消息循环。当<code>asyncio.sleep()</code>返回时，线程就可以从<code>yield from</code>拿到返回值（此处是None），然后接着执行下一行语句。</li>
+<li>最后<code>loop.close()</code>结束消息循环的列表。</li>
+</ol>
+<h2 id="aiohttp的简单实例"><a href="#aiohttp的简单实例" class="headerlink" title="aiohttp的简单实例"></a><code>aiohttp</code>的简单实例</h2><p><code>asyncio</code>实现了TCP、UDP、SSL等协议，<code>aiohttp</code>则是基于asyncio实现的HTTP框架。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Simple HTTP Server</span></div><div class="line"><span class="comment"># coding=utf-8</span></div><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="keyword">from</span> aiohttp <span class="keyword">import</span> web</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">return</span> web.Response(body=<span class="string">b'&lt;h1&gt;Index&lt;/h1&gt;'</span>)</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">0.5</span>)</div><div class="line">    text = <span class="string">'&lt;h1&gt;hello, %s!&lt;/h1&gt;'</span> % request.match_info[<span class="string">'name'</span>]</div><div class="line">    <span class="keyword">return</span> web.Response(body=text.encode(<span class="string">'utf-8'</span>))</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(loop)</span>:</span></div><div class="line">    app = web.Application(loop=loop)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/'</span>, index)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/hello/&#123;name&#125;'</span>, hello)</div><div class="line">    srv = <span class="keyword">yield</span> <span class="keyword">from</span> loop.create_server(app.make_handler(), <span class="string">'127.0.0.1'</span>, <span class="number">8000</span>)</div><div class="line">    print(<span class="string">'Server started at http://127.0.0.1:8000 ...'</span>)</div><div class="line">    <span class="keyword">return</span> srv</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">loop.run_until_complete(init(loop))</div><div class="line">loop.run_forever()</div></pre></td></tr></table></figure>]]></content>
+      
+        
+        <tags>
+            
+            <tag> python </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[python 与 c 的相互调用]]></title>
+      <url>/2016/11/17/python%E4%B8%8Ec%E7%9A%84%E7%9B%B8%E4%BA%92%E8%B0%83%E7%94%A8/</url>
+      <content type="html"><![CDATA[<p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
+<p>   若能将两者结合起来，岂不是妙哉？</p>
+<a id="more"></a>
+<h2 id="python-调用-c-程序"><a href="#python-调用-c-程序" class="headerlink" title="python 调用 c 程序"></a>python 调用 c 程序</h2><ol>
+<li><p>首先我们编写一个简单的 c 程序 <code>multi.c</code></p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">multiply</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> n1 * n2;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>接着将写好的 c 程序编译生成动态库 <code>multi.so</code>，便于 python 程序调用。<br><code>gcc -shared -fPIC multi.c -o multi.so</code></p>
+<ul>
+<li>-shared  生成动态库</li>
+<li>-fPIC 生成与位置无关代码(Position-Independent Code)</li>
+<li>-o 指定生成库的名字</li>
+</ul>
+</li>
+<li><p>最后在 <code>multi.so</code> 的同级目录下运行 python 解释器, 调用刚刚编写的 multiply 函数</p>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> ctypes</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi = ctypes.cdll.LoadLibrary(<span class="string">'./multi.so'</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi.multiply(<span class="number">2</span>, <span class="number">4</span>)</div><div class="line"><span class="number">8</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>ctypes</code> 库提供了与c语言一致的数据类型，并且可以用来调用动态链接库中的函数。在这里，我们通过<code>ctypes.cdll.LoadLibrary</code>来读取c库。该库更详细的使用可以参阅<a href="https://docs.python.org/2/library/ctypes.html" target="_blank" rel="external">官方文档 ctypes — A foreign function library for Python</a></p>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> python </tag>
+            
+            <tag> c </tag>
             
         </tags>
         
@@ -705,39 +778,6 @@
 <li><code>re.match(r&amp;#39;xxx&amp;#39;, string).group(0)</code> 永远是原始字符串，也就是 string。</li>
 </ul>
 ]]></content>
-      
-        
-        <tags>
-            
-            <tag> python </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[yield from、asyncio 与 aiohttp 在异步IO中的应用]]></title>
-      <url>/2016/11/17/yield-from%E3%80%81asyncio-%E4%B8%8E-aiohttp-%E5%9C%A8%E5%BC%82%E6%AD%A5IO%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</url>
-      <content type="html"><![CDATA[<p>Python3.3 中引入了 <code>yield from</code> 用于定义生成器;Python3.4 中引入了 <code>asyncio</code>标准库， 从而直接内置了对异步IO的支持。<br><a id="more"></a></p>
-<h2 id="yield-from的简单实例"><a href="#yield-from的简单实例" class="headerlink" title="yield from的简单实例"></a><code>yield from</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator1</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator2</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>, <span class="number">20</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator1()</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator2()</div><div class="line">    </div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> generator():</div><div class="line">    print(i)</div></pre></td></tr></table></figure>
-<p>在上面的例子中， 最终会输出0~19。通过<code>yield from</code>的使用，我们可以将不同的生成器组合在一起，形成新的生成器，就如同通过不同函数的调用形成新德函数一样。</p>
-<h2 id="next-amp-amp-send"><a href="#next-amp-amp-send" class="headerlink" title="next &amp;&amp; send"></a><code>next</code> &amp;&amp; <code>send</code></h2><ul>
-<li><code>next</code> 返回生成器的下一个值， 然后生成器挂起。</li>
-<li><code>send</code> 对于一个生成器对象g，如果调用<code>g.send(None)</code>， 那么效果和<code>next(g)</code>一样；如果调用<code>g.send(value)</code>，就相当于yield的返回值。</li>
-</ul>
-<h2 id="asyncio的简单实例"><a href="#asyncio的简单实例" class="headerlink" title="asyncio的简单实例"></a><code>asyncio</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'Hello World!'</span>)</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">1</span>)</div><div class="line">    print(<span class="string">'GoodBye!'</span>)</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">tasks = [hello(), hello(), hello()]</div><div class="line">loop.run_until_complete(asyncio.wait(tasks))</div><div class="line">loop.close()</div></pre></td></tr></table></figure>
-<p>观察运行结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">(暂停约1秒）</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div></pre></td></tr></table></figure>
-<p>上述例子的运行流程如下：</p>
-<ol>
-<li><code>@asyncio.coroutine</code>把一个生成器（此处是hello())标记为coroutine类型，然后我们把这个coroutine扔到EventLoop中执行。</li>
-<li>通过<code>asyncio.get_event_loop()</code>创建消息循环的列表。</li>
-<li><code>loop.run_until_complete(asyncio.wait(tasks))</code>异步执行消息列表中的事件。</li>
-<li>在<code>hello()</code>函数中，<code>yield from</code>语法可以让我们调用另一个generator。由于<code>asyncio.sleep()</code>也是一个<code>coroutine</code>，所以线程不会等待<code>asyncio.sleep()</code>，而是直接中断并执行下一个消息循环。当<code>asyncio.sleep()</code>返回时，线程就可以从<code>yield from</code>拿到返回值（此处是None），然后接着执行下一行语句。</li>
-<li>最后<code>loop.close()</code>结束消息循环的列表。</li>
-</ol>
-<h2 id="aiohttp的简单实例"><a href="#aiohttp的简单实例" class="headerlink" title="aiohttp的简单实例"></a><code>aiohttp</code>的简单实例</h2><p><code>asyncio</code>实现了TCP、UDP、SSL等协议，<code>aiohttp</code>则是基于asyncio实现的HTTP框架。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Simple HTTP Server</span></div><div class="line"><span class="comment"># coding=utf-8</span></div><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="keyword">from</span> aiohttp <span class="keyword">import</span> web</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">return</span> web.Response(body=<span class="string">b'&lt;h1&gt;Index&lt;/h1&gt;'</span>)</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">0.5</span>)</div><div class="line">    text = <span class="string">'&lt;h1&gt;hello, %s!&lt;/h1&gt;'</span> % request.match_info[<span class="string">'name'</span>]</div><div class="line">    <span class="keyword">return</span> web.Response(body=text.encode(<span class="string">'utf-8'</span>))</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(loop)</span>:</span></div><div class="line">    app = web.Application(loop=loop)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/'</span>, index)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/hello/&#123;name&#125;'</span>, hello)</div><div class="line">    srv = <span class="keyword">yield</span> <span class="keyword">from</span> loop.create_server(app.make_handler(), <span class="string">'127.0.0.1'</span>, <span class="number">8000</span>)</div><div class="line">    print(<span class="string">'Server started at http://127.0.0.1:8000 ...'</span>)</div><div class="line">    <span class="keyword">return</span> srv</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">loop.run_until_complete(init(loop))</div><div class="line">loop.run_forever()</div></pre></td></tr></table></figure>]]></content>
       
         
         <tags>
