@@ -13,6 +13,8 @@ tags:
 
 ## tranform 改变 fixed 子元素的定位对象
 
+### 例子探究
+
 首先我们来看一个例子：下面示例中的 fixed 元素设置的是 `top:  -50px`，按理说我们应该是看不见它的，因为它会相对根元素定位到页面上方的外部。然而事实狠狠打了我们的脸，它是可见的！这是为什么呢？
 
 <script async src="//jsfiddle.net/elvinn/p38t336r/1/embed/html,css,result/"></script>
@@ -21,9 +23,16 @@ tags:
 
 至于为什么会这样，就需要从 W3C 规范中去寻找原因了。在 [W3C - transform rendering](https://www.w3.org/TR/css-transforms-1/#transform-rendering) 中，我找到了这样一段解释：*For elements whose layout is governed by the CSS box model, any value other than `none` for the transform also causes the element to become a containing block, and the object acts as a containing block for fixed positioned descendants*，也就是说 transform 值不为 `none` 的元素会创建一个 **containing block**（作者注：容器块，盒元素定位和大小一般参考容器块进行计算），然后该元素的 `fixed` 子元素会相对该元素进行定位。
 
+### 一点思考
 
+原因搞明白了，那么为什么 W3C 委员会会这样设计呢？依我愚见，可以从两个方面来思考：
+
+1. 假如我们想让 `fixed 元素` 相对根元素进行绝对定位，我们往往会把它作为根元素的第一级子元素，从而也就不会存在它被 `transform 父元素`  包裹的情况了。
+2. 那么什么情况下我们会把 `fixed 元素` 放在 `transform 父元素` 下呢？在我看来，只有我们希望它跟随父元素一起变形时才会这样做，要不然为什么不把它放在根元素下呢？
 
 ## transform 改变元素层叠顺序
+
+### 例子探究
 
 同样的，我们先来看一个例子：下面示例中第一行为啥都没加的情况下，让第二个元素（蓝色块）通过 `margin-left: -40px` 向左偏移了 40px，按照**后来居上**的层叠规则，它会盖住第一个元素（黄色块）的一部分。第二行给第一个元素（黄色块）加上了 `transform: scale(1)` 后一切就变了，它盖住了第二个元素（蓝色块），**后来居上**的规则貌似不起作用了，这是为什么呢？
 
