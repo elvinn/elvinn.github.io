@@ -220,6 +220,49 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/12/24/call-for-number/">给 Number 打 Call</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年12月24日
+        </span>
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>最近“打 call”这个词突然流行起来，我想到 <code>call</code> 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Number</span>.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call.call.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Number</span>.call.call;</div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Number</span>.call.call.call;</div></pre></td></tr></table></figure>
+          <div class="read-more">
+            <a href="/2017/12/24/call-for-number/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/12/03/transform-effect-side/">transform 的副作用</a>
         
       </h1>
@@ -497,48 +540,6 @@
           <p>之前常听说 JavaScript 的面向对象是构建于原型链（protype chain）上的，通过逐级向上查找直至 Object 的原型为止，但是具体的工作机制不太清楚，今天查阅了资料，才发现原来自己之前把 <code>__proto__</code> 与 <code>prototype</code> 混为一谈了（冏o(╯□╰)o）。</p>
           <div class="read-more">
             <a href="/2017/01/22/proto与prototype的关系/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/01/19/JavaScript-中创建对象的几种方法/">JavaScript 中创建对象的几种方法</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017年1月19日
-        </span>
-      </div>
-    </header>
-
-    
-    
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>在 JavaScript 中，面向对象编程的概念和 C++，Java 等语言都不太一样。在其他的语言中，面向对象的编程需要区分两个概念：<strong>类</strong>和<strong>实例</strong>，<strong>类</strong>是<strong>实例</strong>的模板，<strong>实例</strong>是根据<strong>类</strong>创建出来的对象。以 C++ 为例，在<code>Student jack = new Student();</code>  中，<code>Student</code> 为类，<code>jack</code> 为实例。不过在 JavaScript 中，不区分类和实例，而是通过 <code>原型（prototype）</code> 实现面向对象的编程。关于原型的介绍不是这篇文章的重点，想要深入了解的朋友可以参考 <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain" target="_blank" rel="external">MDN - 继承与原型链</a>。接下来将主要讲讲 JavaScript 中创建对象的几种方法和其优缺点。</p>
-          <div class="read-more">
-            <a href="/2017/01/19/JavaScript-中创建对象的几种方法/" class="read-more-link">阅读更多</a>
           </div>
         
       

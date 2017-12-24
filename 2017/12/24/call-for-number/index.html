@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+  <head>
+    
+<meta charset="UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+
+
+  <meta name="description" content="给 Number 打 Call"/>
+
+
+
+
+  <meta name="keywords" content="前端,JavaScript," />
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Elvin 的博客">
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.4.x" />
+
+
+
+<link rel="canonical" href="http://segmentfault.me/2017/12/24/call-for-number/"/>
+
+
+<meta name="description" content="最近“打 call”这个词突然流行起来，我想到 call 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？ 12345Number.call(Number, 1, 2, 3);Number.call.call(Number, 1,">
+<meta name="keywords" content="前端,JavaScript">
+<meta property="og:type" content="article">
+<meta property="og:title" content="给 Number 打 Call">
+<meta property="og:url" content="http://segmentfault.me/2017/12/24/call-for-number/index.html">
+<meta property="og:site_name" content="Elvin 的博客">
+<meta property="og:description" content="最近“打 call”这个词突然流行起来，我想到 call 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？ 12345Number.call(Number, 1, 2, 3);Number.call.call(Number, 1,">
+<meta property="og:locale" content="zh-cn">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/005XbUDxgy1fmrmpll3zgj30i80aeq42.jpg">
+<meta property="og:image" content="http://ww1.sinaimg.cn/large/005XbUDxly1fmrr921infj31000gy778.jpg">
+<meta property="og:updated_time" content="2017-12-24T05:18:55.015Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="给 Number 打 Call">
+<meta name="twitter:description" content="最近“打 call”这个词突然流行起来，我想到 call 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？ 12345Number.call(Number, 1, 2, 3);Number.call.call(Number, 1,">
+<meta name="twitter:image" content="http://ww1.sinaimg.cn/large/005XbUDxgy1fmrmpll3zgj30i80aeq42.jpg">
+
+
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.4.x" />
+
+
+
+  <link rel="stylesheet" type="text/css" href="/lib/fancybox/jquery.fancybox.css" />
+
+
+
+
+
+<script>
+  var CONFIG = {
+    search: true,
+    searchPath: "/search.xml",
+    fancybox: true,
+    toc: true,
+  }
+</script>
+
+
+
+
+  
+
+  <script type="text/javascript">
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-99326171-1', 'auto');
+        ga('send', 'pageview');
+  </script>
+
+
+
+    <title> 给 Number 打 Call · Elvin 的博客 </title>
+  </head>
+
+  <body><div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/." class="logo">Elvin 的博客</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    
+      <a href="/">
+        <li class="mobile-menu-item">
+          
+          
+            Home
+          
+        </li>
+      </a>
+    
+      <a href="/archives/">
+        <li class="mobile-menu-item">
+          
+          
+            Archives
+          
+        </li>
+      </a>
+    
+      <a href="/tags">
+        <li class="mobile-menu-item">
+          
+          
+            Tags
+          
+        </li>
+      </a>
+    
+      <a href="/hope">
+        <li class="mobile-menu-item">
+          
+          
+            Hope
+          
+        </li>
+      </a>
+    
+      <a href="/about">
+        <li class="mobile-menu-item">
+          
+          
+            About
+          
+        </li>
+      </a>
+    
+  </ul>
+</nav>
+
+    <div class="container" id="mobile-panel">
+      <header id="header" class="header"><div class="logo-wrapper">
+  <a href="/." class="logo">Elvin 的博客</a>
+</div>
+
+<nav class="site-navbar">
+  
+    <ul id="menu" class="menu">
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/">
+            
+            
+              首页
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/archives/">
+            
+            
+              归档
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/tags">
+            
+            
+              标签
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/hope">
+            
+            
+              愿望
+            
+          </a>
+        </li>
+      
+        <li class="menu-item">
+          <a class="menu-item-link" href="/about">
+            
+            
+              关于
+            
+          </a>
+        </li>
+      
+      
+        <li class="menu-search">
+          <form>
+            <i class="iconfont icon-search" id="open-search"></i>
+            <input type="text" class="search-input" id="search-input" />
+            <i class="iconfont icon-close" id="close-search"></i>
+          </form>
+        </li>
+      
+    </ul>
+  
+</nav>
+
+      </header>
+
+      <main id="main" class="main">
+        <div class="content-wrapper">
+          <div id="content" class="content">
+            
+  
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
+          给 Number 打 Call
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017年12月24日
+        </span>
+      </div>
+    </header>
+
+    
+    
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#结果初探"><span class="toc-text">结果初探</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#深入探究"><span class="toc-text">深入探究</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Number-myCall"><span class="toc-text">Number.myCall</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Number-myCall-myCall"><span class="toc-text">Number.myCall.myCall</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#写在最后"><span class="toc-text">写在最后</span></a></li></ol>
+    </div>
+  </div>
+
+
+    <div class="post-content">
+      
+        <p>最近“打 call”这个词突然流行起来，我想到 <code>call</code> 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Number</span>.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call.call.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Number</span>.call.call;</div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Number</span>.call.call.call;</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="结果初探"><a href="#结果初探" class="headerlink" title="结果初探"></a>结果初探</h2><p><img src="http://ww1.sinaimg.cn/large/005XbUDxgy1fmrmpll3zgj30i80aeq42.jpg" alt="打 call 的结果"></p>
+<p> 不知道大家有没有猜中运行结果呢？反正我看到这个结果的时候是崩溃的（内心活动：为什么相等的三个函数，对相同的参数，返回的结果却不一样？？不愧是 JavaScript！）不过虽然结果看起来违反直觉，但是从上述代码中还是可以得出两个好消息的：</p>
+<ol>
+<li><p><code>Number.call(Number, 1, 2, 3)</code> 这段代码的运行结果是符合预期的，它其实就是将 Number 中的 this 指向 Number，然后执行 Number(1, 2, 3)，和直接执行 <code>Number(1, 2, 3)</code> 作用相同，效果就是对传入的第一个参数尝试转化为数字并返回，我们可以通过下列代码验证一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Number</span>.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>); <span class="comment">// output is 1</span></div><div class="line"><span class="built_in">Number</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>); <span class="comment">// output is 1</span></div><div class="line"></div><div class="line"><span class="built_in">Number</span>.call(<span class="built_in">Number</span>, <span class="string">'1'</span>, <span class="string">'2'</span>, <span class="string">'3'</span>); <span class="comment">// output is 1</span></div><div class="line"><span class="built_in">Number</span>(<span class="string">'1'</span>, <span class="string">'2'</span>, <span class="string">'3'</span>); <span class="comment">// output is  1</span></div><div class="line"></div><div class="line"><span class="built_in">Number</span>.call(<span class="built_in">Number</span>, <span class="string">'do'</span>, <span class="string">'call'</span>); <span class="comment">// output is NaN(Not a Number)</span></div><div class="line"><span class="built_in">Number</span>(<span class="string">'do'</span>, <span class="string">'call'</span>); <span class="comment">// output is NaN(Not a Number)</span></div></pre></td></tr></table></figure>
+</li>
+<li><p><code>Number.call</code>、<code>Number.call.call</code> 和 <code>Number.call.call.call</code> 用全等符号的判断结果是 <code>true</code>，这说明它们是同一个函数， 那么它们到底是指向哪一个函数呢？仔细想一下，<code>Number</code> 是函数，<code>Number.call</code> 是函数，<code>Number.call.call</code> 也是函数，那么访问一个函数的 <code>call</code> 方法会不会就是访问 Function 原型上的 call 方法呢？同样地，我们通过下列代码验证一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typeof</span> <span class="built_in">Number</span>;  <span class="comment">// output is "function"</span></div><div class="line"><span class="keyword">typeof</span> <span class="built_in">Number</span>.call; <span class="comment">// output is "function"</span></div><div class="line"><span class="keyword">typeof</span> <span class="built_in">Number</span>.call.call; <span class="comment">// output is "function"</span></div><div class="line"></div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Function</span>.prototype.call; <span class="comment">// output is true</span></div><div class="line"><span class="built_in">Number</span>.call.call === <span class="built_in">Function</span>.prototype.call; <span class="comment">// output is true</span></div><div class="line"><span class="built_in">Number</span>.call.call.call === <span class="built_in">Function</span>.prototype.call; <span class="comment">// output is true</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<blockquote>
+<p>关于原型链更深入的知识，可以参考我之前写的博客 - <a href="http://segmentfault.me/2017/01/22/proto%E4%B8%8Eprototype%E7%9A%84%E5%85%B3%E7%B3%BB/">__proto__ 与 prototype 的关系</a></p>
+</blockquote>
+<p>虽然有了一些收获，但是为什么对于相同的函数 <code>Function.prototype.call</code>，输入相同的参数 <code>(Number, 1, 2, 3)</code>，有时候得到的结果是 1，有时候得到结果却是 2 呢？</p>
+<h2 id="深入探究"><a href="#深入探究" class="headerlink" title="深入探究"></a>深入探究</h2><p>既然已经定位到了 <code>Function.prototype.call</code> 这里，那么我们可以自己写一个 <code>myCall</code> 函数来代替 <code>call</code> 函数，从而进一步地探究这个函数内部发生了什么。不要被自己写一个 <code>call</code> 函数吓到，毕竟它的作用很简单：将调用者函数中的 this 改为传入的第一个参数，然后再依次传入后面的参数并执行函数。所以我们可以先编写一个这样的函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Function</span>.prototype.myCall = <span class="function"><span class="keyword">function</span> <span class="title">myCall</span>(<span class="params">obj, ...args</span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">`this is <span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span>, obj is <span class="subst">$&#123;obj&#125;</span>, arguments are <span class="subst">$&#123;args&#125;</span>`</span>);</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'------------------'</span>);</div><div class="line">  <span class="keyword">const</span> newFunc = <span class="keyword">this</span>.bind(obj);</div><div class="line">  <span class="keyword">return</span> newFunc(...args);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在上面的代码中，关键在于 <code>const newFunc = this.bind(obj);</code>，这里的 <code>this</code> 指的就是调用者函数，然后通过 <code>this.bind(obj)</code> 将调用者函数中的 this（注意：这个 this 是调用者函数中的 this，而不是 myCall 中的 this） 变为了 obj。</p>
+<blockquote>
+<p>上面只是为了探究问题而实现的简单版 call 函数，实际上 call 函数还会对传入的第一个参数做校验和替换，例如传入基本数据类型（primitive values）时会被转化为对象，不过这些与本次问题无关，可以不用关注 ^_^</p>
+</blockquote>
+<p>然后让我们来运行一下 myCall，看看结果如何：</p>
+<p><img src="http://ww1.sinaimg.cn/large/005XbUDxly1fmrr921infj31000gy778.jpg" alt="myCall 执行结果"></p>
+<p>运行的结果和原生的 call 函数相同，说明这个简单版的 myCall 函数实现了目标。在上图中，绿块和蓝块的输出相同，可以把它们俩儿归为一类，所以接下来主要对红块和绿块中的结果进行分析。</p>
+<h3 id="Number-myCall"><a href="#Number-myCall" class="headerlink" title="Number.myCall"></a>Number.myCall</h3><p>从红块中，我们可以看出函数调用只发生了一次，且 this 为 Number，obj 为 Number，arguments 为 1、2 和 3，所以 <code>Number.myCall(Number, 1, 2, 3)</code> 其实相当于调用了 <code>Number.bind(Number)(1, 2, 3)</code>，所以最后结果为 1，这与我们在第一节得出的结论相同。</p>
+<h3 id="Number-myCall-myCall"><a href="#Number-myCall-myCall" class="headerlink" title="Number.myCall.myCall"></a>Number.myCall.myCall</h3><p>从绿块中，我们可以看出函数调用发生了两次：</p>
+<ol>
+<li>对于第一次调用，将输出的 this、obj 和 arguments 带入到 myCall 中，可以发现其实是执行了 <code>myCall.bind(Number)(1, 2, 3)</code>；</li>
+<li>对于第二次调用，同样将输出的 this、obj 和 arguments 带入到 myCall 中，可以发现其实是执行了 <code>Number.bind(1)(2, 3)</code>，所以结果与执行 <code>Number(2, 3)</code>相同，也就是 2。</li>
+</ol>
+<p>———————————— 前方高能预警！！会比较绕！！请准备！请准备！————————————</p>
+<p>对比 <code>Number.myCall</code> 和 <code>Number.myCall.myCall</code> 的第一次调用，可以发现其实 obj 和 arguments 都没有变化，<strong>只是 this 的指向发生了变化</strong>：对于 <code>Number.myCall</code> 而言，myCall 的调用者是 <code>Number</code>，所以 this 指向了 Number；对于 <code>Number.myCall.myCall</code> 而言，  最后一个 myCall 的调用者是 <code>Number.myCall</code>，所以 this 指向了 myCall。再进一步，我们看看 <code>Number.myCall.myCall.myCall</code>，最后一个 myCall 的调用者是 <code>Number.myCall.myCall</code>，也就是 Funct.prototype.myCall，所以 this 指向了 myCall，和 Number.myCall.myCall 调用时 this 指向相同，所以输出的结果也相同，都是 2。</p>
+<p>———————————————————— 预警结束~~~ ————————————————————</p>
+<p>所以说呀，尽管 Number.myCall 和 Number.myCall.myCall 是同一个函数，而且传入的参数也相同，但是由于函数内部的 this 指向不同，导致了函数最后的执行结果不同。这就是基于 “原型链” 的动态语言 JavaScript 的“神奇”之处，在基于类的语言如 C++、Java 中可是难以碰到这等好玩的事情呢~</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>如果读者坚持看到了这里而且还没有晕的话，我真心地佩服你 👍👍 想当初我看到这个执行结果，到最后弄明白的一个多小时里，我是一直处于懵逼的状态中。这里特别感谢和我一起探究的 <a href="https://github.com/avwo/" target="_blank" rel="external">avwo（他出品的代理工具 whistle 广受好评，大家可以试试~）</a> 和提供文章题目的 <a href="http://litten.me/" target="_blank" rel="external">litten</a>。</p>
+<p>最后为了避免大家觉得我是疯子居然写出这种代码来，我在这里说明一下，之所以研究这个是因为看到下面一段代码，大家可以猜猜它的作用是什么（应该有不少人都见过~）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">arrayGenerator</span>(<span class="params">length</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="built_in">Array</span>.apply(<span class="literal">null</span>, &#123; <span class="attr">length</span>: length &#125;).map(<span class="built_in">Number</span>.call, <span class="built_in">Number</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+      
+    </div>
+
+    
+      
+      
+
+  <div class="post-copyright">
+    <p class="copyright-item">
+      <span>作者: </span>
+      <span>Elvin Peng</span>
+    </p>
+    <p class="copyright-item">
+      <span>来源: </span>
+      <a href="http://segmentfault.me">http://segmentfault.me</a>
+    </p>
+    <p class="copyright-item">
+      <span>链接: </span>
+      <a href="http://segmentfault.me/2017/12/24/call-for-number/">http://segmentfault.me/2017/12/24/call-for-number/</a>
+    </p>
+
+    <p class="copyright-item lincese">
+      
+      本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可。通俗地讲，只要在使用时署名，那么使用者可以对本站所有原创内容进行转载、节选、混编、二次创作，允许商业性使用。
+    </p>
+  </div>
+
+
+
+      
+      
+  <div class="post-reward">
+    <input type="checkbox" name="reward" id="reward" hidden />
+    <label class="reward-button" for="reward">赞赏支持</label>
+    <div class="qr-code">
+      
+      
+        <label class="qr-code-image" for="reward">
+          <img class="image" src="/image/reward/wechat.png" title="wechat">
+        </label>
+      
+      
+        <label class="qr-code-image" for="reward">
+          <img class="image" src="/image/reward/alipay.png" title="alipay">
+        </label>
+      
+    </div>
+  </div>
+
+    
+
+    
+      <footer class="post-footer">
+        
+          <div class="post-tags">
+            
+              <a href="/tags/前端/">前端</a>
+            
+              <a href="/tags/JavaScript/">JavaScript</a>
+            
+          </div>
+        
+        
+        
+  <nav class="post-nav">
+    
+    
+      <a class="next" href="/2017/12/03/transform-effect-side/">
+        <span class="next-text nav-default">transform 的副作用</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
+    
+  </nav>
+
+      </footer>
+    
+
+  </article>
+
+
+          </div>
+          
+  <div class="comments" id="comments">
+    
+      <div id="disqus_thread">
+        <noscript>
+          Please enable JavaScript to view the
+          <a href="//disqus.com/?ref_noscript">comments powered by Disqus.</a>
+        </noscript>
+      </div>
+    
+  </div>
+
+
+        </div>  
+      </main>
+
+      <footer id="footer" class="footer">
+
+  <div class="social-links">
+    
+      
+        
+          <a href="mailto:elvin.pjw@gmail.com" class="iconfont icon-email" title="email"></a>
+        
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+        
+          <a href="https://github.com/elvinn" class="iconfont icon-github" title="github"></a>
+        
+      
+    
+      
+    
+      
+        
+          <a href="https://www.zhihu.com/people/peng-leonard/" class="iconfont icon-zhihu" title="zhihu"></a>
+        
+      
+    
+      
+    
+    
+    
+      <a href="/atom.xml" class="iconfont icon-rss" title="rss"></a>
+    
+  </div>
+
+
+<div class="copyright">
+  <span class="power-by">
+    由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
+  </span>
+  
+  <span class="theme-info">
+    主题 - 
+    <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
+  </span>
+
+  <span class="copyright-year">
+    
+    &copy; 
+     
+      2015 - 
+    
+    2017
+
+    <span class="heart">
+      <i class="iconfont icon-heart"></i>
+    </span>
+    <span class="author">Elvin Peng</span>
+  </span>
+</div>
+      </footer>
+
+      <div class="back-to-top" id="back-to-top">
+        <i class="iconfont icon-up"></i>
+      </div>
+    </div>
+
+    
+  
+
+  
+  <script type="text/javascript">
+    var disqus_config = function () {
+        this.page.url = 'http://segmentfault.me/2017/12/24/call-for-number/';
+        this.page.identifier = '2017/12/24/call-for-number/';
+        this.page.title = '给 Number 打 Call';
+    };
+    (function() {
+    var d = document, s = d.createElement('script');
+
+    s.src = '//elvin-peng.disqus.com/embed.js';
+
+    s.setAttribute('data-timestamp', +new Date());
+    (d.head || d.body).appendChild(s);
+    })();  
+  </script>
+
+  
+
+
+
+
+    
+  
+
+
+
+
+
+  
+    <script type="text/javascript" src="/lib/jquery/jquery-3.1.1.min.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/slideout/slideout.js"></script>
+  
+
+  
+    <script type="text/javascript" src="/lib/fancybox/jquery.fancybox.pack.js"></script>
+  
+
+
+    <script type="text/javascript" src="/js/src/even.js?v=2.4.x"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.4.x"></script>
+
+    
+  <script type="text/html" id="search-result">
+    <article class="post">
+      <header class="post-header">
+        <h1 class="post-title">
+          <a href="$url$" class="post-link">
+            $title$
+          </a>
+        </h1>
+      </header>
+      <div class="post-content">
+        $content$
+        <div class="read-more">
+          <a href="$url$" class="read-more-link">
+            阅读更多
+          </a>
+        </div>
+      </div>
+    </article>
+  </script>
+  <script type="text/html" id="no-search-result">
+    <div class="no-result">
+      <h2>No result found!</h2>
+    </div>
+  </script>
+  <script type="text/javascript" src="/js/src/search.js?v=2.4.x"></script>
+
+  </body>
+</html>

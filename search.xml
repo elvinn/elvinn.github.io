@@ -3,6 +3,61 @@
   
     
     <entry>
+      <title><![CDATA[给 Number 打 Call]]></title>
+      <url>/2017/12/24/call-for-number/</url>
+      <content type="html"><![CDATA[<p>最近“打 call”这个词突然流行起来，我想到 <code>call</code> 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Number</span>.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call.call.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Number</span>.call.call;</div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Number</span>.call.call.call;</div></pre></td></tr></table></figure>
+<a id="more"></a>
+<h2 id="结果初探"><a href="#结果初探" class="headerlink" title="结果初探"></a>结果初探</h2><p><img src="http://ww1.sinaimg.cn/large/005XbUDxgy1fmrmpll3zgj30i80aeq42.jpg" alt="打 call 的结果"></p>
+<p> 不知道大家有没有猜中运行结果呢？反正我看到这个结果的时候是崩溃的（内心活动：为什么相等的三个函数，对相同的参数，返回的结果却不一样？？不愧是 JavaScript！）不过虽然结果看起来违反直觉，但是从上述代码中还是可以得出两个好消息的：</p>
+<ol>
+<li><p><code>Number.call(Number, 1, 2, 3)</code> 这段代码的运行结果是符合预期的，它其实就是将 Number 中的 this 指向 Number，然后执行 Number(1, 2, 3)，和直接执行 <code>Number(1, 2, 3)</code> 作用相同，效果就是对传入的第一个参数尝试转化为数字并返回，我们可以通过下列代码验证一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Number</span>.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>); <span class="comment">// output is 1</span></div><div class="line"><span class="built_in">Number</span>(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>); <span class="comment">// output is 1</span></div><div class="line"></div><div class="line"><span class="built_in">Number</span>.call(<span class="built_in">Number</span>, <span class="string">'1'</span>, <span class="string">'2'</span>, <span class="string">'3'</span>); <span class="comment">// output is 1</span></div><div class="line"><span class="built_in">Number</span>(<span class="string">'1'</span>, <span class="string">'2'</span>, <span class="string">'3'</span>); <span class="comment">// output is  1</span></div><div class="line"></div><div class="line"><span class="built_in">Number</span>.call(<span class="built_in">Number</span>, <span class="string">'do'</span>, <span class="string">'call'</span>); <span class="comment">// output is NaN(Not a Number)</span></div><div class="line"><span class="built_in">Number</span>(<span class="string">'do'</span>, <span class="string">'call'</span>); <span class="comment">// output is NaN(Not a Number)</span></div></pre></td></tr></table></figure>
+</li>
+<li><p><code>Number.call</code>、<code>Number.call.call</code> 和 <code>Number.call.call.call</code> 用全等符号的判断结果是 <code>true</code>，这说明它们是同一个函数， 那么它们到底是指向哪一个函数呢？仔细想一下，<code>Number</code> 是函数，<code>Number.call</code> 是函数，<code>Number.call.call</code> 也是函数，那么访问一个函数的 <code>call</code> 方法会不会就是访问 Function 原型上的 call 方法呢？同样地，我们通过下列代码验证一下：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">typeof</span> <span class="built_in">Number</span>;  <span class="comment">// output is "function"</span></div><div class="line"><span class="keyword">typeof</span> <span class="built_in">Number</span>.call; <span class="comment">// output is "function"</span></div><div class="line"><span class="keyword">typeof</span> <span class="built_in">Number</span>.call.call; <span class="comment">// output is "function"</span></div><div class="line"></div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Function</span>.prototype.call; <span class="comment">// output is true</span></div><div class="line"><span class="built_in">Number</span>.call.call === <span class="built_in">Function</span>.prototype.call; <span class="comment">// output is true</span></div><div class="line"><span class="built_in">Number</span>.call.call.call === <span class="built_in">Function</span>.prototype.call; <span class="comment">// output is true</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<blockquote>
+<p>关于原型链更深入的知识，可以参考我之前写的博客 - <a href="http://segmentfault.me/2017/01/22/proto%E4%B8%8Eprototype%E7%9A%84%E5%85%B3%E7%B3%BB/">__proto__ 与 prototype 的关系</a></p>
+</blockquote>
+<p>虽然有了一些收获，但是为什么对于相同的函数 <code>Function.prototype.call</code>，输入相同的参数 <code>(Number, 1, 2, 3)</code>，有时候得到的结果是 1，有时候得到结果却是 2 呢？</p>
+<h2 id="深入探究"><a href="#深入探究" class="headerlink" title="深入探究"></a>深入探究</h2><p>既然已经定位到了 <code>Function.prototype.call</code> 这里，那么我们可以自己写一个 <code>myCall</code> 函数来代替 <code>call</code> 函数，从而进一步地探究这个函数内部发生了什么。不要被自己写一个 <code>call</code> 函数吓到，毕竟它的作用很简单：将调用者函数中的 this 改为传入的第一个参数，然后再依次传入后面的参数并执行函数。所以我们可以先编写一个这样的函数：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Function</span>.prototype.myCall = <span class="function"><span class="keyword">function</span> <span class="title">myCall</span>(<span class="params">obj, ...args</span>) </span>&#123;</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">`this is <span class="subst">$&#123;<span class="keyword">this</span>.name&#125;</span>, obj is <span class="subst">$&#123;obj&#125;</span>, arguments are <span class="subst">$&#123;args&#125;</span>`</span>);</div><div class="line">  <span class="built_in">console</span>.log(<span class="string">'------------------'</span>);</div><div class="line">  <span class="keyword">const</span> newFunc = <span class="keyword">this</span>.bind(obj);</div><div class="line">  <span class="keyword">return</span> newFunc(...args);</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+<p>在上面的代码中，关键在于 <code>const newFunc = this.bind(obj);</code>，这里的 <code>this</code> 指的就是调用者函数，然后通过 <code>this.bind(obj)</code> 将调用者函数中的 this（注意：这个 this 是调用者函数中的 this，而不是 myCall 中的 this） 变为了 obj。</p>
+<blockquote>
+<p>上面只是为了探究问题而实现的简单版 call 函数，实际上 call 函数还会对传入的第一个参数做校验和替换，例如传入基本数据类型（primitive values）时会被转化为对象，不过这些与本次问题无关，可以不用关注 ^_^</p>
+</blockquote>
+<p>然后让我们来运行一下 myCall，看看结果如何：</p>
+<p><img src="http://ww1.sinaimg.cn/large/005XbUDxly1fmrr921infj31000gy778.jpg" alt="myCall 执行结果"></p>
+<p>运行的结果和原生的 call 函数相同，说明这个简单版的 myCall 函数实现了目标。在上图中，绿块和蓝块的输出相同，可以把它们俩儿归为一类，所以接下来主要对红块和绿块中的结果进行分析。</p>
+<h3 id="Number-myCall"><a href="#Number-myCall" class="headerlink" title="Number.myCall"></a>Number.myCall</h3><p>从红块中，我们可以看出函数调用只发生了一次，且 this 为 Number，obj 为 Number，arguments 为 1、2 和 3，所以 <code>Number.myCall(Number, 1, 2, 3)</code> 其实相当于调用了 <code>Number.bind(Number)(1, 2, 3)</code>，所以最后结果为 1，这与我们在第一节得出的结论相同。</p>
+<h3 id="Number-myCall-myCall"><a href="#Number-myCall-myCall" class="headerlink" title="Number.myCall.myCall"></a>Number.myCall.myCall</h3><p>从绿块中，我们可以看出函数调用发生了两次：</p>
+<ol>
+<li>对于第一次调用，将输出的 this、obj 和 arguments 带入到 myCall 中，可以发现其实是执行了 <code>myCall.bind(Number)(1, 2, 3)</code>；</li>
+<li>对于第二次调用，同样将输出的 this、obj 和 arguments 带入到 myCall 中，可以发现其实是执行了 <code>Number.bind(1)(2, 3)</code>，所以结果与执行 <code>Number(2, 3)</code>相同，也就是 2。</li>
+</ol>
+<p>———————————— 前方高能预警！！会比较绕！！请准备！请准备！————————————</p>
+<p>对比 <code>Number.myCall</code> 和 <code>Number.myCall.myCall</code> 的第一次调用，可以发现其实 obj 和 arguments 都没有变化，<strong>只是 this 的指向发生了变化</strong>：对于 <code>Number.myCall</code> 而言，myCall 的调用者是 <code>Number</code>，所以 this 指向了 Number；对于 <code>Number.myCall.myCall</code> 而言，  最后一个 myCall 的调用者是 <code>Number.myCall</code>，所以 this 指向了 myCall。再进一步，我们看看 <code>Number.myCall.myCall.myCall</code>，最后一个 myCall 的调用者是 <code>Number.myCall.myCall</code>，也就是 Funct.prototype.myCall，所以 this 指向了 myCall，和 Number.myCall.myCall 调用时 this 指向相同，所以输出的结果也相同，都是 2。</p>
+<p>———————————————————— 预警结束~~~ ————————————————————</p>
+<p>所以说呀，尽管 Number.myCall 和 Number.myCall.myCall 是同一个函数，而且传入的参数也相同，但是由于函数内部的 this 指向不同，导致了函数最后的执行结果不同。这就是基于 “原型链” 的动态语言 JavaScript 的“神奇”之处，在基于类的语言如 C++、Java 中可是难以碰到这等好玩的事情呢~</p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>如果读者坚持看到了这里而且还没有晕的话，我真心地佩服你 👍👍 想当初我看到这个执行结果，到最后弄明白的一个多小时里，我是一直处于懵逼的状态中。这里特别感谢和我一起探究的 <a href="https://github.com/avwo/" target="_blank" rel="external">avwo（他出品的代理工具 whistle 广受好评，大家可以试试~）</a> 和提供文章题目的 <a href="http://litten.me/" target="_blank" rel="external">litten</a>。</p>
+<p>最后为了避免大家觉得我是疯子居然写出这种代码来，我在这里说明一下，之所以研究这个是因为看到下面一段代码，大家可以猜猜它的作用是什么（应该有不少人都见过~）：</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">function</span> <span class="title">arrayGenerator</span>(<span class="params">length</span>) </span>&#123;</div><div class="line">  <span class="keyword">return</span> <span class="built_in">Array</span>.apply(<span class="literal">null</span>, &#123; <span class="attr">length</span>: length &#125;).map(<span class="built_in">Number</span>.call, <span class="built_in">Number</span>)</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> 前端 </tag>
+            
+            <tag> JavaScript </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
       <title><![CDATA[transform 的副作用]]></title>
       <url>/2017/12/03/transform-effect-side/</url>
       <content type="html"><![CDATA[<p><code>transform</code> 想必大家都很熟悉，可以通过其转换（translate）、旋转（rotate）、缩放（scale）、倾斜（skew）等属性来对元素进行变换，不过这篇文章想探讨的不是这些内容，而是 <code>transform</code> 对元素布局、页面渲染方面的影响。例如，你知道它会影响 <code>fixed</code> 元素的位置吗？你有想过它会改变元素的层叠顺序吗？</p>
@@ -563,101 +618,6 @@
     </entry>
     
     <entry>
-      <title><![CDATA[UML 类图]]></title>
-      <url>/2016/11/17/UML-%E7%B1%BB%E5%9B%BE/</url>
-      <content type="html"><![CDATA[<p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
-<a id="more"></a>
-<h2 id="类本身的表示"><a href="#类本身的表示" class="headerlink" title="类本身的表示"></a><a href="#类本身的表示" title="类本身的表示"></a>类本身的表示</h2><p>类是对象的蓝图，封装了数据和行为，它是具有相同属性、方法、关系的对象的集合的总称，下面是一个简单的 Person 类的 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span>  <span class="title">Person</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> String name;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.name = name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.age = age;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>其对应的类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Person.png" alt="Person 类图"></p>
-<p>在上面这个简单的例子中，我们可以看到，从上至下类图分为三个部分，依次为：</p>
-<ul>
-<li>类的名称</li>
-<li>类的属性</li>
-<li>类的方法</li>
-</ul>
-<p>其中，属性部分的格式为 <code>可见性 名称:类型 [=缺省值]</code>，方法部分的格式为 <code>可见性 名称(参数类型):返回类型</code>，可见性的可选项为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">+    public</div><div class="line">-    private</div><div class="line">#    protected</div><div class="line">~    default</div><div class="line">_    static</div></pre></td></tr></table></figure>
-
-<h2 id="类间关系的表示"><a href="#类间关系的表示" class="headerlink" title="类间关系的表示"></a><a href="#类间关系的表示" title="类间关系的表示"></a>类间关系的表示</h2><h3 id="泛化（Generalization）"><a href="#泛化（Generalization）" class="headerlink" title="泛化（Generalization）"></a><a href="#泛化（Generalization）" title="泛化（Generalization）"></a>泛化（Generalization）</h3><p>泛化，可理解为继承，在 Java 中通过关键字 <code>extends</code> 标示，用<strong>带空心三角箭头的实线</strong>表示，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/generalization.png" alt="泛化关系示意图"></p>
-<h3 id="实现（Realization）"><a href="#实现（Realization）" class="headerlink" title="实现（Realization）"></a><a href="#实现（Realization）" title="实现（Realization）"></a>实现（Realization）</h3><p>实现，指的是一个类实现接口（可以是多个）的功能，在 Java 中通过关键字 <code>implements</code> 标示，用<strong>带空心三角箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">implements</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/realization.png" alt="实现关系示意图"></p>
-<h3 id="依赖（Dependency）"><a href="#依赖（Dependency）" class="headerlink" title="依赖（Dependency）"></a><a href="#依赖（Dependency）" title="依赖（Dependency）"></a>依赖（Dependency）</h3><p>依赖，可简单的理解为类 A 使用到了另一个类 B，可以用 <em>‘… use a …’</em> 进行判断，这种使用关系是具有偶然性的、临时性的、非常弱的。表现在代码层面，就是类 B 作为参数被类 A 在某个方法中使用，用<strong>带燕尾箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">(A param)</span></span>&#123;</div><div class="line">      <span class="comment">//…</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/dependency.png" alt="依赖关系示意图"></p>
-<h3 id="关联（Association）"><a href="#关联（Association）" class="headerlink" title="关联（Association）"></a><a href="#关联（Association）" title="关联（Association）"></a>关联（Association）</h3><p>关联，体现的是两个类、类与接口或者接口与接口之间的强依赖关系，可以用 <em>‘… has a …’</em> 进行判断，一般来说是一种长期的稳定的关系。表现在代码层面，就是 B 以属性的形式出现在 A 中，关联既可以是单向的，也可以是双向的，用<strong>带燕尾箭头的实线</strong>表示单向关联，<strong>不带箭头的实现</strong>表示双向关联，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> A attribute;</div><div class="line">  </div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/association.png" alt="关联关系示意图"></p>
-<h3 id="聚合（Aggregation）"><a href="#聚合（Aggregation）" class="headerlink" title="聚合（Aggregation）"></a><a href="#聚合（Aggregation）" title="聚合（Aggregation）"></a>聚合（Aggregation）</h3><p>聚合，指整体与部分之间的一类特殊的关联关系，是“弱”的包含关系，可以用 <em>‘… owns a …</em> 进行判断，成分类可以不依靠集合类而单独存在，可以拥有各自的生命周期，用<strong>带空心棱形箭尾的实线</strong>表示，例如教室与教室中的学生间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/aggregation.png" alt="聚合关系示意图"></p>
-<p>有些时候，我们还需要两个对象在数量上的对应关系（Multiplicity），可以<strong>直接在关联直线上用一个数字或者一个数字范围</strong>来表示，例如有一个最多只能容纳 40 个学生的教室，那么教室和这个教室之间的关系可表示为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Multiplicity.png" alt="多重性关联关系示意图"></p>
-<p>数字范围表示方法具体为：</p>
-<ul>
-<li>0..1 没有或者只有一个实例</li>
-<li>1    有且仅有一个实例</li>
-<li>0..* 大于等于 0 个实例</li>
-<li><ul>
-<li>大于等于 0 个实例</li>
-</ul>
-</li>
-<li>1..* 大于等于 1 个实例</li>
-<li>m..n 大于等于 m ，小于等于 n 个实例</li>
-</ul>
-<h3 id="组成（Composition）"><a href="#组成（Composition）" class="headerlink" title="组成（Composition）"></a><a href="#组成（Composition）" title="组成（Composition）"></a>组成（Composition）</h3><p>组成，指整体与部分之间一类“强”的包含关系，可以用 <em>‘… is a part of …’</em> 进行判断，成分类必须依靠集合类而存在，两者是密不可分的，整体类负责创建与销毁成分类，当整体类的生命周期结束时也意味着部分类生命周期的结束，用<strong>带实心棱形箭尾的实线</strong>表示，例如人与其大脑间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/composition.png" alt="组成关系示意图"></p>
-]]></content>
-      
-        
-        <tags>
-            
-            <tag> JAVA </tag>
-            
-            <tag> 基础知识 </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
-      <title><![CDATA[yield from、asyncio 与 aiohttp 在异步IO中的应用]]></title>
-      <url>/2016/11/17/yield-from%E3%80%81asyncio-%E4%B8%8E-aiohttp-%E5%9C%A8%E5%BC%82%E6%AD%A5IO%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</url>
-      <content type="html"><![CDATA[<p>Python3.3 中引入了 <code>yield from</code> 用于定义生成器;Python3.4 中引入了 <code>asyncio</code>标准库， 从而直接内置了对异步IO的支持。<br><a id="more"></a></p>
-<h2 id="yield-from的简单实例"><a href="#yield-from的简单实例" class="headerlink" title="yield from的简单实例"></a><code>yield from</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator1</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator2</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>, <span class="number">20</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator1()</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator2()</div><div class="line">    </div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> generator():</div><div class="line">    print(i)</div></pre></td></tr></table></figure>
-<p>在上面的例子中， 最终会输出0~19。通过<code>yield from</code>的使用，我们可以将不同的生成器组合在一起，形成新的生成器，就如同通过不同函数的调用形成新德函数一样。</p>
-<h2 id="next-amp-amp-send"><a href="#next-amp-amp-send" class="headerlink" title="next &amp;&amp; send"></a><code>next</code> &amp;&amp; <code>send</code></h2><ul>
-<li><code>next</code> 返回生成器的下一个值， 然后生成器挂起。</li>
-<li><code>send</code> 对于一个生成器对象g，如果调用<code>g.send(None)</code>， 那么效果和<code>next(g)</code>一样；如果调用<code>g.send(value)</code>，就相当于yield的返回值。</li>
-</ul>
-<h2 id="asyncio的简单实例"><a href="#asyncio的简单实例" class="headerlink" title="asyncio的简单实例"></a><code>asyncio</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'Hello World!'</span>)</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">1</span>)</div><div class="line">    print(<span class="string">'GoodBye!'</span>)</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">tasks = [hello(), hello(), hello()]</div><div class="line">loop.run_until_complete(asyncio.wait(tasks))</div><div class="line">loop.close()</div></pre></td></tr></table></figure>
-<p>观察运行结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">(暂停约1秒）</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div></pre></td></tr></table></figure>
-<p>上述例子的运行流程如下：</p>
-<ol>
-<li><code>@asyncio.coroutine</code>把一个生成器（此处是hello())标记为coroutine类型，然后我们把这个coroutine扔到EventLoop中执行。</li>
-<li>通过<code>asyncio.get_event_loop()</code>创建消息循环的列表。</li>
-<li><code>loop.run_until_complete(asyncio.wait(tasks))</code>异步执行消息列表中的事件。</li>
-<li>在<code>hello()</code>函数中，<code>yield from</code>语法可以让我们调用另一个generator。由于<code>asyncio.sleep()</code>也是一个<code>coroutine</code>，所以线程不会等待<code>asyncio.sleep()</code>，而是直接中断并执行下一个消息循环。当<code>asyncio.sleep()</code>返回时，线程就可以从<code>yield from</code>拿到返回值（此处是None），然后接着执行下一行语句。</li>
-<li>最后<code>loop.close()</code>结束消息循环的列表。</li>
-</ol>
-<h2 id="aiohttp的简单实例"><a href="#aiohttp的简单实例" class="headerlink" title="aiohttp的简单实例"></a><code>aiohttp</code>的简单实例</h2><p><code>asyncio</code>实现了TCP、UDP、SSL等协议，<code>aiohttp</code>则是基于asyncio实现的HTTP框架。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Simple HTTP Server</span></div><div class="line"><span class="comment"># coding=utf-8</span></div><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="keyword">from</span> aiohttp <span class="keyword">import</span> web</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">return</span> web.Response(body=<span class="string">b'&lt;h1&gt;Index&lt;/h1&gt;'</span>)</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">0.5</span>)</div><div class="line">    text = <span class="string">'&lt;h1&gt;hello, %s!&lt;/h1&gt;'</span> % request.match_info[<span class="string">'name'</span>]</div><div class="line">    <span class="keyword">return</span> web.Response(body=text.encode(<span class="string">'utf-8'</span>))</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(loop)</span>:</span></div><div class="line">    app = web.Application(loop=loop)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/'</span>, index)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/hello/&#123;name&#125;'</span>, hello)</div><div class="line">    srv = <span class="keyword">yield</span> <span class="keyword">from</span> loop.create_server(app.make_handler(), <span class="string">'127.0.0.1'</span>, <span class="number">8000</span>)</div><div class="line">    print(<span class="string">'Server started at http://127.0.0.1:8000 ...'</span>)</div><div class="line">    <span class="keyword">return</span> srv</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">loop.run_until_complete(init(loop))</div><div class="line">loop.run_forever()</div></pre></td></tr></table></figure>]]></content>
-      
-        
-        <tags>
-            
-            <tag> python </tag>
-            
-        </tags>
-        
-    </entry>
-    
-    <entry>
       <title><![CDATA[python 与 c 的相互调用]]></title>
       <url>/2016/11/17/python%E4%B8%8Ec%E7%9A%84%E7%9B%B8%E4%BA%92%E8%B0%83%E7%94%A8/</url>
       <content type="html"><![CDATA[<p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
@@ -717,6 +677,68 @@
         <tags>
             
             <tag> python </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[UML 类图]]></title>
+      <url>/2016/11/17/UML-%E7%B1%BB%E5%9B%BE/</url>
+      <content type="html"><![CDATA[<p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
+<a id="more"></a>
+<h2 id="类本身的表示"><a href="#类本身的表示" class="headerlink" title="类本身的表示"></a><a href="#类本身的表示" title="类本身的表示"></a>类本身的表示</h2><p>类是对象的蓝图，封装了数据和行为，它是具有相同属性、方法、关系的对象的集合的总称，下面是一个简单的 Person 类的 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span>  <span class="title">Person</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> String name;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.name = name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.age = age;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>其对应的类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Person.png" alt="Person 类图"></p>
+<p>在上面这个简单的例子中，我们可以看到，从上至下类图分为三个部分，依次为：</p>
+<ul>
+<li>类的名称</li>
+<li>类的属性</li>
+<li>类的方法</li>
+</ul>
+<p>其中，属性部分的格式为 <code>可见性 名称:类型 [=缺省值]</code>，方法部分的格式为 <code>可见性 名称(参数类型):返回类型</code>，可见性的可选项为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">+    public</div><div class="line">-    private</div><div class="line">#    protected</div><div class="line">~    default</div><div class="line">_    static</div></pre></td></tr></table></figure>
+
+<h2 id="类间关系的表示"><a href="#类间关系的表示" class="headerlink" title="类间关系的表示"></a><a href="#类间关系的表示" title="类间关系的表示"></a>类间关系的表示</h2><h3 id="泛化（Generalization）"><a href="#泛化（Generalization）" class="headerlink" title="泛化（Generalization）"></a><a href="#泛化（Generalization）" title="泛化（Generalization）"></a>泛化（Generalization）</h3><p>泛化，可理解为继承，在 Java 中通过关键字 <code>extends</code> 标示，用<strong>带空心三角箭头的实线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/generalization.png" alt="泛化关系示意图"></p>
+<h3 id="实现（Realization）"><a href="#实现（Realization）" class="headerlink" title="实现（Realization）"></a><a href="#实现（Realization）" title="实现（Realization）"></a>实现（Realization）</h3><p>实现，指的是一个类实现接口（可以是多个）的功能，在 Java 中通过关键字 <code>implements</code> 标示，用<strong>带空心三角箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">implements</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/realization.png" alt="实现关系示意图"></p>
+<h3 id="依赖（Dependency）"><a href="#依赖（Dependency）" class="headerlink" title="依赖（Dependency）"></a><a href="#依赖（Dependency）" title="依赖（Dependency）"></a>依赖（Dependency）</h3><p>依赖，可简单的理解为类 A 使用到了另一个类 B，可以用 <em>‘… use a …’</em> 进行判断，这种使用关系是具有偶然性的、临时性的、非常弱的。表现在代码层面，就是类 B 作为参数被类 A 在某个方法中使用，用<strong>带燕尾箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">(A param)</span></span>&#123;</div><div class="line">      <span class="comment">//…</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/dependency.png" alt="依赖关系示意图"></p>
+<h3 id="关联（Association）"><a href="#关联（Association）" class="headerlink" title="关联（Association）"></a><a href="#关联（Association）" title="关联（Association）"></a>关联（Association）</h3><p>关联，体现的是两个类、类与接口或者接口与接口之间的强依赖关系，可以用 <em>‘… has a …’</em> 进行判断，一般来说是一种长期的稳定的关系。表现在代码层面，就是 B 以属性的形式出现在 A 中，关联既可以是单向的，也可以是双向的，用<strong>带燕尾箭头的实线</strong>表示单向关联，<strong>不带箭头的实现</strong>表示双向关联，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> A attribute;</div><div class="line">  </div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/association.png" alt="关联关系示意图"></p>
+<h3 id="聚合（Aggregation）"><a href="#聚合（Aggregation）" class="headerlink" title="聚合（Aggregation）"></a><a href="#聚合（Aggregation）" title="聚合（Aggregation）"></a>聚合（Aggregation）</h3><p>聚合，指整体与部分之间的一类特殊的关联关系，是“弱”的包含关系，可以用 <em>‘… owns a …</em> 进行判断，成分类可以不依靠集合类而单独存在，可以拥有各自的生命周期，用<strong>带空心棱形箭尾的实线</strong>表示，例如教室与教室中的学生间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/aggregation.png" alt="聚合关系示意图"></p>
+<p>有些时候，我们还需要两个对象在数量上的对应关系（Multiplicity），可以<strong>直接在关联直线上用一个数字或者一个数字范围</strong>来表示，例如有一个最多只能容纳 40 个学生的教室，那么教室和这个教室之间的关系可表示为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Multiplicity.png" alt="多重性关联关系示意图"></p>
+<p>数字范围表示方法具体为：</p>
+<ul>
+<li>0..1 没有或者只有一个实例</li>
+<li>1    有且仅有一个实例</li>
+<li>0..* 大于等于 0 个实例</li>
+<li><ul>
+<li>大于等于 0 个实例</li>
+</ul>
+</li>
+<li>1..* 大于等于 1 个实例</li>
+<li>m..n 大于等于 m ，小于等于 n 个实例</li>
+</ul>
+<h3 id="组成（Composition）"><a href="#组成（Composition）" class="headerlink" title="组成（Composition）"></a><a href="#组成（Composition）" title="组成（Composition）"></a>组成（Composition）</h3><p>组成，指整体与部分之间一类“强”的包含关系，可以用 <em>‘… is a part of …’</em> 进行判断，成分类必须依靠集合类而存在，两者是密不可分的，整体类负责创建与销毁成分类，当整体类的生命周期结束时也意味着部分类生命周期的结束，用<strong>带实心棱形箭尾的实线</strong>表示，例如人与其大脑间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/composition.png" alt="组成关系示意图"></p>
+]]></content>
+      
+        
+        <tags>
+            
+            <tag> JAVA </tag>
+            
+            <tag> 基础知识 </tag>
             
         </tags>
         
@@ -783,6 +805,39 @@
 <li><code>re.match(r&amp;#39;xxx&amp;#39;, string).group(0)</code> 永远是原始字符串，也就是 string。</li>
 </ul>
 ]]></content>
+      
+        
+        <tags>
+            
+            <tag> python </tag>
+            
+        </tags>
+        
+    </entry>
+    
+    <entry>
+      <title><![CDATA[yield from、asyncio 与 aiohttp 在异步IO中的应用]]></title>
+      <url>/2016/11/17/yield-from%E3%80%81asyncio-%E4%B8%8E-aiohttp-%E5%9C%A8%E5%BC%82%E6%AD%A5IO%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/</url>
+      <content type="html"><![CDATA[<p>Python3.3 中引入了 <code>yield from</code> 用于定义生成器;Python3.4 中引入了 <code>asyncio</code>标准库， 从而直接内置了对异步IO的支持。<br><a id="more"></a></p>
+<h2 id="yield-from的简单实例"><a href="#yield-from的简单实例" class="headerlink" title="yield from的简单实例"></a><code>yield from</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator1</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator2</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>, <span class="number">20</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator1()</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator2()</div><div class="line">    </div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> generator():</div><div class="line">    print(i)</div></pre></td></tr></table></figure>
+<p>在上面的例子中， 最终会输出0~19。通过<code>yield from</code>的使用，我们可以将不同的生成器组合在一起，形成新的生成器，就如同通过不同函数的调用形成新德函数一样。</p>
+<h2 id="next-amp-amp-send"><a href="#next-amp-amp-send" class="headerlink" title="next &amp;&amp; send"></a><code>next</code> &amp;&amp; <code>send</code></h2><ul>
+<li><code>next</code> 返回生成器的下一个值， 然后生成器挂起。</li>
+<li><code>send</code> 对于一个生成器对象g，如果调用<code>g.send(None)</code>， 那么效果和<code>next(g)</code>一样；如果调用<code>g.send(value)</code>，就相当于yield的返回值。</li>
+</ul>
+<h2 id="asyncio的简单实例"><a href="#asyncio的简单实例" class="headerlink" title="asyncio的简单实例"></a><code>asyncio</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'Hello World!'</span>)</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">1</span>)</div><div class="line">    print(<span class="string">'GoodBye!'</span>)</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">tasks = [hello(), hello(), hello()]</div><div class="line">loop.run_until_complete(asyncio.wait(tasks))</div><div class="line">loop.close()</div></pre></td></tr></table></figure>
+<p>观察运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">(暂停约1秒）</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div></pre></td></tr></table></figure>
+<p>上述例子的运行流程如下：</p>
+<ol>
+<li><code>@asyncio.coroutine</code>把一个生成器（此处是hello())标记为coroutine类型，然后我们把这个coroutine扔到EventLoop中执行。</li>
+<li>通过<code>asyncio.get_event_loop()</code>创建消息循环的列表。</li>
+<li><code>loop.run_until_complete(asyncio.wait(tasks))</code>异步执行消息列表中的事件。</li>
+<li>在<code>hello()</code>函数中，<code>yield from</code>语法可以让我们调用另一个generator。由于<code>asyncio.sleep()</code>也是一个<code>coroutine</code>，所以线程不会等待<code>asyncio.sleep()</code>，而是直接中断并执行下一个消息循环。当<code>asyncio.sleep()</code>返回时，线程就可以从<code>yield from</code>拿到返回值（此处是None），然后接着执行下一行语句。</li>
+<li>最后<code>loop.close()</code>结束消息循环的列表。</li>
+</ol>
+<h2 id="aiohttp的简单实例"><a href="#aiohttp的简单实例" class="headerlink" title="aiohttp的简单实例"></a><code>aiohttp</code>的简单实例</h2><p><code>asyncio</code>实现了TCP、UDP、SSL等协议，<code>aiohttp</code>则是基于asyncio实现的HTTP框架。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Simple HTTP Server</span></div><div class="line"><span class="comment"># coding=utf-8</span></div><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="keyword">from</span> aiohttp <span class="keyword">import</span> web</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">return</span> web.Response(body=<span class="string">b'&lt;h1&gt;Index&lt;/h1&gt;'</span>)</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">0.5</span>)</div><div class="line">    text = <span class="string">'&lt;h1&gt;hello, %s!&lt;/h1&gt;'</span> % request.match_info[<span class="string">'name'</span>]</div><div class="line">    <span class="keyword">return</span> web.Response(body=text.encode(<span class="string">'utf-8'</span>))</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(loop)</span>:</span></div><div class="line">    app = web.Application(loop=loop)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/'</span>, index)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/hello/&#123;name&#125;'</span>, hello)</div><div class="line">    srv = <span class="keyword">yield</span> <span class="keyword">from</span> loop.create_server(app.make_handler(), <span class="string">'127.0.0.1'</span>, <span class="number">8000</span>)</div><div class="line">    print(<span class="string">'Server started at http://127.0.0.1:8000 ...'</span>)</div><div class="line">    <span class="keyword">return</span> srv</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">loop.run_until_complete(init(loop))</div><div class="line">loop.run_forever()</div></pre></td></tr></table></figure>]]></content>
       
         
         <tags>
