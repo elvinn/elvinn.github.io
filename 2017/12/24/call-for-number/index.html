@@ -42,13 +42,13 @@
 <meta property="og:site_name" content="Elvin 的博客">
 <meta property="og:description" content="最近“打 call”这个词突然流行起来，我想到 call 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？ 12345Number.call(Number, 1, 2, 3);Number.call.call(Number, 1,">
 <meta property="og:locale" content="zh-cn">
-<meta property="og:image" content="http://ww1.sinaimg.cn/large/005XbUDxgy1fmrmpll3zgj30i80aeq42.jpg">
+<meta property="og:image" content="https://ww2.sinaimg.cn/large/0060lm7Tly1fn3lud9mgyj30i80aegnn.jpg">
 <meta property="og:image" content="http://ww1.sinaimg.cn/large/005XbUDxly1fmrr921infj31000gy778.jpg">
-<meta property="og:updated_time" content="2017-12-24T05:18:55.015Z">
+<meta property="og:updated_time" content="2018-01-03T10:43:12.059Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="给 Number 打 Call">
 <meta name="twitter:description" content="最近“打 call”这个词突然流行起来，我想到 call 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？ 12345Number.call(Number, 1, 2, 3);Number.call.call(Number, 1,">
-<meta name="twitter:image" content="http://ww1.sinaimg.cn/large/005XbUDxgy1fmrmpll3zgj30i80aeq42.jpg">
+<meta name="twitter:image" content="https://ww2.sinaimg.cn/large/0060lm7Tly1fn3lud9mgyj30i80aegnn.jpg">
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.4.x" />
@@ -256,7 +256,7 @@
         <p>最近“打 call”这个词突然流行起来，我想到 <code>call</code> 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Number</span>.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call.call.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Number</span>.call.call;</div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Number</span>.call.call.call;</div></pre></td></tr></table></figure>
 <a id="more"></a>
-<h2 id="结果初探"><a href="#结果初探" class="headerlink" title="结果初探"></a>结果初探</h2><p><img src="http://ww1.sinaimg.cn/large/005XbUDxgy1fmrmpll3zgj30i80aeq42.jpg" alt="打 call 的结果"></p>
+<h2 id="结果初探"><a href="#结果初探" class="headerlink" title="结果初探"></a>结果初探</h2><p><img src="https://ww2.sinaimg.cn/large/0060lm7Tly1fn3lud9mgyj30i80aegnn.jpg" alt="打 call 的结果"></p>
 <p> 不知道大家有没有猜中运行结果呢？反正我看到这个结果的时候是崩溃的（内心活动：为什么相等的三个函数，对相同的参数，返回的结果却不一样？？不愧是 JavaScript！）不过虽然结果看起来违反直觉，但是从上述代码中还是可以得出两个好消息的：</p>
 <ol>
 <li><p><code>Number.call(Number, 1, 2, 3)</code> 这段代码的运行结果是符合预期的，它其实就是将 Number 中的 this 指向 Number，然后执行 Number(1, 2, 3)，和直接执行 <code>Number(1, 2, 3)</code> 作用相同，效果就是对传入的第一个参数尝试转化为数字并返回，我们可以通过下列代码验证一下：</p>
@@ -359,6 +359,12 @@
         
   <nav class="post-nav">
     
+      <a class="prev" href="/2017/12/30/2017-to-2018/">
+        <i class="iconfont icon-left"></i>
+        <span class="prev-text nav-default">2017-to-2018</span>
+        <span class="prev-text nav-mobile">上一篇</span>
+      </a>
+    
     
       <a class="next" href="/2017/12/03/transform-effect-side/">
         <span class="next-text nav-default">transform 的副作用</span>
@@ -450,7 +456,7 @@
      
       2015 - 
     
-    2017
+    2018
 
     <span class="heart">
       <i class="iconfont icon-heart"></i>
