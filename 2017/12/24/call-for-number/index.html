@@ -43,8 +43,8 @@
 <meta property="og:description" content="最近“打 call”这个词突然流行起来，我想到 call 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？ 12345Number.call(Number, 1, 2, 3);Number.call.call(Number, 1,">
 <meta property="og:locale" content="zh-cn">
 <meta property="og:image" content="https://ww2.sinaimg.cn/large/0060lm7Tly1fn3lud9mgyj30i80aegnn.jpg">
-<meta property="og:image" content="http://ww1.sinaimg.cn/large/005XbUDxly1fmrr921infj31000gy778.jpg">
-<meta property="og:updated_time" content="2018-01-03T10:43:12.059Z">
+<meta property="og:image" content="https://ww1.sinaimg.cn/large/0060lm7Tly1fn3mng6p9ej30zk0gqgs5.jpg">
+<meta property="og:updated_time" content="2018-01-03T11:54:23.805Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="给 Number 打 Call">
 <meta name="twitter:description" content="最近“打 call”这个词突然流行起来，我想到 call 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？ 12345Number.call(Number, 1, 2, 3);Number.call.call(Number, 1,">
@@ -277,7 +277,7 @@
 <p>上面只是为了探究问题而实现的简单版 call 函数，实际上 call 函数还会对传入的第一个参数做校验和替换，例如传入基本数据类型（primitive values）时会被转化为对象，不过这些与本次问题无关，可以不用关注 ^_^</p>
 </blockquote>
 <p>然后让我们来运行一下 myCall，看看结果如何：</p>
-<p><img src="http://ww1.sinaimg.cn/large/005XbUDxly1fmrr921infj31000gy778.jpg" alt="myCall 执行结果"></p>
+<p><img src="https://ww1.sinaimg.cn/large/0060lm7Tly1fn3mng6p9ej30zk0gqgs5.jpg" alt="myCall 执行结果"></p>
 <p>运行的结果和原生的 call 函数相同，说明这个简单版的 myCall 函数实现了目标。在上图中，绿块和蓝块的输出相同，可以把它们俩儿归为一类，所以接下来主要对红块和绿块中的结果进行分析。</p>
 <h3 id="Number-myCall"><a href="#Number-myCall" class="headerlink" title="Number.myCall"></a>Number.myCall</h3><p>从红块中，我们可以看出函数调用只发生了一次，且 this 为 Number，obj 为 Number，arguments 为 1、2 和 3，所以 <code>Number.myCall(Number, 1, 2, 3)</code> 其实相当于调用了 <code>Number.bind(Number)(1, 2, 3)</code>，所以最后结果为 1，这与我们在第一节得出的结论相同。</p>
 <h3 id="Number-myCall-myCall"><a href="#Number-myCall-myCall" class="headerlink" title="Number.myCall.myCall"></a>Number.myCall.myCall</h3><p>从绿块中，我们可以看出函数调用发生了两次：</p>
@@ -358,12 +358,6 @@
         
         
   <nav class="post-nav">
-    
-      <a class="prev" href="/2017/12/30/2017-to-2018/">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">2017-to-2018</span>
-        <span class="prev-text nav-mobile">上一篇</span>
-      </a>
     
     
       <a class="next" href="/2017/12/03/transform-effect-side/">
