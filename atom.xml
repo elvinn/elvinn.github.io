@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://segmentfault.me/"/>
-  <updated>2018-01-03T11:54:23.805Z</updated>
+  <updated>2018-01-13T17:17:59.743Z</updated>
   <id>http://segmentfault.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://segmentfault.me/2017/12/24/call-for-number/"/>
     <id>http://segmentfault.me/2017/12/24/call-for-number/</id>
     <published>2017-12-24T01:48:46.000Z</published>
-    <updated>2018-01-03T11:54:23.805Z</updated>
+    <updated>2018-01-13T17:17:59.743Z</updated>
     
     <content type="html"><![CDATA[<p>最近“打 call”这个词突然流行起来，我想到 <code>call</code> 在 JavaScript 中可是个重要的方法，那么能不能用 JavaScript 也来玩一把打 call 呢？于是我在 Number 上实验了下，写出来的代码让我自己都一脸懵逼了，大家能猜到下面这段代码的输出结果吗？</p>
 <figure class="highlight javascript"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="built_in">Number</span>.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call.call.call(<span class="built_in">Number</span>, <span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>);</div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Number</span>.call.call;</div><div class="line"><span class="built_in">Number</span>.call === <span class="built_in">Number</span>.call.call.call;</div></pre></td></tr></table></figure>
@@ -82,7 +82,7 @@
     <link href="http://segmentfault.me/2017/12/03/transform-effect-side/"/>
     <id>http://segmentfault.me/2017/12/03/transform-effect-side/</id>
     <published>2017-12-03T11:15:53.000Z</published>
-    <updated>2017-12-07T10:53:02.801Z</updated>
+    <updated>2018-01-13T17:17:59.741Z</updated>
     
     <content type="html"><![CDATA[<p><code>transform</code> 想必大家都很熟悉，可以通过其转换（translate）、旋转（rotate）、缩放（scale）、倾斜（skew）等属性来对元素进行变换，不过这篇文章想探讨的不是这些内容，而是 <code>transform</code> 对元素布局、页面渲染方面的影响。例如，你知道它会影响 <code>fixed</code> 元素的位置吗？你有想过它会改变元素的层叠顺序吗？</p>
 <a id="more"></a>
@@ -133,7 +133,7 @@
     <link href="http://segmentfault.me/2017/11/02/word-break-and-word-wrap/"/>
     <id>http://segmentfault.me/2017/11/02/word-break-and-word-wrap/</id>
     <published>2017-11-02T01:48:31.000Z</published>
-    <updated>2017-12-03T11:24:25.511Z</updated>
+    <updated>2018-01-13T17:17:59.746Z</updated>
     
     <content type="html"><![CDATA[<p>本文主要要介绍的是 CSS 中 <code>word-break: break-all</code> 和 <code>word-wrap: break-word</code> 的区别，虽然这两个属性都有使用过，但都是属于使用时查一查文档随手就用，用完了也不会深入去探究的范畴，希望借着这篇文章来深入的探究一下这两者的区别。</p>
 <a id="more"></a>
@@ -190,7 +190,7 @@
     <link href="http://segmentfault.me/2017/10/03/ts-jsdoc/"/>
     <id>http://segmentfault.me/2017/10/03/ts-jsdoc/</id>
     <published>2017-10-03T15:27:21.000Z</published>
-    <updated>2017-10-03T17:02:45.000Z</updated>
+    <updated>2018-01-13T17:17:59.747Z</updated>
     
     <content type="html"><![CDATA[<p>由于 JavsScript 是弱类型，所以在大型项目中使用时显得能力略有不足。从七月份在腾讯实习到现在，接触到了不少项目的代码，平均算来每天都有 70% 的时间用于阅读、理解他人的代码。每次阅读他人代码的时候，我心中都会冒出来两个强烈的愿望：要是 JavaScript是强类型的多好！要是文档能再详细一点就好了！多亏了 TypeScript 和 JSDoc，这两个愿望都有变成现实的可能。</p>
 <a id="more"></a>
@@ -226,7 +226,7 @@
     <link href="http://segmentfault.me/2017/08/27/css-js%E4%B8%BB%E5%9F%9F%E9%87%8D%E8%AF%95/"/>
     <id>http://segmentfault.me/2017/08/27/css-js主域重试/</id>
     <published>2017-08-27T04:43:42.000Z</published>
-    <updated>2017-10-18T03:51:53.000Z</updated>
+    <updated>2018-01-13T17:17:59.735Z</updated>
     
     <content type="html"><![CDATA[<p>为了提高网站的访问速度，现在一般会将静态资源放在 CDN 下，而不是放在网站的域名之下。以腾讯课堂为例，其域名为 ke.qq.com，打开控制台，访问 ke.qq.com，我们可以看到 js 文件放在了 CDN 7.url.cn 下，css 文件放在了 CDN 8.url.cn 下。尽管 CDN 的服务可用性一般宣称 99.9% 甚至 99.999%，然而实际上监测结果比该数值要小一些。为了应对这种情况，需要做到当发现 css 或 js 文件从 CDN 加载失败时，能再次从网站的域名加载。</p>
 <a id="more"></a>
@@ -329,7 +329,7 @@
     <link href="http://segmentfault.me/2017/07/22/evenEmitter/"/>
     <id>http://segmentfault.me/2017/07/22/evenEmitter/</id>
     <published>2017-07-22T15:20:55.000Z</published>
-    <updated>2017-07-22T15:28:23.000Z</updated>
+    <updated>2018-01-13T17:17:59.738Z</updated>
     
     <content type="html"><![CDATA[<p>Node 中的许多核心 API 都是通过事件驱动的异步架构实现的，具体来说就是当 <code>emitters</code> 发送事件后，相应的响应函数（ <code>listeners</code> ）会被执行。例如：<code>net.Server</code> 会在每次收到连接时发出事件，<code>fs.ReadStram</code> 会在文件打开时发出事件，<code>stram</code>会在有数据可读时发出事件。<br>所有这些对象都是 <code>EventEmitter</code> 的实例，它们通过向外暴露的 <code>eventEmitter.on()</code> 接口从而让不同的事件响应函数得以执行。</p>
 <a id="more"></a>
@@ -385,7 +385,7 @@
     <link href="http://segmentfault.me/2017/06/01/%E4%B8%8D%E5%86%8D%E6%98%AF%E5%AD%A9%E5%AD%90/"/>
     <id>http://segmentfault.me/2017/06/01/不再是孩子/</id>
     <published>2017-06-01T05:26:46.000Z</published>
-    <updated>2017-08-27T04:33:13.000Z</updated>
+    <updated>2018-01-13T17:17:59.734Z</updated>
     
     <content type="html"><![CDATA[<p>又是六一儿童节，前几年每次过六一都会去电影院看哆啦A梦的大电影，今年不想去了，一是这次上映的《哆啦A梦：大熊的南极冰冰凉大冒险》不是不二雄亲自执笔的，评价也不怎么好；二是一起去看电影的人也不在了，一个人去的话看电影的乐趣少了太多。</p>
 <a id="more"></a>
@@ -418,7 +418,7 @@
     <link href="http://segmentfault.me/2017/01/22/proto%E4%B8%8Eprototype%E7%9A%84%E5%85%B3%E7%B3%BB/"/>
     <id>http://segmentfault.me/2017/01/22/proto与prototype的关系/</id>
     <published>2017-01-22T01:21:37.000Z</published>
-    <updated>2017-07-22T15:13:34.000Z</updated>
+    <updated>2018-01-13T17:17:59.744Z</updated>
     
     <content type="html"><![CDATA[<p>之前常听说 JavaScript 的面向对象是构建于原型链（protype chain）上的，通过逐级向上查找直至 Object 的原型为止，但是具体的工作机制不太清楚，今天查阅了资料，才发现原来自己之前把 <code>__proto__</code> 与 <code>prototype</code> 混为一谈了（冏o(╯□╰)o）。</p>
 <a id="more"></a>
@@ -471,7 +471,7 @@
     <link href="http://segmentfault.me/2017/01/19/JavaScript-%E4%B8%AD%E5%88%9B%E5%BB%BA%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E6%B3%95/"/>
     <id>http://segmentfault.me/2017/01/19/JavaScript-中创建对象的几种方法/</id>
     <published>2017-01-19T05:35:59.000Z</published>
-    <updated>2017-07-22T15:13:34.000Z</updated>
+    <updated>2018-01-13T17:17:59.740Z</updated>
     
     <content type="html"><![CDATA[<p>在 JavaScript 中，面向对象编程的概念和 C++，Java 等语言都不太一样。在其他的语言中，面向对象的编程需要区分两个概念：<strong>类</strong>和<strong>实例</strong>，<strong>类</strong>是<strong>实例</strong>的模板，<strong>实例</strong>是根据<strong>类</strong>创建出来的对象。以 C++ 为例，在<code>Student jack = new Student();</code>  中，<code>Student</code> 为类，<code>jack</code> 为实例。不过在 JavaScript 中，不区分类和实例，而是通过 <code>原型（prototype）</code> 实现面向对象的编程。关于原型的介绍不是这篇文章的重点，想要深入了解的朋友可以参考 <a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Inheritance_and_the_prototype_chain" target="_blank" rel="external">MDN - 继承与原型链</a>。接下来将主要讲讲 JavaScript 中创建对象的几种方法和其优缺点。</p>
 <a id="more"></a>
@@ -540,11 +540,11 @@
     </summary>
     
     
+      <category term="读书笔记" scheme="http://segmentfault.me/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+    
       <category term="前端" scheme="http://segmentfault.me/tags/%E5%89%8D%E7%AB%AF/"/>
     
       <category term="JavaScript" scheme="http://segmentfault.me/tags/JavaScript/"/>
-    
-      <category term="读书笔记" scheme="http://segmentfault.me/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
   </entry>
   
@@ -553,7 +553,7 @@
     <link href="http://segmentfault.me/2016/12/16/%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BA%8B%E4%BB%B6/"/>
     <id>http://segmentfault.me/2016/12/16/自定义事件/</id>
     <published>2016-12-16T02:51:35.000Z</published>
-    <updated>2017-07-22T15:13:34.000Z</updated>
+    <updated>2018-01-13T17:17:59.742Z</updated>
     
     <content type="html"><![CDATA[<p> 首先，我们要弄清楚什么是<strong>事件</strong>。在 W3School 上有这样一句话：</p>
 <blockquote>
@@ -621,7 +621,7 @@
     <link href="http://segmentfault.me/2016/12/08/%E5%B1%95%E6%9C%9B-2017/"/>
     <id>http://segmentfault.me/2016/12/08/展望-2017/</id>
     <published>2016-12-08T14:18:55.000Z</published>
-    <updated>2017-07-22T15:13:34.000Z</updated>
+    <updated>2018-01-13T17:17:59.744Z</updated>
     
     <content type="html"><![CDATA[<p>不知不觉，2016年走到了末尾。</p>
 <p>往前看，不久就将迎来实习生面试，然后就是从暑假开始，大概会持续一年的实习工作，这样想想，大学生活也走到了末尾；回首一望，发现大学也才过去了两年半不到，但感觉自己已经鼓捣了不少东西：大一时懵懵懂懂地跟着学长学 PHP、Python、HTML &amp; CSS，还给 MacBook 装过 Arch；大二的时候和基友参加 SDN 的比赛，帮老师用 Flask 写了公选课管理系统，还自己鼓捣了一段时间 Android；大三开学不久从学院那儿接了个外包，用 Vue 在微信公众号上用 H5 复刻了一个简单版的外卖平台。</p>
@@ -655,7 +655,7 @@
     <link href="http://segmentfault.me/2016/11/27/%E5%A6%82%E4%BD%95%E7%BB%88%E6%AD%A2%E6%B6%88%E8%B4%B9%E8%80%85%E7%BA%BF%E7%A8%8B%EF%BC%9F/"/>
     <id>http://segmentfault.me/2016/11/27/如何终止消费者线程？/</id>
     <published>2016-11-27T14:50:45.000Z</published>
-    <updated>2017-07-22T15:13:34.000Z</updated>
+    <updated>2018-01-13T17:17:59.746Z</updated>
     
     <content type="html"><![CDATA[<p>最近在做 <a href="https://github.com/Leonard-Peng/HungrySpider" target="_blank" rel="external">黄网嗅探器</a> 的时候，因为单线程版实在太慢，大部分时间都用在了网络 IO上，因而想着利用<strong>生产者-消费者模型</strong>做出多线程版，把网址的生成部分当作生产者线程，网址是否为黄网的检测部分当作消费者线程。不过在实现的过程中，碰到了一个问题：当网址的全部组合已生成完毕后，如何由生产者通知消费者，进而待网址检测完成后终止消费者线程呢？</p>
 <a id="more"></a>
@@ -709,92 +709,11 @@
   </entry>
   
   <entry>
-    <title>yield from、asyncio 与 aiohttp 在异步IO中的应用</title>
-    <link href="http://segmentfault.me/2016/11/17/yield-from%E3%80%81asyncio-%E4%B8%8E-aiohttp-%E5%9C%A8%E5%BC%82%E6%AD%A5IO%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/"/>
-    <id>http://segmentfault.me/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/</id>
-    <published>2016-11-17T14:43:34.000Z</published>
-    <updated>2017-07-22T15:13:34.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>Python3.3 中引入了 <code>yield from</code> 用于定义生成器;Python3.4 中引入了 <code>asyncio</code>标准库， 从而直接内置了对异步IO的支持。<br><a id="more"></a></p>
-<h2 id="yield-from的简单实例"><a href="#yield-from的简单实例" class="headerlink" title="yield from的简单实例"></a><code>yield from</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator1</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator2</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>, <span class="number">20</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator1()</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator2()</div><div class="line">    </div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> generator():</div><div class="line">    print(i)</div></pre></td></tr></table></figure>
-<p>在上面的例子中， 最终会输出0~19。通过<code>yield from</code>的使用，我们可以将不同的生成器组合在一起，形成新的生成器，就如同通过不同函数的调用形成新德函数一样。</p>
-<h2 id="next-amp-amp-send"><a href="#next-amp-amp-send" class="headerlink" title="next &amp;&amp; send"></a><code>next</code> &amp;&amp; <code>send</code></h2><ul>
-<li><code>next</code> 返回生成器的下一个值， 然后生成器挂起。</li>
-<li><code>send</code> 对于一个生成器对象g，如果调用<code>g.send(None)</code>， 那么效果和<code>next(g)</code>一样；如果调用<code>g.send(value)</code>，就相当于yield的返回值。</li>
-</ul>
-<h2 id="asyncio的简单实例"><a href="#asyncio的简单实例" class="headerlink" title="asyncio的简单实例"></a><code>asyncio</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'Hello World!'</span>)</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">1</span>)</div><div class="line">    print(<span class="string">'GoodBye!'</span>)</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">tasks = [hello(), hello(), hello()]</div><div class="line">loop.run_until_complete(asyncio.wait(tasks))</div><div class="line">loop.close()</div></pre></td></tr></table></figure>
-<p>观察运行结果：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">(暂停约1秒）</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div></pre></td></tr></table></figure>
-<p>上述例子的运行流程如下：</p>
-<ol>
-<li><code>@asyncio.coroutine</code>把一个生成器（此处是hello())标记为coroutine类型，然后我们把这个coroutine扔到EventLoop中执行。</li>
-<li>通过<code>asyncio.get_event_loop()</code>创建消息循环的列表。</li>
-<li><code>loop.run_until_complete(asyncio.wait(tasks))</code>异步执行消息列表中的事件。</li>
-<li>在<code>hello()</code>函数中，<code>yield from</code>语法可以让我们调用另一个generator。由于<code>asyncio.sleep()</code>也是一个<code>coroutine</code>，所以线程不会等待<code>asyncio.sleep()</code>，而是直接中断并执行下一个消息循环。当<code>asyncio.sleep()</code>返回时，线程就可以从<code>yield from</code>拿到返回值（此处是None），然后接着执行下一行语句。</li>
-<li>最后<code>loop.close()</code>结束消息循环的列表。</li>
-</ol>
-<h2 id="aiohttp的简单实例"><a href="#aiohttp的简单实例" class="headerlink" title="aiohttp的简单实例"></a><code>aiohttp</code>的简单实例</h2><p><code>asyncio</code>实现了TCP、UDP、SSL等协议，<code>aiohttp</code>则是基于asyncio实现的HTTP框架。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Simple HTTP Server</span></div><div class="line"><span class="comment"># coding=utf-8</span></div><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="keyword">from</span> aiohttp <span class="keyword">import</span> web</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">return</span> web.Response(body=<span class="string">b'&lt;h1&gt;Index&lt;/h1&gt;'</span>)</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">0.5</span>)</div><div class="line">    text = <span class="string">'&lt;h1&gt;hello, %s!&lt;/h1&gt;'</span> % request.match_info[<span class="string">'name'</span>]</div><div class="line">    <span class="keyword">return</span> web.Response(body=text.encode(<span class="string">'utf-8'</span>))</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(loop)</span>:</span></div><div class="line">    app = web.Application(loop=loop)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/'</span>, index)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/hello/&#123;name&#125;'</span>, hello)</div><div class="line">    srv = <span class="keyword">yield</span> <span class="keyword">from</span> loop.create_server(app.make_handler(), <span class="string">'127.0.0.1'</span>, <span class="number">8000</span>)</div><div class="line">    print(<span class="string">'Server started at http://127.0.0.1:8000 ...'</span>)</div><div class="line">    <span class="keyword">return</span> srv</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">loop.run_until_complete(init(loop))</div><div class="line">loop.run_forever()</div></pre></td></tr></table></figure>]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;Python3.3 中引入了 &lt;code&gt;yield from&lt;/code&gt; 用于定义生成器;Python3.4 中引入了 &lt;code&gt;asyncio&lt;/code&gt;标准库， 从而直接内置了对异步IO的支持。&lt;br&gt;
-    
-    </summary>
-    
-    
-      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>python 与 c 的相互调用</title>
-    <link href="http://segmentfault.me/2016/11/17/python%E4%B8%8Ec%E7%9A%84%E7%9B%B8%E4%BA%92%E8%B0%83%E7%94%A8/"/>
-    <id>http://segmentfault.me/2016/11/17/python与c的相互调用/</id>
-    <published>2016-11-17T14:43:34.000Z</published>
-    <updated>2017-07-22T15:13:34.000Z</updated>
-    
-    <content type="html"><![CDATA[<p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
-<p>   若能将两者结合起来，岂不是妙哉？</p>
-<a id="more"></a>
-<h2 id="python-调用-c-程序"><a href="#python-调用-c-程序" class="headerlink" title="python 调用 c 程序"></a>python 调用 c 程序</h2><ol>
-<li><p>首先我们编写一个简单的 c 程序 <code>multi.c</code></p>
- <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">multiply</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> n1 * n2;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>接着将写好的 c 程序编译生成动态库 <code>multi.so</code>，便于 python 程序调用。<br><code>gcc -shared -fPIC multi.c -o multi.so</code></p>
-<ul>
-<li>-shared  生成动态库</li>
-<li>-fPIC 生成与位置无关代码(Position-Independent Code)</li>
-<li>-o 指定生成库的名字</li>
-</ul>
-</li>
-<li><p>最后在 <code>multi.so</code> 的同级目录下运行 python 解释器, 调用刚刚编写的 multiply 函数</p>
-  <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> ctypes</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi = ctypes.cdll.LoadLibrary(<span class="string">'./multi.so'</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi.multiply(<span class="number">2</span>, <span class="number">4</span>)</div><div class="line"><span class="number">8</span></div></pre></td></tr></table></figure>
-</li>
-</ol>
-<p><code>ctypes</code> 库提供了与c语言一致的数据类型，并且可以用来调用动态链接库中的函数。在这里，我们通过<code>ctypes.cdll.LoadLibrary</code>来读取c库。该库更详细的使用可以参阅<a href="https://docs.python.org/2/library/ctypes.html" target="_blank" rel="external">官方文档 ctypes — A foreign function library for Python</a></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。&lt;/p&gt;
-&lt;p&gt;   若能将两者结合起来，岂不是妙哉？&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
-    
-      <category term="c" scheme="http://segmentfault.me/tags/c/"/>
-    
-  </entry>
-  
-  <entry>
     <title>UML 类图</title>
     <link href="http://segmentfault.me/2016/11/17/UML-%E7%B1%BB%E5%9B%BE/"/>
     <id>http://segmentfault.me/2016/11/17/UML-类图/</id>
     <published>2016-11-17T14:43:34.000Z</published>
-    <updated>2017-08-27T04:55:42.000Z</updated>
+    <updated>2018-01-13T17:17:59.745Z</updated>
     
     <content type="html"><![CDATA[<p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
 <a id="more"></a>
@@ -858,11 +777,92 @@
   </entry>
   
   <entry>
+    <title>yield from、asyncio 与 aiohttp 在异步IO中的应用</title>
+    <link href="http://segmentfault.me/2016/11/17/yield-from%E3%80%81asyncio-%E4%B8%8E-aiohttp-%E5%9C%A8%E5%BC%82%E6%AD%A5IO%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/"/>
+    <id>http://segmentfault.me/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/</id>
+    <published>2016-11-17T14:43:34.000Z</published>
+    <updated>2018-01-13T17:17:59.741Z</updated>
+    
+    <content type="html"><![CDATA[<p>Python3.3 中引入了 <code>yield from</code> 用于定义生成器;Python3.4 中引入了 <code>asyncio</code>标准库， 从而直接内置了对异步IO的支持。<br><a id="more"></a></p>
+<h2 id="yield-from的简单实例"><a href="#yield-from的简单实例" class="headerlink" title="yield from的简单实例"></a><code>yield from</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator1</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator2</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">10</span>, <span class="number">20</span>):</div><div class="line">        <span class="keyword">yield</span> i</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">generator</span><span class="params">()</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator1()</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> generator2()</div><div class="line">    </div><div class="line"><span class="keyword">for</span> i <span class="keyword">in</span> generator():</div><div class="line">    print(i)</div></pre></td></tr></table></figure>
+<p>在上面的例子中， 最终会输出0~19。通过<code>yield from</code>的使用，我们可以将不同的生成器组合在一起，形成新的生成器，就如同通过不同函数的调用形成新德函数一样。</p>
+<h2 id="next-amp-amp-send"><a href="#next-amp-amp-send" class="headerlink" title="next &amp;&amp; send"></a><code>next</code> &amp;&amp; <code>send</code></h2><ul>
+<li><code>next</code> 返回生成器的下一个值， 然后生成器挂起。</li>
+<li><code>send</code> 对于一个生成器对象g，如果调用<code>g.send(None)</code>， 那么效果和<code>next(g)</code>一样；如果调用<code>g.send(value)</code>，就相当于yield的返回值。</li>
+</ul>
+<h2 id="asyncio的简单实例"><a href="#asyncio的简单实例" class="headerlink" title="asyncio的简单实例"></a><code>asyncio</code>的简单实例</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">()</span>:</span></div><div class="line">    print(<span class="string">'Hello World!'</span>)</div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">1</span>)</div><div class="line">    print(<span class="string">'GoodBye!'</span>)</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">tasks = [hello(), hello(), hello()]</div><div class="line">loop.run_until_complete(asyncio.wait(tasks))</div><div class="line">loop.close()</div></pre></td></tr></table></figure>
+<p>观察运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">Hello World!</div><div class="line">(暂停约1秒）</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div><div class="line">GoodBye!</div></pre></td></tr></table></figure>
+<p>上述例子的运行流程如下：</p>
+<ol>
+<li><code>@asyncio.coroutine</code>把一个生成器（此处是hello())标记为coroutine类型，然后我们把这个coroutine扔到EventLoop中执行。</li>
+<li>通过<code>asyncio.get_event_loop()</code>创建消息循环的列表。</li>
+<li><code>loop.run_until_complete(asyncio.wait(tasks))</code>异步执行消息列表中的事件。</li>
+<li>在<code>hello()</code>函数中，<code>yield from</code>语法可以让我们调用另一个generator。由于<code>asyncio.sleep()</code>也是一个<code>coroutine</code>，所以线程不会等待<code>asyncio.sleep()</code>，而是直接中断并执行下一个消息循环。当<code>asyncio.sleep()</code>返回时，线程就可以从<code>yield from</code>拿到返回值（此处是None），然后接着执行下一行语句。</li>
+<li>最后<code>loop.close()</code>结束消息循环的列表。</li>
+</ol>
+<h2 id="aiohttp的简单实例"><a href="#aiohttp的简单实例" class="headerlink" title="aiohttp的简单实例"></a><code>aiohttp</code>的简单实例</h2><p><code>asyncio</code>实现了TCP、UDP、SSL等协议，<code>aiohttp</code>则是基于asyncio实现的HTTP框架。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment"># Simple HTTP Server</span></div><div class="line"><span class="comment"># coding=utf-8</span></div><div class="line"><span class="keyword">import</span> asyncio</div><div class="line"><span class="keyword">from</span> aiohttp <span class="keyword">import</span> web</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">index</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">return</span> web.Response(body=<span class="string">b'&lt;h1&gt;Index&lt;/h1&gt;'</span>)</div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello</span><span class="params">(request)</span>:</span></div><div class="line">    <span class="keyword">yield</span> <span class="keyword">from</span> asyncio.sleep(<span class="number">0.5</span>)</div><div class="line">    text = <span class="string">'&lt;h1&gt;hello, %s!&lt;/h1&gt;'</span> % request.match_info[<span class="string">'name'</span>]</div><div class="line">    <span class="keyword">return</span> web.Response(body=text.encode(<span class="string">'utf-8'</span>))</div><div class="line"><span class="meta">@asyncio.coroutine</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">init</span><span class="params">(loop)</span>:</span></div><div class="line">    app = web.Application(loop=loop)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/'</span>, index)</div><div class="line">    app.router.add_route(<span class="string">'GET'</span>, <span class="string">'/hello/&#123;name&#125;'</span>, hello)</div><div class="line">    srv = <span class="keyword">yield</span> <span class="keyword">from</span> loop.create_server(app.make_handler(), <span class="string">'127.0.0.1'</span>, <span class="number">8000</span>)</div><div class="line">    print(<span class="string">'Server started at http://127.0.0.1:8000 ...'</span>)</div><div class="line">    <span class="keyword">return</span> srv</div><div class="line">loop = asyncio.get_event_loop()</div><div class="line">loop.run_until_complete(init(loop))</div><div class="line">loop.run_forever()</div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;Python3.3 中引入了 &lt;code&gt;yield from&lt;/code&gt; 用于定义生成器;Python3.4 中引入了 &lt;code&gt;asyncio&lt;/code&gt;标准库， 从而直接内置了对异步IO的支持。&lt;br&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>python 与 c 的相互调用</title>
+    <link href="http://segmentfault.me/2016/11/17/python%E4%B8%8Ec%E7%9A%84%E7%9B%B8%E4%BA%92%E8%B0%83%E7%94%A8/"/>
+    <id>http://segmentfault.me/2016/11/17/python与c的相互调用/</id>
+    <published>2016-11-17T14:43:34.000Z</published>
+    <updated>2018-01-13T17:17:59.743Z</updated>
+    
+    <content type="html"><![CDATA[<p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
+<p>   若能将两者结合起来，岂不是妙哉？</p>
+<a id="more"></a>
+<h2 id="python-调用-c-程序"><a href="#python-调用-c-程序" class="headerlink" title="python 调用 c 程序"></a>python 调用 c 程序</h2><ol>
+<li><p>首先我们编写一个简单的 c 程序 <code>multi.c</code></p>
+ <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">multiply</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> n1 * n2;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+</li>
+<li><p>接着将写好的 c 程序编译生成动态库 <code>multi.so</code>，便于 python 程序调用。<br><code>gcc -shared -fPIC multi.c -o multi.so</code></p>
+<ul>
+<li>-shared  生成动态库</li>
+<li>-fPIC 生成与位置无关代码(Position-Independent Code)</li>
+<li>-o 指定生成库的名字</li>
+</ul>
+</li>
+<li><p>最后在 <code>multi.so</code> 的同级目录下运行 python 解释器, 调用刚刚编写的 multiply 函数</p>
+  <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> ctypes</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi = ctypes.cdll.LoadLibrary(<span class="string">'./multi.so'</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi.multiply(<span class="number">2</span>, <span class="number">4</span>)</div><div class="line"><span class="number">8</span></div></pre></td></tr></table></figure>
+</li>
+</ol>
+<p><code>ctypes</code> 库提供了与c语言一致的数据类型，并且可以用来调用动态链接库中的函数。在这里，我们通过<code>ctypes.cdll.LoadLibrary</code>来读取c库。该库更详细的使用可以参阅<a href="https://docs.python.org/2/library/ctypes.html" target="_blank" rel="external">官方文档 ctypes — A foreign function library for Python</a></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。&lt;/p&gt;
+&lt;p&gt;   若能将两者结合起来，岂不是妙哉？&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
+    
+      <category term="c" scheme="http://segmentfault.me/tags/c/"/>
+    
+  </entry>
+  
+  <entry>
     <title>函数作为返回值--闭包</title>
     <link href="http://segmentfault.me/2016/11/17/%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E8%BF%94%E5%9B%9E%E5%80%BC-%E9%97%AD%E5%8C%85/"/>
     <id>http://segmentfault.me/2016/11/17/函数作为返回值-闭包/</id>
     <published>2016-11-17T14:43:34.000Z</published>
-    <updated>2017-07-22T15:13:34.000Z</updated>
+    <updated>2018-01-13T17:17:59.739Z</updated>
     
     <content type="html"><![CDATA[<p>当我们在函数A中又定义了函数B，并且内部函数B可以引用外部函数A的参数和局部变量，当A返回函数B时，相关参数和变量都保存在返回的函数中，这种程序结构称为<strong>“闭包”（Closure）</strong>。</p>
 <a id="more"></a>
@@ -898,7 +898,7 @@
     <link href="http://segmentfault.me/2016/11/17/%E5%AD%A6%E4%B8%80%E6%AC%A1%E5%BF%98%E4%B8%80%E6%AC%A1%E7%9A%84%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F/"/>
     <id>http://segmentfault.me/2016/11/17/学一次忘一次的正则表达式/</id>
     <published>2016-11-17T14:43:34.000Z</published>
-    <updated>2017-07-22T15:13:34.000Z</updated>
+    <updated>2018-01-13T17:17:59.748Z</updated>
     
     <content type="html"><![CDATA[<p>说实话，正则表达式已经看过不下五遍了，然而每次要用的时候，都得再重新学一下才行——实在是记不住呀！！</p>
 <p>今天趁着重新学Python的机会，总结一下正则表达式中基本的内容，更加深入、详细的内容可以移步<a href="http://deerchao.net/tutorials/regex/regex.htm" target="_blank" rel="external">正则表达式30分钟入门</a>。</p>
@@ -976,7 +976,7 @@
     <link href="http://segmentfault.me/2015/06/01/%E5%8D%9A%E5%AE%A2%E7%9A%84%E7%AC%AC%E4%B8%80%E5%A4%A9/"/>
     <id>http://segmentfault.me/2015/06/01/博客的第一天/</id>
     <published>2015-05-31T16:00:00.000Z</published>
-    <updated>2017-07-22T15:13:34.000Z</updated>
+    <updated>2018-01-13T17:17:59.737Z</updated>
     
     <content type="html"><![CDATA[<p>今天是20岁之前的最后一个六一儿童节了，想想马上就是奔三十的人了，身上肩负的责任也会越来越多了吧。</p>
 <p>在今天，和基友一起鼓捣了很久的SDN大赛初赛算是落下了帷幕；在今天，和量云从五一开始到现在开开心心地走过了一个月；在今天，纠结了很久最终下定决心写的博客也上线了——二十岁前的最后一个六一，对我来说意味着很多^_^<br>希望从今天起，以后能在技术、爱情上能够越来越好，碰到了任何问题都能和基友、她一起共同解决吧。</p>

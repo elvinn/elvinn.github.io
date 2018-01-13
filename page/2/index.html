@@ -10,6 +10,17 @@
 <meta http-equiv="Cache-Control" content="no-transform" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+
+
+
+
 
 
 
@@ -23,23 +34,14 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.4.x" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.6" />
 
 
 
 <link rel="canonical" href="http://segmentfault.me/page/2/"/>
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Elvin 的博客">
-<meta property="og:url" content="http://segmentfault.me/page/2/index.html">
-<meta property="og:site_name" content="Elvin 的博客">
-<meta property="og:locale" content="zh-cn">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Elvin 的博客">
-
-
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.4.x" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6" />
 
 
 
@@ -48,30 +50,38 @@
 
 
 
+  
 
-<script>
-  var CONFIG = {
-    search: true,
-    searchPath: "/search.xml",
-    fancybox: true,
-    toc: true,
-  }
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
 </script>
 
 
 
 
-  
 
-  <script type="text/javascript">
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-        ga('create', 'UA-99326171-1', 'auto');
-        ga('send', 'pageview');
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "yBvm8iKfVaJoUvQCdQsBQrQm-gzGzoHsz",
+      appKey: "86Lk6wSBdW33u6trzkNgYB6S"
+    });
   </script>
+
+
 
 
 
@@ -96,7 +106,7 @@
         <li class="mobile-menu-item">
           
           
-            Home
+            首页
           
         </li>
       </a>
@@ -105,7 +115,7 @@
         <li class="mobile-menu-item">
           
           
-            Archives
+            归档
           
         </li>
       </a>
@@ -114,7 +124,7 @@
         <li class="mobile-menu-item">
           
           
-            Tags
+            标签
           
         </li>
       </a>
@@ -132,7 +142,7 @@
         <li class="mobile-menu-item">
           
           
-            About
+            关于
           
         </li>
       </a>
@@ -180,7 +190,7 @@
           <a class="menu-item-link" href="/hope">
             
             
-              愿望
+              Hope
             
           </a>
         </li>
@@ -192,15 +202,6 @@
               关于
             
           </a>
-        </li>
-      
-      
-        <li class="menu-search">
-          <form>
-            <i class="iconfont icon-search" id="open-search"></i>
-            <input type="text" class="search-input" id="search-input" />
-            <i class="iconfont icon-close" id="close-search"></i>
-          </form>
         </li>
       
     </ul>
@@ -226,8 +227,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2017年1月19日
+          2017-01-19
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2017/01/19/JavaScript-中创建对象的几种方法/"
+             data-title="JavaScript 中创建对象的几种方法">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -268,8 +277,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2016年12月16日
+          2016-12-16
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2016/12/16/自定义事件/"
+             data-title="自定义事件">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -314,8 +331,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2016年12月8日
+          2016-12-08
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2016/12/08/展望-2017/"
+             data-title="展望 2017">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -357,8 +382,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2016年11月27日
+          2016-11-27
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2016/11/27/如何终止消费者线程？/"
+             data-title="如何终止消费者线程？">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -393,14 +426,72 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2016/11/17/UML-类图/">UML 类图</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2016-11-17
+        </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2016/11/17/UML-类图/"
+             data-title="UML 类图">
+            阅读次数
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
+          <div class="read-more">
+            <a href="/2016/11/17/UML-类图/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/">yield from、asyncio 与 aiohttp 在异步IO中的应用</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016年11月17日
+          2016-11-17
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/"
+             data-title="yield from、asyncio 与 aiohttp 在异步IO中的应用">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -441,8 +532,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2016年11月17日
+          2016-11-17
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2016/11/17/python与c的相互调用/"
+             data-title="python 与 c 的相互调用">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -478,56 +577,22 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          <a class="post-link" href="/2016/11/17/UML-类图/">UML 类图</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2016年11月17日
-        </span>
-      </div>
-    </header>
-
-    
-    
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
-          <div class="read-more">
-            <a href="/2016/11/17/UML-类图/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
           <a class="post-link" href="/2016/11/17/函数作为返回值-闭包/">函数作为返回值--闭包</a>
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016年11月17日
+          2016-11-17
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2016/11/17/函数作为返回值-闭包/"
+             data-title="函数作为返回值--闭包">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -579,7 +644,7 @@
           </div>
           
 
-        </div>  
+        </div>
       </main>
 
       <footer id="footer" class="footer">
@@ -629,7 +694,7 @@
   <span class="power-by">
     由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
   </span>
-  
+  <span class="division">|</span>
   <span class="theme-info">
     主题 - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
@@ -649,6 +714,7 @@
     <span class="author">Elvin Peng</span>
   </span>
 </div>
+
       </footer>
 
       <div class="back-to-top" id="back-to-top">
@@ -679,35 +745,8 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.4.x"></script>
-<script type="text/javascript" src="/js/src/bootstrap.js?v=2.4.x"></script>
-
-    
-  <script type="text/html" id="search-result">
-    <article class="post">
-      <header class="post-header">
-        <h1 class="post-title">
-          <a href="$url$" class="post-link">
-            $title$
-          </a>
-        </h1>
-      </header>
-      <div class="post-content">
-        $content$
-        <div class="read-more">
-          <a href="$url$" class="read-more-link">
-            阅读更多
-          </a>
-        </div>
-      </div>
-    </article>
-  </script>
-  <script type="text/html" id="no-search-result">
-    <div class="no-result">
-      <h2>No result found!</h2>
-    </div>
-  </script>
-  <script type="text/javascript" src="/js/src/search.js?v=2.4.x"></script>
+    <script type="text/javascript" src="/js/src/even.js?v=2.6"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.6"></script>
 
   </body>
 </html>

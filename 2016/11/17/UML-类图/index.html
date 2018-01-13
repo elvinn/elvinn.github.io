@@ -10,6 +10,11 @@
 <meta http-equiv="Cache-Control" content="no-transform" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
 
 
   <meta name="description" content="UML 类图"/>
@@ -17,7 +22,13 @@
 
 
 
-  <meta name="keywords" content="JAVA,基础知识," />
+  <meta name="keywords" content="JAVA, 基础知识, Elvin 的博客" />
+
+
+
+
+
+
 
 
 
@@ -27,37 +38,14 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.4.x" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.6" />
 
 
 
 <link rel="canonical" href="http://segmentfault.me/2016/11/17/UML-类图/"/>
 
 
-<meta name="description" content="在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。">
-<meta name="keywords" content="JAVA,基础知识">
-<meta property="og:type" content="article">
-<meta property="og:title" content="UML 类图">
-<meta property="og:url" content="http://segmentfault.me/2016/11/17/UML-类图/index.html">
-<meta property="og:site_name" content="Elvin 的博客">
-<meta property="og:description" content="在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。">
-<meta property="og:locale" content="zh-cn">
-<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/Person.png">
-<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/generalization.png">
-<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/realization.png">
-<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/dependency.png">
-<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/association.png">
-<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/aggregation.png">
-<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/Multiplicity.png">
-<meta property="og:image" content="http://7xlboz.com1.z0.glb.clouddn.com/composition.png">
-<meta property="og:updated_time" content="2017-08-27T04:55:42.000Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="UML 类图">
-<meta name="twitter:description" content="在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。">
-<meta name="twitter:image" content="http://7xlboz.com1.z0.glb.clouddn.com/Person.png">
-
-
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.4.x" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6" />
 
 
 
@@ -66,34 +54,42 @@
 
 
 
+  
 
-<script>
-  var CONFIG = {
-    search: true,
-    searchPath: "/search.xml",
-    fancybox: true,
-    toc: true,
-  }
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
 </script>
 
 
 
 
-  
 
-  <script type="text/javascript">
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-        ga('create', 'UA-99326171-1', 'auto');
-        ga('send', 'pageview');
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "yBvm8iKfVaJoUvQCdQsBQrQm-gzGzoHsz",
+      appKey: "86Lk6wSBdW33u6trzkNgYB6S"
+    });
   </script>
 
 
 
-    <title> UML 类图 · Elvin 的博客 </title>
+
+
+    <title> UML 类图 - Elvin 的博客 </title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -114,7 +110,7 @@
         <li class="mobile-menu-item">
           
           
-            Home
+            首页
           
         </li>
       </a>
@@ -123,7 +119,7 @@
         <li class="mobile-menu-item">
           
           
-            Archives
+            归档
           
         </li>
       </a>
@@ -132,7 +128,7 @@
         <li class="mobile-menu-item">
           
           
-            Tags
+            标签
           
         </li>
       </a>
@@ -150,7 +146,7 @@
         <li class="mobile-menu-item">
           
           
-            About
+            关于
           
         </li>
       </a>
@@ -198,7 +194,7 @@
           <a class="menu-item-link" href="/hope">
             
             
-              愿望
+              Hope
             
           </a>
         </li>
@@ -210,15 +206,6 @@
               关于
             
           </a>
-        </li>
-      
-      
-        <li class="menu-search">
-          <form>
-            <i class="iconfont icon-search" id="open-search"></i>
-            <input type="text" class="search-input" id="search-input" />
-            <i class="iconfont icon-close" id="close-search"></i>
-          </form>
         </li>
       
     </ul>
@@ -242,8 +229,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2016年11月17日
+          2016-11-17
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2016/11/17/UML-类图/"
+             data-title="UML 类图">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -315,19 +310,15 @@
 
   <div class="post-copyright">
     <p class="copyright-item">
-      <span>作者: </span>
-      <span>Elvin Peng</span>
+      <span>原文作者: </span>
+      <a href="http://segmentfault.me">Elvin Peng</a>
     </p>
     <p class="copyright-item">
-      <span>来源: </span>
-      <a href="http://segmentfault.me">http://segmentfault.me</a>
-    </p>
-    <p class="copyright-item">
-      <span>链接: </span>
+      <span>原文链接: </span>
       <a href="http://segmentfault.me/2016/11/17/UML-类图/">http://segmentfault.me/2016/11/17/UML-类图/</a>
     </p>
-
-    <p class="copyright-item lincese">
+    <p class="copyright-item">
+      <span>许可协议: </span>
       
       本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/" target="_blank">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可。通俗地讲，只要在使用时署名，那么使用者可以对本站所有原创内容进行转载、节选、混编、二次创作，允许商业性使用。
     </p>
@@ -372,15 +363,15 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2016/11/17/python与c的相互调用/">
+      <a class="prev" href="/2016/11/27/如何终止消费者线程？/">
         <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">python 与 c 的相互调用</span>
+        <span class="prev-text nav-default">如何终止消费者线程？</span>
         <span class="prev-text nav-mobile">上一篇</span>
       </a>
     
     
-      <a class="next" href="/2016/11/17/函数作为返回值-闭包/">
-        <span class="next-text nav-default">函数作为返回值--闭包</span>
+      <a class="next" href="/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/">
+        <span class="next-text nav-default">yield from、asyncio 与 aiohttp 在异步IO中的应用</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
@@ -407,7 +398,7 @@
   </div>
 
 
-        </div>  
+        </div>
       </main>
 
       <footer id="footer" class="footer">
@@ -457,7 +448,7 @@
   <span class="power-by">
     由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
   </span>
-  
+  <span class="division">|</span>
   <span class="theme-info">
     主题 - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
@@ -477,6 +468,7 @@
     <span class="author">Elvin Peng</span>
   </span>
 </div>
+
       </footer>
 
       <div class="back-to-top" id="back-to-top">
@@ -485,8 +477,6 @@
     </div>
 
     
-  
-
   
   <script type="text/javascript">
     var disqus_config = function () {
@@ -506,6 +496,7 @@
 
   
 
+  
 
 
 
@@ -529,35 +520,8 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.4.x"></script>
-<script type="text/javascript" src="/js/src/bootstrap.js?v=2.4.x"></script>
-
-    
-  <script type="text/html" id="search-result">
-    <article class="post">
-      <header class="post-header">
-        <h1 class="post-title">
-          <a href="$url$" class="post-link">
-            $title$
-          </a>
-        </h1>
-      </header>
-      <div class="post-content">
-        $content$
-        <div class="read-more">
-          <a href="$url$" class="read-more-link">
-            阅读更多
-          </a>
-        </div>
-      </div>
-    </article>
-  </script>
-  <script type="text/html" id="no-search-result">
-    <div class="no-result">
-      <h2>No result found!</h2>
-    </div>
-  </script>
-  <script type="text/javascript" src="/js/src/search.js?v=2.4.x"></script>
+    <script type="text/javascript" src="/js/src/even.js?v=2.6"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.6"></script>
 
   </body>
 </html>

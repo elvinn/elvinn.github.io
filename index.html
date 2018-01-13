@@ -10,6 +10,17 @@
 <meta http-equiv="Cache-Control" content="no-transform" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+
+
+
+
+
 
 
 
@@ -23,23 +34,14 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.4.x" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.6" />
 
 
 
 <link rel="canonical" href="http://segmentfault.me/"/>
 
 
-<meta property="og:type" content="website">
-<meta property="og:title" content="Elvin 的博客">
-<meta property="og:url" content="http://segmentfault.me/index.html">
-<meta property="og:site_name" content="Elvin 的博客">
-<meta property="og:locale" content="zh-cn">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Elvin 的博客">
-
-
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.4.x" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6" />
 
 
 
@@ -48,30 +50,38 @@
 
 
 
+  
 
-<script>
-  var CONFIG = {
-    search: true,
-    searchPath: "/search.xml",
-    fancybox: true,
-    toc: true,
-  }
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
 </script>
 
 
 
 
-  
 
-  <script type="text/javascript">
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-        ga('create', 'UA-99326171-1', 'auto');
-        ga('send', 'pageview');
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "yBvm8iKfVaJoUvQCdQsBQrQm-gzGzoHsz",
+      appKey: "86Lk6wSBdW33u6trzkNgYB6S"
+    });
   </script>
+
+
 
 
 
@@ -96,7 +106,7 @@
         <li class="mobile-menu-item">
           
           
-            Home
+            首页
           
         </li>
       </a>
@@ -105,7 +115,7 @@
         <li class="mobile-menu-item">
           
           
-            Archives
+            归档
           
         </li>
       </a>
@@ -114,7 +124,7 @@
         <li class="mobile-menu-item">
           
           
-            Tags
+            标签
           
         </li>
       </a>
@@ -132,7 +142,7 @@
         <li class="mobile-menu-item">
           
           
-            About
+            关于
           
         </li>
       </a>
@@ -180,7 +190,7 @@
           <a class="menu-item-link" href="/hope">
             
             
-              愿望
+              Hope
             
           </a>
         </li>
@@ -192,15 +202,6 @@
               关于
             
           </a>
-        </li>
-      
-      
-        <li class="menu-search">
-          <form>
-            <i class="iconfont icon-search" id="open-search"></i>
-            <input type="text" class="search-input" id="search-input" />
-            <i class="iconfont icon-close" id="close-search"></i>
-          </form>
         </li>
       
     </ul>
@@ -226,8 +227,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2017年12月24日
+          2017-12-24
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2017/12/24/call-for-number/"
+             data-title="给 Number 打 Call">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -269,8 +278,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2017年12月3日
+          2017-12-03
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2017/12/03/transform-effect-side/"
+             data-title="transform 的副作用">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -311,8 +328,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2017年11月2日
+          2017-11-02
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2017/11/02/word-break-and-word-wrap/"
+             data-title="word-break 和 word-wrap 的区别">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -353,8 +378,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2017年10月3日
+          2017-10-03
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2017/10/03/ts-jsdoc/"
+             data-title="ts-check 立即上手，JSDoc 添加类型">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -395,8 +428,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2017年8月27日
+          2017-08-27
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2017/08/27/css-js主域重试/"
+             data-title="webpack 项目 css/js主域重试">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -437,8 +478,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2017年7月22日
+          2017-07-22
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2017/07/22/evenEmitter/"
+             data-title="深入探究 Node 中的 events.EventEmitter 模块">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -479,8 +528,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2017年6月1日
+          2017-06-01
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2017/06/01/不再是孩子/"
+             data-title="不再是孩子">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -521,8 +578,16 @@
 
       <div class="post-meta">
         <span class="post-time">
-          2017年1月22日
+          2017-01-22
         </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2017/01/22/proto与prototype的关系/"
+             data-title="__proto__ 与 prototype 的关系">
+            阅读次数
+          </div>
+        
       </div>
     </header>
 
@@ -569,7 +634,7 @@
           </div>
           
 
-        </div>  
+        </div>
       </main>
 
       <footer id="footer" class="footer">
@@ -619,7 +684,7 @@
   <span class="power-by">
     由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
   </span>
-  
+  <span class="division">|</span>
   <span class="theme-info">
     主题 - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
@@ -639,6 +704,7 @@
     <span class="author">Elvin Peng</span>
   </span>
 </div>
+
       </footer>
 
       <div class="back-to-top" id="back-to-top">
@@ -669,35 +735,8 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.4.x"></script>
-<script type="text/javascript" src="/js/src/bootstrap.js?v=2.4.x"></script>
-
-    
-  <script type="text/html" id="search-result">
-    <article class="post">
-      <header class="post-header">
-        <h1 class="post-title">
-          <a href="$url$" class="post-link">
-            $title$
-          </a>
-        </h1>
-      </header>
-      <div class="post-content">
-        $content$
-        <div class="read-more">
-          <a href="$url$" class="read-more-link">
-            阅读更多
-          </a>
-        </div>
-      </div>
-    </article>
-  </script>
-  <script type="text/html" id="no-search-result">
-    <div class="no-result">
-      <h2>No result found!</h2>
-    </div>
-  </script>
-  <script type="text/javascript" src="/js/src/search.js?v=2.4.x"></script>
+    <script type="text/javascript" src="/js/src/even.js?v=2.6"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.6"></script>
 
   </body>
 </html>

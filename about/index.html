@@ -10,9 +10,20 @@
 <meta http-equiv="Cache-Control" content="no-transform" />
 <meta http-equiv="Cache-Control" content="no-siteapp" />
 
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
 
 
   <meta name="description" content="about"/>
+
+
+
+
+
+
 
 
 
@@ -25,27 +36,14 @@
 
 
 
-  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.4.x" />
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2.6" />
 
 
 
 <link rel="canonical" href="http://segmentfault.me/about/"/>
 
 
-<meta name="description" content="Seize the day and enjoy the sunshine.  经历 2017年，腾讯 IMWeb 前端团队实习生，希望能越行越远。   2016年，华中科技大学计算机学院大三学生，折腾过后台，正努力学习前端中。  爱好 敲代码，爱折腾，必须的~ 看动漫，既喜欢热血的《海贼王》，也爱纯纯的《Clannad》和《四月是你的谎言》。 打 DOTA2，从小学一路玩来差不多10年了，300">
-<meta property="og:type" content="website">
-<meta property="og:title" content="about">
-<meta property="og:url" content="http://segmentfault.me/about/index.html">
-<meta property="og:site_name" content="Elvin 的博客">
-<meta property="og:description" content="Seize the day and enjoy the sunshine.  经历 2017年，腾讯 IMWeb 前端团队实习生，希望能越行越远。   2016年，华中科技大学计算机学院大三学生，折腾过后台，正努力学习前端中。  爱好 敲代码，爱折腾，必须的~ 看动漫，既喜欢热血的《海贼王》，也爱纯纯的《Clannad》和《四月是你的谎言》。 打 DOTA2，从小学一路玩来差不多10年了，300">
-<meta property="og:locale" content="zh-cn">
-<meta property="og:updated_time" content="2017-07-22T15:29:14.000Z">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="about">
-<meta name="twitter:description" content="Seize the day and enjoy the sunshine.  经历 2017年，腾讯 IMWeb 前端团队实习生，希望能越行越远。   2016年，华中科技大学计算机学院大三学生，折腾过后台，正努力学习前端中。  爱好 敲代码，爱折腾，必须的~ 看动漫，既喜欢热血的《海贼王》，也爱纯纯的《Clannad》和《四月是你的谎言》。 打 DOTA2，从小学一路玩来差不多10年了，300">
-
-
-<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.4.x" />
+<link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6" />
 
 
 
@@ -54,34 +52,42 @@
 
 
 
+  
 
-<script>
-  var CONFIG = {
-    search: true,
-    searchPath: "/search.xml",
-    fancybox: true,
-    toc: true,
-  }
+
+
+  <script id="baidu_push">
+(function(){
+    var bp = document.createElement('script');
+    var curProtocol = window.location.protocol.split(':')[0];
+    if (curProtocol === 'https') {
+        bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+    }
+    else {
+        bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+    }
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(bp, s);
+})();
 </script>
 
 
 
 
-  
 
-  <script type="text/javascript">
-    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-
-        ga('create', 'UA-99326171-1', 'auto');
-        ga('send', 'pageview');
+  <script src="//cdn1.lncld.net/static/js/3.1.1/av-min.js"></script>
+  <script id="leancloud">
+    AV.init({
+      appId: "yBvm8iKfVaJoUvQCdQsBQrQm-gzGzoHsz",
+      appKey: "86Lk6wSBdW33u6trzkNgYB6S"
+    });
   </script>
 
 
 
-    <title> about · Elvin 的博客 </title>
+
+
+    <title> about - Elvin 的博客 </title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -102,7 +108,7 @@
         <li class="mobile-menu-item">
           
           
-            Home
+            首页
           
         </li>
       </a>
@@ -111,7 +117,7 @@
         <li class="mobile-menu-item">
           
           
-            Archives
+            归档
           
         </li>
       </a>
@@ -120,7 +126,7 @@
         <li class="mobile-menu-item">
           
           
-            Tags
+            标签
           
         </li>
       </a>
@@ -138,7 +144,7 @@
         <li class="mobile-menu-item">
           
           
-            About
+            关于
           
         </li>
       </a>
@@ -186,7 +192,7 @@
           <a class="menu-item-link" href="/hope">
             
             
-              愿望
+              Hope
             
           </a>
         </li>
@@ -198,15 +204,6 @@
               关于
             
           </a>
-        </li>
-      
-      
-        <li class="menu-search">
-          <form>
-            <i class="iconfont icon-search" id="open-search"></i>
-            <input type="text" class="search-input" id="search-input" />
-            <i class="iconfont icon-close" id="close-search"></i>
-          </form>
         </li>
       
     </ul>
@@ -236,6 +233,7 @@
 <li>打 DOTA2，从小学一路玩来差不多10年了，3000多分鱼塘水平，欢迎开黑（testforperfect）。</li>
 </ul>
 <h2 id="博客的历程"><a href="#博客的历程" class="headerlink" title="博客的历程"></a>博客的历程</h2><ul>
+<li>2018年1月14日，添加阅读次数功能。</li>
 <li>2017年6月1日，启用全新域名 <a href="http://segmentfault.me/">segmentfault.me</a>。</li>
 <li>2015年6月1日，利用 Github Pages 搭建<a href="http://leonard-peng.github.io/" target="_blank" rel="external">个人博客</a>，这里要特别感谢 <a href="http://litten.me/" target="_blank" rel="external">Litten 学长</a>的帮助。</li>
 </ul>
@@ -257,7 +255,7 @@
   </div>
 
 
-        </div>  
+        </div>
       </main>
 
       <footer id="footer" class="footer">
@@ -307,7 +305,7 @@
   <span class="power-by">
     由 <a class="hexo-link" href="https://hexo.io/">Hexo</a> 强力驱动
   </span>
-  
+  <span class="division">|</span>
   <span class="theme-info">
     主题 - 
     <a class="theme-link" href="https://github.com/ahonn/hexo-theme-even">Even</a>
@@ -327,6 +325,7 @@
     <span class="author">Elvin Peng</span>
   </span>
 </div>
+
       </footer>
 
       <div class="back-to-top" id="back-to-top">
@@ -335,8 +334,6 @@
     </div>
 
     
-  
-
   
   <script type="text/javascript">
     var disqus_config = function () {
@@ -356,6 +353,7 @@
 
   
 
+  
 
 
 
@@ -379,35 +377,8 @@
   
 
 
-    <script type="text/javascript" src="/js/src/even.js?v=2.4.x"></script>
-<script type="text/javascript" src="/js/src/bootstrap.js?v=2.4.x"></script>
-
-    
-  <script type="text/html" id="search-result">
-    <article class="post">
-      <header class="post-header">
-        <h1 class="post-title">
-          <a href="$url$" class="post-link">
-            $title$
-          </a>
-        </h1>
-      </header>
-      <div class="post-content">
-        $content$
-        <div class="read-more">
-          <a href="$url$" class="read-more-link">
-            阅读更多
-          </a>
-        </div>
-      </div>
-    </article>
-  </script>
-  <script type="text/html" id="no-search-result">
-    <div class="no-result">
-      <h2>No result found!</h2>
-    </div>
-  </script>
-  <script type="text/javascript" src="/js/src/search.js?v=2.4.x"></script>
+    <script type="text/javascript" src="/js/src/even.js?v=2.6"></script>
+<script type="text/javascript" src="/js/src/bootstrap.js?v=2.6"></script>
 
   </body>
 </html>
