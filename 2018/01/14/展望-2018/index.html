@@ -17,12 +17,12 @@
 
 
 
-  <meta name="description" content="python 与 c 的相互调用"/>
+  <meta name="description" content="展望-2018"/>
 
 
 
 
-  <meta name="keywords" content="python, c, Elvin 的博客" />
+  <meta name="keywords" content="生活, Elvin 的博客" />
 
 
 
@@ -42,7 +42,7 @@
 
 
 
-<link rel="canonical" href="http://segmentfault.me/2016/11/17/python与c的相互调用/"/>
+<link rel="canonical" href="http://segmentfault.me/2018/01/14/展望-2018/"/>
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6" />
@@ -89,7 +89,7 @@
 
 
 
-    <title> python 与 c 的相互调用 - Elvin 的博客 </title>
+    <title> 展望-2018 - Elvin 的博客 </title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -223,19 +223,19 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          python 与 c 的相互调用
+          展望-2018
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2016-11-17
+          2018-01-14
         </span>
         
         
         <div class="post-visits"
-             data-url="/2016/11/17/python与c的相互调用/"
-             data-title="python 与 c 的相互调用">
+             data-url="/2018/01/14/展望-2018/"
+             data-title="展望-2018">
             阅读次数
           </div>
         
@@ -247,32 +247,30 @@
   <div class="post-toc" id="post-toc">
     <h2 class="post-toc-title">文章目录</h2>
     <div class="post-toc-content">
-      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#python-调用-c-程序"><span class="toc-text">python 调用 c 程序</span></a></li></ol>
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#工作"><span class="toc-text">工作</span></a></li></ol>
     </div>
   </div>
 
 
     <div class="post-content">
       
-        <p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
-<p>   若能将两者结合起来，岂不是妙哉？</p>
+        <p>又一年溜走了，算一算离开学校在腾讯实习已经 6 个月了，看着 2017 年写的两篇展望<a href="http://segmentfault.me/2016/12/08/%E5%B1%95%E6%9C%9B-2017/">《展望2017》</a>和<a href="http://segmentfault.me/2017/06/01/%E4%B8%8D%E5%86%8D%E6%98%AF%E5%AD%A9%E5%AD%90/">《不再是孩子》</a>，感觉像是发生在很久以前的事情了。这一年最大的感受就是学校生活和工作生活的差别还是挺大的，不过幸运的是自己渐渐地找到了工作的节奏，希望在 2018 年能在腾讯获得更好的发展。</p>
 <a id="more"></a>
-<h2 id="python-调用-c-程序"><a href="#python-调用-c-程序" class="headerlink" title="python 调用 c 程序"></a>python 调用 c 程序</h2><ol>
-<li><p>首先我们编写一个简单的 c 程序 <code>multi.c</code></p>
- <figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></div><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">multiply</span><span class="params">(<span class="keyword">int</span> n1, <span class="keyword">int</span> n2)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> n1 * n2;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-</li>
-<li><p>接着将写好的 c 程序编译生成动态库 <code>multi.so</code>，便于 python 程序调用。<br><code>gcc -shared -fPIC multi.c -o multi.so</code></p>
-<ul>
-<li>-shared  生成动态库</li>
-<li>-fPIC 生成与位置无关代码(Position-Independent Code)</li>
-<li>-o 指定生成库的名字</li>
-</ul>
-</li>
-<li><p>最后在 <code>multi.so</code> 的同级目录下运行 python 解释器, 调用刚刚编写的 multiply 函数</p>
-  <figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> ctypes</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi = ctypes.cdll.LoadLibrary(<span class="string">'./multi.so'</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>multi.multiply(<span class="number">2</span>, <span class="number">4</span>)</div><div class="line"><span class="number">8</span></div></pre></td></tr></table></figure>
-</li>
+<h2 id="工作"><a href="#工作" class="headerlink" title="工作"></a>工作</h2><p>从大一开始参加俱乐部鼓捣 Web 前后台开发算起，三年半的时间过去了，就 Web 前端开发方面来说，我觉得自己有两段飞跃式提升的经历：</p>
+<ol>
+<li>第一段是17 年三四月准备实习的时候，读完了红宝书（《JavaScript 高级程序设计》）和《JavaScript 语言精粹》，当时感觉如获至宝：原来写 JS 不只是简单的调调 API，它内部还有这么多的细节可以去深挖和理解 — 通过这两本书和相关的学习，打牢了前端的基础。</li>
+<li>还有一段就是在腾讯 IMWeb 团队的实习经历了，在这个有爱的团队里，我第一次深刻感受了页面监控和数据上报的重要性，自己也尝试进行了一些诸如 CSS/JS 文件主域重试、内部工具开发等周边工作，让我认识到前端开发不只是简简单单地还原设计稿或者实现页面，还有很多相关的工作可以进行，自己不了解的内容还有很多很多。</li>
 </ol>
-<p><code>ctypes</code> 库提供了与c语言一致的数据类型，并且可以用来调用动态链接库中的函数。在这里，我们通过<code>ctypes.cdll.LoadLibrary</code>来读取c库。该库更详细的使用可以参阅<a href="https://docs.python.org/2/library/ctypes.html" target="_blank" rel="external">官方文档 ctypes — A foreign function library for Python</a></p>
+<p>在 2018 年，希望自己能努力让知识更有广度，也更有深度，例如：</p>
+<ol>
+<li>进行客户端相关的开发，了解 webview 和原生应用协同开发的模式和原理。</li>
+<li>通过学习诸如 <a href="http://www.material-ui.com/" target="_blank" rel="external">Material UI</a> 等 React 组件库，了解 React 组件库的开发方式，重点学习其中文件的组织方式、组件的测试方式等。</li>
+<li>阅读 《JavaScript 设计模式与开发实践》，希望能更加敦实 JS 语言本身。</li>
+<li>对 PWA 进行关注，或许可以尝试对博客进行相关实践。</li>
+<li>在掘金等平台上继续保持每月一篇文章的更新频率，同时尝试进行一些开源项目的开发。</li>
+<li>在深入前端方向的同时，对科技发展的火热方向进行了解，例如 AI、区块链等。</li>
+</ol>
+<p>未完待续 。。。</p>
 
       
     </div>
@@ -288,7 +286,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://segmentfault.me/2016/11/17/python与c的相互调用/">http://segmentfault.me/2016/11/17/python与c的相互调用/</a>
+      <a href="http://segmentfault.me/2018/01/14/展望-2018/">http://segmentfault.me/2018/01/14/展望-2018/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -326,9 +324,7 @@
         
           <div class="post-tags">
             
-              <a href="/tags/python/">python</a>
-            
-              <a href="/tags/c/">c</a>
+              <a href="/tags/生活/">生活</a>
             
           </div>
         
@@ -336,15 +332,9 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2016/11/17/学一次忘一次的正则表达式/">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">学一次忘一次的正则表达式</span>
-        <span class="prev-text nav-mobile">上一篇</span>
-      </a>
     
-    
-      <a class="next" href="/2015/06/01/博客的第一天/">
-        <span class="next-text nav-default">博客的第一天</span>
+      <a class="next" href="/2017/12/24/call-for-number/">
+        <span class="next-text nav-default">给 Number 打 Call</span>
         <span class="prev-text nav-mobile">下一篇</span>
         <i class="iconfont icon-right"></i>
       </a>
@@ -453,9 +443,9 @@
   
   <script type="text/javascript">
     var disqus_config = function () {
-        this.page.url = 'http://segmentfault.me/2016/11/17/python与c的相互调用/';
-        this.page.identifier = '2016/11/17/python与c的相互调用/';
-        this.page.title = 'python 与 c 的相互调用';
+        this.page.url = 'http://segmentfault.me/2018/01/14/展望-2018/';
+        this.page.identifier = '2018/01/14/展望-2018/';
+        this.page.title = '展望-2018';
     };
     (function() {
     var d = document, s = d.createElement('script');
