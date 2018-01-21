@@ -18,7 +18,7 @@
             {% block content %}{% endblock %}
           </div>
           {% include '_partial/comments.swig' %}
-        </div>  
+        </div>
       </main>
 
       <footer id="footer" class="footer">
@@ -34,6 +34,5 @@
 
     {% include '_script/libs.swig' %}
     {% include '_script/theme.swig' %}
-    {% include '_script/search.swig' %}
   </body>
 </html>

@@ -22,5 +22,6 @@ date: 2017-05-18 21:14:18
 
 ## 博客的历程
 
+- 2018年1月14日，添加阅读次数功能。
 - 2017年6月1日，启用全新域名 [segmentfault.me](http://segmentfault.me/)。
 - 2015年6月1日，利用 Github Pages 搭建[个人博客](http://leonard-peng.github.io/)，这里要特别感谢 [Litten 学长](http://litten.me/)的帮助。

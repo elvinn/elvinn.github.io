@@ -1,9 +1,8 @@
-menu: 
+menu:
   home: Home
   archives: Archives
   tags: Tags
   categories: Categories
-  hope: Hope
   about: About
 
 footer:
@@ -22,7 +21,7 @@ posts:
 copyright:
   author: 'Author'
   link: 'Link'
-  origin: 'Origin'
+  license: 'License'
 
 counter:
   archives:

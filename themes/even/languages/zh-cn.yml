@@ -1,10 +1,10 @@
-menu: 
+menu:
   home: 首页
   archives: 归档
   tags: 标签
   categories: 分类
-  hope: 愿望
   about: 关于
+  hope: 愿望
 
 footer:
   powered: "由 %s 强力驱动"
@@ -17,12 +17,13 @@ posts:
   next_post: 下一篇
   toc: 文章目录
   readmore: 阅读更多
+  visits: '阅读次数'
   reward: '赞赏支持'
 
 copyright:
-  author: '作者'
-  link: '链接'
-  origin: '来源'
+  author: '原文作者'
+  link: '原文链接'
+  license: '许可协议'
 
 counter:
   archives:

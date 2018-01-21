@@ -65,19 +65,22 @@ social:
 # Third Party Services Settings
 # ===========================================
 
+# LeanCloud
+leancloud:
+  app_id: yBvm8iKfVaJoUvQCdQsBQrQm-gzGzoHsz
+  app_key: 86Lk6wSBdW33u6trzkNgYB6S
+
 # Baidu Analytics
 baidu_analytics:
 # Google Analytics
-google_analytics: UA-99326171-1
+google_analytics:
 
 # Duoshuo
 # duoshuo_shortname:
 # Disqus
 disqus_shortname: elvin-peng
-# netease
-# netease_key: 5d2790c0a9ad46a997dd0db1dfd3407b
 
 # ===========================================
 # Version
 # ===========================================
-version: 2.4.x
+version: 2.6

@@ -20,7 +20,7 @@ Number.call === Number.call.call.call;
 
 ## 结果初探
 
-![打 call 的结果](http://ww1.sinaimg.cn/large/005XbUDxgy1fmrmpll3zgj30i80aeq42.jpg)
+![打 call 的结果](https://ww2.sinaimg.cn/large/0060lm7Tly1fn3lud9mgyj30i80aegnn.jpg)
 
  不知道大家有没有猜中运行结果呢？反正我看到这个结果的时候是崩溃的（内心活动：为什么相等的三个函数，对相同的参数，返回的结果却不一样？？不愧是 JavaScript！）不过虽然结果看起来违反直觉，但是从上述代码中还是可以得出两个好消息的：
 
@@ -72,7 +72,7 @@ Function.prototype.myCall = function myCall(obj, ...args) {
 
 然后让我们来运行一下 myCall，看看结果如何：
 
-![myCall 执行结果](http://ww1.sinaimg.cn/large/005XbUDxly1fmrr921infj31000gy778.jpg)
+![myCall 执行结果](https://ww1.sinaimg.cn/large/0060lm7Tly1fn3mng6p9ej30zk0gqgs5.jpg)
 
 运行的结果和原生的 call 函数相同，说明这个简单版的 myCall 函数实现了目标。在上图中，绿块和蓝块的输出相同，可以把它们俩儿归为一类，所以接下来主要对红块和绿块中的结果进行分析。
 
