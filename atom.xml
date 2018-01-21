@@ -5,7 +5,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://segmentfault.me/"/>
-  <updated>2018-01-14T16:33:52.861Z</updated>
+  <updated>2018-01-21T15:59:14.907Z</updated>
   <id>http://segmentfault.me/</id>
   
   <author>
@@ -20,7 +20,7 @@
     <link href="http://segmentfault.me/2018/01/14/%E5%B1%95%E6%9C%9B-2018/"/>
     <id>http://segmentfault.me/2018/01/14/展望-2018/</id>
     <published>2018-01-14T15:29:54.000Z</published>
-    <updated>2018-01-14T16:33:52.861Z</updated>
+    <updated>2018-01-21T15:59:14.907Z</updated>
     
     <content type="html"><![CDATA[<p>又一年溜走了，算一算离开学校在腾讯实习已经 6 个月了，看着 2017 年写的两篇展望<a href="http://segmentfault.me/2016/12/08/%E5%B1%95%E6%9C%9B-2017/">《展望2017》</a>和<a href="http://segmentfault.me/2017/06/01/%E4%B8%8D%E5%86%8D%E6%98%AF%E5%AD%A9%E5%AD%90/">《不再是孩子》</a>，感觉像是发生在很久以前的事情了。这一年最大的感受就是学校生活和工作生活的差别还是挺大的，不过幸运的是自己渐渐地找到了工作的节奏，希望在 2018 年能在腾讯获得更好的发展。</p>
 <a id="more"></a>
@@ -38,7 +38,15 @@
 <li>在掘金等平台上继续保持每月一篇文章的更新频率，同时尝试进行一些开源项目的开发。</li>
 <li>在深入前端方向的同时，对科技发展的火热方向进行了解，例如 AI、区块链等。</li>
 </ol>
-<p>未完待续 。。。</p>
+<h2 id="生活"><a href="#生活" class="headerlink" title="生活"></a>生活</h2><p>2017年尝试了很多好玩的事情，例如：在小梅沙第一次潜水、在平峦山第一次登顶、买了第一台游戏主机 NINTENDO SWITCH 等等。在 2018 年里，希望生活仍然能带给我很多惊喜，自己也能有机会去体验不同的生活方式。</p>
+<p>在这里许下几个小小的心愿吧：</p>
+<ol>
+<li>日语能学完 N3 的课程，进入到 N2 级别的学习。</li>
+<li>好好珍惜五月份实习完回学校后最后的一个月大学生活。三年多的大学生活留下了些遗憾和心结，希望最后的毕业季能不留遗憾地度过，给大学画上个完美的句号。</li>
+<li>毕业后和小伙伴们一起去日本玩上半个月，一直以来都是从课本上、动漫中、游戏里了解日本，不知日本是否真的是那样呢？</li>
+<li>来腾讯半年长胖了十斤，胖回了健身之前的体重 O__O “…  最近晚上开始和同事在深圳大学、荔香公园等地方慢跑，希望在工作的同时也能有一个好的身体。</li>
+</ol>
+<p>2017，充满惊喜；2018，希望更好！</p>
 ]]></content>
     
     <summary type="html">
@@ -577,11 +585,11 @@
     </summary>
     
     
+      <category term="读书笔记" scheme="http://segmentfault.me/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
+    
       <category term="前端" scheme="http://segmentfault.me/tags/%E5%89%8D%E7%AB%AF/"/>
     
       <category term="JavaScript" scheme="http://segmentfault.me/tags/JavaScript/"/>
-    
-      <category term="读书笔记" scheme="http://segmentfault.me/tags/%E8%AF%BB%E4%B9%A6%E7%AC%94%E8%AE%B0/"/>
     
   </entry>
   
@@ -746,6 +754,110 @@
   </entry>
   
   <entry>
+    <title>函数作为返回值--闭包</title>
+    <link href="http://segmentfault.me/2016/11/17/%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E8%BF%94%E5%9B%9E%E5%80%BC-%E9%97%AD%E5%8C%85/"/>
+    <id>http://segmentfault.me/2016/11/17/函数作为返回值-闭包/</id>
+    <published>2016-11-17T14:43:34.000Z</published>
+    <updated>2018-01-13T17:17:59.739Z</updated>
+    
+    <content type="html"><![CDATA[<p>当我们在函数A中又定义了函数B，并且内部函数B可以引用外部函数A的参数和局部变量，当A返回函数B时，相关参数和变量都保存在返回的函数中，这种程序结构称为<strong>“闭包”（Closure）</strong>。</p>
+<a id="more"></a>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#一个简单地例子</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">lazy_sum</span><span class="params">(*args)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sum</span><span class="params">()</span>:</span></div><div class="line">        a = <span class="number">0</span></div><div class="line">        <span class="keyword">for</span> n <span class="keyword">in</span> args:</div><div class="line">            a += n</div><div class="line">        <span class="keyword">return</span> a</div><div class="line">    <span class="keyword">return</span> sum</div></pre></td></tr></table></figure>
+<p>当我们调用的_lazy<em>sum( )</em>时，返回的并不是求和结果，而是求和函数<em>sum( )</em>:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>f = lazy_sum(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>f</div><div class="line">&lt;function sum at <span class="number">0x4c43f0</span>&gt;</div></pre></td></tr></table></figure>
+<p>调用函数<em>f( )</em>时，才真正计算求和的结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>f()</div><div class="line"><span class="number">15</span></div></pre></td></tr></table></figure>
+<p>有一个需要特别注意的问题：返回的函数并没有立刻执行，而是直到调用了<em>f( )</em>才执行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#输出的结果会是多少？</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">square_1</span><span class="params">()</span>:</span></div><div class="line">    result = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">1</span>, <span class="number">4</span>):</div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">()</span>:</span></div><div class="line">            <span class="keyword">return</span> ii</div><div class="line">        result.append(f())</div><div class="line">    <span class="keyword">return</span> result</div><div class="line">    </div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">square_2</span><span class="params">()</span>:</span></div><div class="line">    result = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">1</span>, <span class="number">4</span>):</div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">()</span>:</span></div><div class="line">            <span class="keyword">return</span> ii</div><div class="line">        result.append(f)</div><div class="line">    <span class="keyword">return</span> result</div><div class="line">    </div><div class="line"><span class="keyword">print</span> square_1()</div><div class="line"><span class="keyword">print</span> square_2()</div><div class="line">f1, f2, f3 = square_2()</div><div class="line"><span class="keyword">print</span> f1(), f2(), f3()</div></pre></td></tr></table></figure>
+<p>你可能认为<em>f1( ), f2( ), f3( )</em>的结果应该是<em>1， 4， 9</em>，或者认为_square_1( ), square<em>2( )</em>的返回值相同， 但实际结果是：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> square_1()</div><div class="line">[<span class="number">1</span>, <span class="number">4</span>, <span class="number">9</span>]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> square_2()</div><div class="line">[&lt;function f at <span class="number">0x4c45b0</span>&gt;, &lt;function f at <span class="number">0x4c44f0</span>&gt;, &lt;function f at <span class="number">0x4c4570</span>&gt;]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>f1, f2, f3 = square_2()</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> f1(), f2(), f3()</div><div class="line"><span class="number">9</span> <span class="number">9</span> <span class="number">9</span></div></pre></td></tr></table></figure>
+<p>1._square<em>1( )</em>中<code>result.append(f( ))</code>，<em>f( )</em>立刻被执行，因而返回值直接是计算结果的tuple， _suqre<em>2( )</em>中<code>result.append(f)</code>，因而返回值是函数f()的tuple，两者是完全不同的!<br>2.<em>f1( ), f2( ), f3( )</em>的值全部都是9！原因就在于返回的函数引用了变量i，但它并非立刻执行。等到3个函数都返回时，它们所引用的变量i已经变成了3，因此最终结果为9。</p>
+<p><strong>返回闭包时牢记的一点就是：返回函数不要引用任何循环变量，或者后续会发生变化的变量。</strong> </p>
+<p>如果一定要引用循环变量的话，方法是再创建一个函数，用该函数的参数绑定循环变量当前的值，无论该循环变量后续如何更改，已绑定到函数参数的值不变。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">square_3</span><span class="params">()</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">g</span><span class="params">(j)</span>:</span></div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">()</span>:</span></div><div class="line">            <span class="keyword">return</span> j*j</div><div class="line">        <span class="keyword">return</span> f</div><div class="line">    result = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">1</span>, <span class="number">4</span>):</div><div class="line">        result.append(g(i))</div><div class="line">    <span class="keyword">return</span> result</div></pre></td></tr></table></figure>
+<p>我们来看看结果：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>f1, f2, f3 = square_3()</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> f1(), f2(), f3()</div><div class="line"><span class="number">1</span> <span class="number">4</span> <span class="number">9</span></div></pre></td></tr></table></figure>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;当我们在函数A中又定义了函数B，并且内部函数B可以引用外部函数A的参数和局部变量，当A返回函数B时，相关参数和变量都保存在返回的函数中，这种程序结构称为&lt;strong&gt;“闭包”（Closure）&lt;/strong&gt;。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>UML 类图</title>
+    <link href="http://segmentfault.me/2016/11/17/UML-%E7%B1%BB%E5%9B%BE/"/>
+    <id>http://segmentfault.me/2016/11/17/UML-类图/</id>
+    <published>2016-11-17T14:43:34.000Z</published>
+    <updated>2018-01-13T17:17:59.745Z</updated>
+    
+    <content type="html"><![CDATA[<p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
+<a id="more"></a>
+<h2 id="类本身的表示"><a href="#类本身的表示" class="headerlink" title="类本身的表示"></a><a href="#类本身的表示" title="类本身的表示"></a>类本身的表示</h2><p>类是对象的蓝图，封装了数据和行为，它是具有相同属性、方法、关系的对象的集合的总称，下面是一个简单的 Person 类的 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span>  <span class="title">Person</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> String name;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.name = name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.age = age;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>其对应的类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Person.png" alt="Person 类图"></p>
+<p>在上面这个简单的例子中，我们可以看到，从上至下类图分为三个部分，依次为：</p>
+<ul>
+<li>类的名称</li>
+<li>类的属性</li>
+<li>类的方法</li>
+</ul>
+<p>其中，属性部分的格式为 <code>可见性 名称:类型 [=缺省值]</code>，方法部分的格式为 <code>可见性 名称(参数类型):返回类型</code>，可见性的可选项为：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">+    public</div><div class="line">-    private</div><div class="line">#    protected</div><div class="line">~    default</div><div class="line">_    static</div></pre></td></tr></table></figure>
+
+<h2 id="类间关系的表示"><a href="#类间关系的表示" class="headerlink" title="类间关系的表示"></a><a href="#类间关系的表示" title="类间关系的表示"></a>类间关系的表示</h2><h3 id="泛化（Generalization）"><a href="#泛化（Generalization）" class="headerlink" title="泛化（Generalization）"></a><a href="#泛化（Generalization）" title="泛化（Generalization）"></a>泛化（Generalization）</h3><p>泛化，可理解为继承，在 Java 中通过关键字 <code>extends</code> 标示，用<strong>带空心三角箭头的实线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/generalization.png" alt="泛化关系示意图"></p>
+<h3 id="实现（Realization）"><a href="#实现（Realization）" class="headerlink" title="实现（Realization）"></a><a href="#实现（Realization）" title="实现（Realization）"></a>实现（Realization）</h3><p>实现，指的是一个类实现接口（可以是多个）的功能，在 Java 中通过关键字 <code>implements</code> 标示，用<strong>带空心三角箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">implements</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/realization.png" alt="实现关系示意图"></p>
+<h3 id="依赖（Dependency）"><a href="#依赖（Dependency）" class="headerlink" title="依赖（Dependency）"></a><a href="#依赖（Dependency）" title="依赖（Dependency）"></a>依赖（Dependency）</h3><p>依赖，可简单的理解为类 A 使用到了另一个类 B，可以用 <em>‘… use a …’</em> 进行判断，这种使用关系是具有偶然性的、临时性的、非常弱的。表现在代码层面，就是类 B 作为参数被类 A 在某个方法中使用，用<strong>带燕尾箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">(A param)</span></span>&#123;</div><div class="line">      <span class="comment">//…</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/dependency.png" alt="依赖关系示意图"></p>
+<h3 id="关联（Association）"><a href="#关联（Association）" class="headerlink" title="关联（Association）"></a><a href="#关联（Association）" title="关联（Association）"></a>关联（Association）</h3><p>关联，体现的是两个类、类与接口或者接口与接口之间的强依赖关系，可以用 <em>‘… has a …’</em> 进行判断，一般来说是一种长期的稳定的关系。表现在代码层面，就是 B 以属性的形式出现在 A 中，关联既可以是单向的，也可以是双向的，用<strong>带燕尾箭头的实线</strong>表示单向关联，<strong>不带箭头的实现</strong>表示双向关联，例如有如下 Java 代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> A attribute;</div><div class="line">  </div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
+
+<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/association.png" alt="关联关系示意图"></p>
+<h3 id="聚合（Aggregation）"><a href="#聚合（Aggregation）" class="headerlink" title="聚合（Aggregation）"></a><a href="#聚合（Aggregation）" title="聚合（Aggregation）"></a>聚合（Aggregation）</h3><p>聚合，指整体与部分之间的一类特殊的关联关系，是“弱”的包含关系，可以用 <em>‘… owns a …</em> 进行判断，成分类可以不依靠集合类而单独存在，可以拥有各自的生命周期，用<strong>带空心棱形箭尾的实线</strong>表示，例如教室与教室中的学生间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/aggregation.png" alt="聚合关系示意图"></p>
+<p>有些时候，我们还需要两个对象在数量上的对应关系（Multiplicity），可以<strong>直接在关联直线上用一个数字或者一个数字范围</strong>来表示，例如有一个最多只能容纳 40 个学生的教室，那么教室和这个教室之间的关系可表示为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Multiplicity.png" alt="多重性关联关系示意图"></p>
+<p>数字范围表示方法具体为：</p>
+<ul>
+<li>0..1 没有或者只有一个实例</li>
+<li>1    有且仅有一个实例</li>
+<li>0..* 大于等于 0 个实例</li>
+<li><ul>
+<li>大于等于 0 个实例</li>
+</ul>
+</li>
+<li>1..* 大于等于 1 个实例</li>
+<li>m..n 大于等于 m ，小于等于 n 个实例</li>
+</ul>
+<h3 id="组成（Composition）"><a href="#组成（Composition）" class="headerlink" title="组成（Composition）"></a><a href="#组成（Composition）" title="组成（Composition）"></a>组成（Composition）</h3><p>组成，指整体与部分之间一类“强”的包含关系，可以用 <em>‘… is a part of …’</em> 进行判断，成分类必须依靠集合类而存在，两者是密不可分的，整体类负责创建与销毁成分类，当整体类的生命周期结束时也意味着部分类生命周期的结束，用<strong>带实心棱形箭尾的实线</strong>表示，例如人与其大脑间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/composition.png" alt="组成关系示意图"></p>
+]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。&lt;/p&gt;
+    
+    </summary>
+    
+    
+      <category term="JAVA" scheme="http://segmentfault.me/tags/JAVA/"/>
+    
+      <category term="基础知识" scheme="http://segmentfault.me/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
+    
+  </entry>
+  
+  <entry>
     <title>yield from、asyncio 与 aiohttp 在异步IO中的应用</title>
     <link href="http://segmentfault.me/2016/11/17/yield-from%E3%80%81asyncio-%E4%B8%8E-aiohttp-%E5%9C%A8%E5%BC%82%E6%AD%A5IO%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8/"/>
     <id>http://segmentfault.me/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/</id>
@@ -776,42 +888,6 @@
     <summary type="html">
     
       &lt;p&gt;Python3.3 中引入了 &lt;code&gt;yield from&lt;/code&gt; 用于定义生成器;Python3.4 中引入了 &lt;code&gt;asyncio&lt;/code&gt;标准库， 从而直接内置了对异步IO的支持。&lt;br&gt;
-    
-    </summary>
-    
-    
-      <category term="python" scheme="http://segmentfault.me/tags/python/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>函数作为返回值--闭包</title>
-    <link href="http://segmentfault.me/2016/11/17/%E5%87%BD%E6%95%B0%E4%BD%9C%E4%B8%BA%E8%BF%94%E5%9B%9E%E5%80%BC-%E9%97%AD%E5%8C%85/"/>
-    <id>http://segmentfault.me/2016/11/17/函数作为返回值-闭包/</id>
-    <published>2016-11-17T14:43:34.000Z</published>
-    <updated>2018-01-13T17:17:59.739Z</updated>
-    
-    <content type="html"><![CDATA[<p>当我们在函数A中又定义了函数B，并且内部函数B可以引用外部函数A的参数和局部变量，当A返回函数B时，相关参数和变量都保存在返回的函数中，这种程序结构称为<strong>“闭包”（Closure）</strong>。</p>
-<a id="more"></a>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#一个简单地例子</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">lazy_sum</span><span class="params">(*args)</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">sum</span><span class="params">()</span>:</span></div><div class="line">        a = <span class="number">0</span></div><div class="line">        <span class="keyword">for</span> n <span class="keyword">in</span> args:</div><div class="line">            a += n</div><div class="line">        <span class="keyword">return</span> a</div><div class="line">    <span class="keyword">return</span> sum</div></pre></td></tr></table></figure>
-<p>当我们调用的_lazy<em>sum( )</em>时，返回的并不是求和结果，而是求和函数<em>sum( )</em>:</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>f = lazy_sum(<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>, <span class="number">4</span>, <span class="number">5</span>)</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>f</div><div class="line">&lt;function sum at <span class="number">0x4c43f0</span>&gt;</div></pre></td></tr></table></figure>
-<p>调用函数<em>f( )</em>时，才真正计算求和的结果：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>f()</div><div class="line"><span class="number">15</span></div></pre></td></tr></table></figure>
-<p>有一个需要特别注意的问题：返回的函数并没有立刻执行，而是直到调用了<em>f( )</em>才执行。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div><div class="line">21</div></pre></td><td class="code"><pre><div class="line"><span class="comment">#输出的结果会是多少？</span></div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">square_1</span><span class="params">()</span>:</span></div><div class="line">    result = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">1</span>, <span class="number">4</span>):</div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">()</span>:</span></div><div class="line">            <span class="keyword">return</span> ii</div><div class="line">        result.append(f())</div><div class="line">    <span class="keyword">return</span> result</div><div class="line">    </div><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">square_2</span><span class="params">()</span>:</span></div><div class="line">    result = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">1</span>, <span class="number">4</span>):</div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">()</span>:</span></div><div class="line">            <span class="keyword">return</span> ii</div><div class="line">        result.append(f)</div><div class="line">    <span class="keyword">return</span> result</div><div class="line">    </div><div class="line"><span class="keyword">print</span> square_1()</div><div class="line"><span class="keyword">print</span> square_2()</div><div class="line">f1, f2, f3 = square_2()</div><div class="line"><span class="keyword">print</span> f1(), f2(), f3()</div></pre></td></tr></table></figure>
-<p>你可能认为<em>f1( ), f2( ), f3( )</em>的结果应该是<em>1， 4， 9</em>，或者认为_square_1( ), square<em>2( )</em>的返回值相同， 但实际结果是：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> square_1()</div><div class="line">[<span class="number">1</span>, <span class="number">4</span>, <span class="number">9</span>]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> square_2()</div><div class="line">[&lt;function f at <span class="number">0x4c45b0</span>&gt;, &lt;function f at <span class="number">0x4c44f0</span>&gt;, &lt;function f at <span class="number">0x4c4570</span>&gt;]</div><div class="line"><span class="meta">&gt;&gt;&gt; </span>f1, f2, f3 = square_2()</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> f1(), f2(), f3()</div><div class="line"><span class="number">9</span> <span class="number">9</span> <span class="number">9</span></div></pre></td></tr></table></figure>
-<p>1._square<em>1( )</em>中<code>result.append(f( ))</code>，<em>f( )</em>立刻被执行，因而返回值直接是计算结果的tuple， _suqre<em>2( )</em>中<code>result.append(f)</code>，因而返回值是函数f()的tuple，两者是完全不同的!<br>2.<em>f1( ), f2( ), f3( )</em>的值全部都是9！原因就在于返回的函数引用了变量i，但它并非立刻执行。等到3个函数都返回时，它们所引用的变量i已经变成了3，因此最终结果为9。</p>
-<p><strong>返回闭包时牢记的一点就是：返回函数不要引用任何循环变量，或者后续会发生变化的变量。</strong> </p>
-<p>如果一定要引用循环变量的话，方法是再创建一个函数，用该函数的参数绑定循环变量当前的值，无论该循环变量后续如何更改，已绑定到函数参数的值不变。</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">def</span> <span class="title">square_3</span><span class="params">()</span>:</span></div><div class="line">    <span class="function"><span class="keyword">def</span> <span class="title">g</span><span class="params">(j)</span>:</span></div><div class="line">        <span class="function"><span class="keyword">def</span> <span class="title">f</span><span class="params">()</span>:</span></div><div class="line">            <span class="keyword">return</span> j*j</div><div class="line">        <span class="keyword">return</span> f</div><div class="line">    result = []</div><div class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> xrange(<span class="number">1</span>, <span class="number">4</span>):</div><div class="line">        result.append(g(i))</div><div class="line">    <span class="keyword">return</span> result</div></pre></td></tr></table></figure>
-<p>我们来看看结果：</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div></pre></td><td class="code"><pre><div class="line"><span class="meta">&gt;&gt;&gt; </span>f1, f2, f3 = square_3()</div><div class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">print</span> f1(), f2(), f3()</div><div class="line"><span class="number">1</span> <span class="number">4</span> <span class="number">9</span></div></pre></td></tr></table></figure>]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;当我们在函数A中又定义了函数B，并且内部函数B可以引用外部函数A的参数和局部变量，当A返回函数B时，相关参数和变量都保存在返回的函数中，这种程序结构称为&lt;strong&gt;“闭包”（Closure）&lt;/strong&gt;。&lt;/p&gt;
     
     </summary>
     
@@ -937,74 +1013,6 @@
       <category term="python" scheme="http://segmentfault.me/tags/python/"/>
     
       <category term="c" scheme="http://segmentfault.me/tags/c/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>UML 类图</title>
-    <link href="http://segmentfault.me/2016/11/17/UML-%E7%B1%BB%E5%9B%BE/"/>
-    <id>http://segmentfault.me/2016/11/17/UML-类图/</id>
-    <published>2016-11-17T14:43:34.000Z</published>
-    <updated>2018-01-13T17:17:59.745Z</updated>
-    
-    <content type="html"><![CDATA[<p>在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。</p>
-<a id="more"></a>
-<h2 id="类本身的表示"><a href="#类本身的表示" class="headerlink" title="类本身的表示"></a><a href="#类本身的表示" title="类本身的表示"></a>类本身的表示</h2><p>类是对象的蓝图，封装了数据和行为，它是具有相同属性、方法、关系的对象的集合的总称，下面是一个简单的 Person 类的 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div><div class="line">18</div><div class="line">19</div><div class="line">20</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span>  <span class="title">Person</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> String name;</div><div class="line">  <span class="keyword">private</span> <span class="keyword">int</span> age;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setName</span><span class="params">(String name)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.name = name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> String <span class="title">getName</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">setAge</span><span class="params">(<span class="keyword">int</span> age)</span> </span>&#123;</div><div class="line">    <span class="keyword">this</span>.age = age;</div><div class="line">  &#125;</div><div class="line"></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">getAge</span><span class="params">()</span> </span>&#123;</div><div class="line">    <span class="keyword">return</span> <span class="keyword">this</span>.name;</div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>其对应的类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Person.png" alt="Person 类图"></p>
-<p>在上面这个简单的例子中，我们可以看到，从上至下类图分为三个部分，依次为：</p>
-<ul>
-<li>类的名称</li>
-<li>类的属性</li>
-<li>类的方法</li>
-</ul>
-<p>其中，属性部分的格式为 <code>可见性 名称:类型 [=缺省值]</code>，方法部分的格式为 <code>可见性 名称(参数类型):返回类型</code>，可见性的可选项为：</p>
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div></pre></td><td class="code"><pre><div class="line">+    public</div><div class="line">-    private</div><div class="line">#    protected</div><div class="line">~    default</div><div class="line">_    static</div></pre></td></tr></table></figure>
-
-<h2 id="类间关系的表示"><a href="#类间关系的表示" class="headerlink" title="类间关系的表示"></a><a href="#类间关系的表示" title="类间关系的表示"></a>类间关系的表示</h2><h3 id="泛化（Generalization）"><a href="#泛化（Generalization）" class="headerlink" title="泛化（Generalization）"></a><a href="#泛化（Generalization）" title="泛化（Generalization）"></a>泛化（Generalization）</h3><p>泛化，可理解为继承，在 Java 中通过关键字 <code>extends</code> 标示，用<strong>带空心三角箭头的实线</strong>表示，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">extends</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/generalization.png" alt="泛化关系示意图"></p>
-<h3 id="实现（Realization）"><a href="#实现（Realization）" class="headerlink" title="实现（Realization）"></a><a href="#实现（Realization）" title="实现（Realization）"></a>实现（Realization）</h3><p>实现，指的是一个类实现接口（可以是多个）的功能，在 Java 中通过关键字 <code>implements</code> 标示，用<strong>带空心三角箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">interface</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> <span class="keyword">implements</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/realization.png" alt="实现关系示意图"></p>
-<h3 id="依赖（Dependency）"><a href="#依赖（Dependency）" class="headerlink" title="依赖（Dependency）"></a><a href="#依赖（Dependency）" title="依赖（Dependency）"></a>依赖（Dependency）</h3><p>依赖，可简单的理解为类 A 使用到了另一个类 B，可以用 <em>‘… use a …’</em> 进行判断，这种使用关系是具有偶然性的、临时性的、非常弱的。表现在代码层面，就是类 B 作为参数被类 A 在某个方法中使用，用<strong>带燕尾箭头的虚线</strong>表示，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">method</span><span class="params">(A param)</span></span>&#123;</div><div class="line">      <span class="comment">//…</span></div><div class="line">  &#125;</div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/dependency.png" alt="依赖关系示意图"></p>
-<h3 id="关联（Association）"><a href="#关联（Association）" class="headerlink" title="关联（Association）"></a><a href="#关联（Association）" title="关联（Association）"></a>关联（Association）</h3><p>关联，体现的是两个类、类与接口或者接口与接口之间的强依赖关系，可以用 <em>‘… has a …’</em> 进行判断，一般来说是一种长期的稳定的关系。表现在代码层面，就是 B 以属性的形式出现在 A 中，关联既可以是单向的，也可以是双向的，用<strong>带燕尾箭头的实线</strong>表示单向关联，<strong>不带箭头的实现</strong>表示双向关联，例如有如下 Java 代码：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div></pre></td><td class="code"><pre><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">A</span> </span>&#123;</div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div><div class="line"></div><div class="line"><span class="class"><span class="keyword">class</span> <span class="title">B</span> </span>&#123;</div><div class="line">  <span class="keyword">private</span> A attribute;</div><div class="line">  </div><div class="line">  <span class="comment">//…</span></div><div class="line">&#125;</div></pre></td></tr></table></figure>
-
-<p>那么相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/association.png" alt="关联关系示意图"></p>
-<h3 id="聚合（Aggregation）"><a href="#聚合（Aggregation）" class="headerlink" title="聚合（Aggregation）"></a><a href="#聚合（Aggregation）" title="聚合（Aggregation）"></a>聚合（Aggregation）</h3><p>聚合，指整体与部分之间的一类特殊的关联关系，是“弱”的包含关系，可以用 <em>‘… owns a …</em> 进行判断，成分类可以不依靠集合类而单独存在，可以拥有各自的生命周期，用<strong>带空心棱形箭尾的实线</strong>表示，例如教室与教室中的学生间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/aggregation.png" alt="聚合关系示意图"></p>
-<p>有些时候，我们还需要两个对象在数量上的对应关系（Multiplicity），可以<strong>直接在关联直线上用一个数字或者一个数字范围</strong>来表示，例如有一个最多只能容纳 40 个学生的教室，那么教室和这个教室之间的关系可表示为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/Multiplicity.png" alt="多重性关联关系示意图"></p>
-<p>数字范围表示方法具体为：</p>
-<ul>
-<li>0..1 没有或者只有一个实例</li>
-<li>1    有且仅有一个实例</li>
-<li>0..* 大于等于 0 个实例</li>
-<li><ul>
-<li>大于等于 0 个实例</li>
-</ul>
-</li>
-<li>1..* 大于等于 1 个实例</li>
-<li>m..n 大于等于 m ，小于等于 n 个实例</li>
-</ul>
-<h3 id="组成（Composition）"><a href="#组成（Composition）" class="headerlink" title="组成（Composition）"></a><a href="#组成（Composition）" title="组成（Composition）"></a>组成（Composition）</h3><p>组成，指整体与部分之间一类“强”的包含关系，可以用 <em>‘… is a part of …’</em> 进行判断，成分类必须依靠集合类而存在，两者是密不可分的，整体类负责创建与销毁成分类，当整体类的生命周期结束时也意味着部分类生命周期的结束，用<strong>带实心棱形箭尾的实线</strong>表示，例如人与其大脑间的关系，相应的 UML 类图为：<br><img src="http://7xlboz.com1.z0.glb.clouddn.com/composition.png" alt="组成关系示意图"></p>
-]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;在研究、学习 Android 及第三方库的源码过程中，类本身的属性、方法与类间的关系等都是研究的重点，因而利用统一建模语言（ Unified Modeling Language, UML）提供的类图来展示类的信息十分的重要。&lt;/p&gt;
-    
-    </summary>
-    
-    
-      <category term="JAVA" scheme="http://segmentfault.me/tags/JAVA/"/>
-    
-      <category term="基础知识" scheme="http://segmentfault.me/tags/%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/"/>
     
   </entry>
   
