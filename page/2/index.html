@@ -221,6 +221,56 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/07/22/evenEmitter/">深入探究 Node 中的 events.EventEmitter 模块</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-07-22
+        </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2017/07/22/evenEmitter/"
+             data-title="深入探究 Node 中的 events.EventEmitter 模块">
+            阅读次数
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>Node 中的许多核心 API 都是通过事件驱动的异步架构实现的，具体来说就是当 <code>emitters</code> 发送事件后，相应的响应函数（ <code>listeners</code> ）会被执行。例如：<code>net.Server</code> 会在每次收到连接时发出事件，<code>fs.ReadStram</code> 会在文件打开时发出事件，<code>stram</code>会在有数据可读时发出事件。<br>所有这些对象都是 <code>EventEmitter</code> 的实例，它们通过向外暴露的 <code>eventEmitter.on()</code> 接口从而让不同的事件响应函数得以执行。</p>
+          <div class="read-more">
+            <a href="/2017/07/22/evenEmitter/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/06/01/不再是孩子/">不再是孩子</a>
         
       </h1>
@@ -509,57 +559,6 @@
           <p>最近在做 <a href="https://github.com/Leonard-Peng/HungrySpider" target="_blank" rel="external">黄网嗅探器</a> 的时候，因为单线程版实在太慢，大部分时间都用在了网络 IO上，因而想着利用<strong>生产者-消费者模型</strong>做出多线程版，把网址的生成部分当作生产者线程，网址是否为黄网的检测部分当作消费者线程。不过在实现的过程中，碰到了一个问题：当网址的全部组合已生成完毕后，如何由生产者通知消费者，进而待网址检测完成后终止消费者线程呢？</p>
           <div class="read-more">
             <a href="/2016/11/27/如何终止消费者线程？/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/11/17/python与c的相互调用/">python 与 c 的相互调用</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2016-11-17
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2016/11/17/python与c的相互调用/"
-             data-title="python 与 c 的相互调用">
-            阅读次数
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>   python写出的程序被称为‘能运行的伪代码’， 因为它语法简单，能极大的解放程序员的思想，不需要使用者太关注细节，但是它效率较低，处理大量数据时需要大量时间。而C语言则正好相反，接近底层，运行速度快，但是使用时要处处小心，要不然轻则编译不通过，重则运行时崩溃。</p>
-<p>   若能将两者结合起来，岂不是妙哉？</p>
-          <div class="read-more">
-            <a href="/2016/11/17/python与c的相互调用/" class="read-more-link">阅读更多</a>
           </div>
         
       

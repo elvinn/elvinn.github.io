@@ -221,6 +221,60 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2018/02/23/man-in-the-middle/">对 HTTPS 的中间人攻击</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2018-02-23
+        </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2018/02/23/man-in-the-middle/"
+             data-title="对 HTTPS 的中间人攻击">
+            阅读次数
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <blockquote>
+<p>本文翻译自 2009 年 2月 03 日发表于 IEEE 的文章 《Man-in-the-middle attack to the HTTPS protocol》，原文链接为 <a href="http://ieeexplore.ieee.org/document/4768661/。" target="_blank" rel="external">http://ieeexplore.ieee.org/document/4768661/。</a></p>
+</blockquote>
+<p>对于网上银行、电子商业和电子采购等需要处理敏感信息的交易，基于 Web 的应用通过 HTTPS 协议来保证其中的隐私和安全。用户相信这种协议可以避免他们个人信息、金融信息或私密信息等被他人截获。</p>
+<p>在 1994 年，网景公司为了敏感信息的通讯引入了<strong>安全套接层协议</strong>（    Secure Socket Layer，即 SSL）。随后在 1999 年，互联网工程任务小组（IETF）采纳了它，将其完善为<strong>安全传输层协议</strong>（Transport Layer Security，即 TLS），并通过它将 HTTP 协议加密为 HTTPS 协议。一个 HTTPS 的链接表明浏览器会在 443 端口通过 HTTP 协议下载页面，并在 HTTP 和 TCP 协议之间引入附加的 TLS 加密/认证层。因此，大部分人认为基于 HTTPS 的信息交换是安全的。在这篇文章中，我们将指出这种想法的危险之处 — <strong>攻击者可以成功地拦截信息从而使信息安全失效</strong>。</p>
+          <div class="read-more">
+            <a href="/2018/02/23/man-in-the-middle/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2018/01/28/beautify-open-source-project/">怎样让开源项目看起来“高大上”</a>
         
       </h1>
@@ -555,56 +609,6 @@
           <p>为了提高网站的访问速度，现在一般会将静态资源放在 CDN 下，而不是放在网站的域名之下。以腾讯课堂为例，其域名为 ke.qq.com，打开控制台，访问 ke.qq.com，我们可以看到 js 文件放在了 CDN 7.url.cn 下，css 文件放在了 CDN 8.url.cn 下。尽管 CDN 的服务可用性一般宣称 99.9% 甚至 99.999%，然而实际上监测结果比该数值要小一些。为了应对这种情况，需要做到当发现 css 或 js 文件从 CDN 加载失败时，能再次从网站的域名加载。</p>
           <div class="read-more">
             <a href="/2017/08/27/css-js主域重试/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2017/07/22/evenEmitter/">深入探究 Node 中的 events.EventEmitter 模块</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2017-07-22
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2017/07/22/evenEmitter/"
-             data-title="深入探究 Node 中的 events.EventEmitter 模块">
-            阅读次数
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>Node 中的许多核心 API 都是通过事件驱动的异步架构实现的，具体来说就是当 <code>emitters</code> 发送事件后，相应的响应函数（ <code>listeners</code> ）会被执行。例如：<code>net.Server</code> 会在每次收到连接时发出事件，<code>fs.ReadStram</code> 会在文件打开时发出事件，<code>stram</code>会在有数据可读时发出事件。<br>所有这些对象都是 <code>EventEmitter</code> 的实例，它们通过向外暴露的 <code>eventEmitter.on()</code> 接口从而让不同的事件响应函数得以执行。</p>
-          <div class="read-more">
-            <a href="/2017/07/22/evenEmitter/" class="read-more-link">阅读更多</a>
           </div>
         
       
