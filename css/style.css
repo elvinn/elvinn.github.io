@@ -563,7 +563,8 @@ h6 {
     .post .post-header .post-meta .post-visits {
       display: inline-block;
       font-size: 14px;
-      color: #8a8a8a; }
+      color: #8a8a8a;
+      visibility: hidden; }
       .post .post-header .post-meta .post-visits::before {
         content: '·'; }
   .post .post-toc {
