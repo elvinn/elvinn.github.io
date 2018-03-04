@@ -17,12 +17,12 @@
 
 
 
-  <meta name="description" content="博客的第一天"/>
+  <meta name="description" content="四步让享受 Service Worker 带来的快感"/>
 
 
 
 
-  <meta name="keywords" content="生活, Elvin 的博客" />
+  <meta name="keywords" content="前端, 工具, Elvin 的博客" />
 
 
 
@@ -42,7 +42,7 @@
 
 
 
-<link rel="canonical" href="http://segmentfault.me/2015/06/01/博客的第一天/"/>
+<link rel="canonical" href="http://segmentfault.me/2018/03/04/whistle-service-worker/"/>
 
 
 <link rel="stylesheet" type="text/css" href="/css/style.css?v=2.6" />
@@ -89,7 +89,7 @@
 
 
 
-    <title> 博客的第一天 - Elvin 的博客 </title>
+    <title> 四步让享受 Service Worker 带来的快感 - Elvin 的博客 </title>
   </head>
 
   <body><div id="mobile-navbar" class="mobile-navbar">
@@ -223,19 +223,19 @@
     <header class="post-header">
       <h1 class="post-title">
         
-          博客的第一天
+          四步让享受 Service Worker 带来的快感
         
       </h1>
 
       <div class="post-meta">
         <span class="post-time">
-          2015-06-01
+          2018-03-04
         </span>
         
         
         <div class="post-visits"
-             data-url="/2015/06/01/博客的第一天/"
-             data-title="博客的第一天">
+             data-url="/2018/03/04/whistle-service-worker/"
+             data-title="四步让享受 Service Worker 带来的快感">
             阅读次数
           </div>
         
@@ -244,12 +244,40 @@
 
     
     
+  <div class="post-toc" id="post-toc">
+    <h2 class="post-toc-title">文章目录</h2>
+    <div class="post-toc-content">
+      <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#举个例子"><span class="toc-text">举个例子</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-安装插件"><span class="toc-text">1. 安装插件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-设置代理"><span class="toc-text">2. 设置代理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-配置规则"><span class="toc-text">3. 配置规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-打开网站"><span class="toc-text">4. 打开网站</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#写在最后"><span class="toc-text">写在最后</span></a></li></ol>
+    </div>
+  </div>
+
 
     <div class="post-content">
       
-        <p>今天是20岁之前的最后一个六一儿童节了，想想马上就是奔三十的人了，身上肩负的责任也会越来越多了吧。</p>
-<p>在今天，和基友一起鼓捣了很久的SDN大赛初赛算是落下了帷幕；在今天，和量云从五一开始到现在开开心心地走过了一个月；在今天，纠结了很久最终下定决心写的博客也上线了——二十岁前的最后一个六一，对我来说意味着很多^_^<br>希望从今天起，以后能在技术、爱情上能够越来越好，碰到了任何问题都能和基友、她一起共同解决吧。</p>
-<p>期待美好的明天!!</p>
+        <p>随着 17 年年底苹果宣布 Safari 支持 Service Worker，越来越多的网站势必会在生产环境中引入它。不过由于存在接入的成本，大家无法立马体验到 Service Worker 应用在自己网站上所带来的优点。为了能快速体验到 Service Worker 带来的丝滑快感，趁着春节后上班第一周的空闲时间，我开发了一款 <a href="https://github.com/elvinn/whistle.service-worker" target="_blank" rel="external">whistle.service-worker</a> 的小工具，只需四步就可以为想要使用 Service Worker 的网站测试效果。</p>
+<a id="more"></a>
+<h2 id="举个例子"><a href="#举个例子" class="headerlink" title="举个例子"></a>举个例子</h2><p>假设我们想测试 <a href="help.github.com">Github Help</a> 使用 Service Worker 后的效果，那么只需如下四步:</p>
+<h3 id="1-安装插件"><a href="#1-安装插件" class="headerlink" title="1. 安装插件"></a>1. 安装插件</h3><p><a href="https://github.com/elvinn/whistle.service-worker" target="_blank" rel="external">whistle.service-worker</a> 是基于 <a href="https://github.com/avwo/whistle" target="_blank" rel="external">whistle</a> 制作的一款插件，所以需要同时安装它们两个，执行如下命令进行安装并启动即可：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div></pre></td><td class="code"><pre><div class="line"><span class="meta">$</span> npm install --global whistle whistle.service-worker</div><div class="line"><span class="meta">$</span> w2 start</div></pre></td></tr></table></figure>
+<p>启动成功后可看到如下提示：</p>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1fp0sjw00s2j30jo04dmy9.jpg" alt="w1"></p>
+<h3 id="2-设置代理"><a href="#2-设置代理" class="headerlink" title="2. 设置代理"></a>2. 设置代理</h3><p>将代理设置为 <code>127.0.0.1:8899</code>，如果是 Chrome 的话推荐使用 <a href="https://chrome.google.com/webstore/detail/padekgcemlokbadohgkifijomclgjgif" target="_blank" rel="external">SwitchyOmega</a>，Firefox 则推荐使用 <a href="https://addons.mozilla.org/zh-cn/firefox/addon/proxy-selector/" target="_blank" rel="external">Proxy Selector</a> 进行设置。设置后结果如下：</p>
+<p><img src="https://ws2.sinaimg.cn/large/006tNc79gy1fp0sjzgy42j30y70enmyx.jpg" alt="w2"></p>
+<h3 id="3-配置规则"><a href="#3-配置规则" class="headerlink" title="3. 配置规则"></a>3. 配置规则</h3><p>在浏览器中打开 <a href="http://local.whistlejs.com/#rules" target="_blank" rel="external">配置界面</a> 并添加如下规则：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div></pre></td><td class="code"><pre><div class="line">help.github.com whistle.service-worker://route=/.*/&amp;strategy=cacheFirst</div></pre></td></tr></table></figure>
+<p><img src="https://ws4.sinaimg.cn/large/006tNc79gy1fp0sjwmcbcj30qf02pt9f.jpg" alt="rule"></p>
+<h3 id="4-打开网站"><a href="#4-打开网站" class="headerlink" title="4. 打开网站"></a>4. 打开网站</h3><p>终于来到最后一步了，只需要打开 <a href="https://help.github.com/" target="_blank" rel="external">Github Help</a> 即可发现 Service Worker 注册成功。再次刷新页面，就能享受到它带来的丝滑快感了 O(∩_∩)O~~</p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79gy1fp0sjyj3lfj30un0lqq72.jpg" alt="registered"></p>
+<p><img src="https://ws3.sinaimg.cn/large/006tNc79gy1fp0sjxnil1j30un0lqwkj.jpg" alt="fetch"></p>
+<h2 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h2><p>实际上，Service Worker 主要是在两个方面发挥作用：</p>
+<ul>
+<li>对未加载文件的预拉取能力，例如用户在 A 页面的时候就可以拉取 B、C 页面的文件，从而让用户在页面间的跳转更加流畅；</li>
+<li>对已加载文件的缓存控制能力，相较于现有的 HTTP(S) 协议中缓存相关的内容，Service Worker 带来的缓存控制能力不仅粒度更小，而且策略更加丰富。</li>
+</ul>
+<p><a href="https://github.com/elvinn/whistle.service-worker" target="_blank" rel="external">whistle.service-worker</a> 工具目前只是在第二个方面做了一点工作，若想完整享受 Service Worker 带来的好处，建议接入 Google 开发的 <a href="https://github.com/GoogleChrome/workbox" target="_blank" rel="external">Workbox</a> 工具，功能十分强大👍</p>
+<blockquote>
+<p><a href="https://github.com/elvinn/whistle.service-worker" target="_blank" rel="external">whistle.service-worker</a> 实际上是基于跨平台的代理工具 <a href="https://github.com/avwo/whistle" target="_blank" rel="external">whistle</a> 制作的一款插件，是我<strong>迄今为止用过体验最好、功能最强大的开源、跨平台web调试代理工具</strong>，强烈推荐大家使用。</p>
+</blockquote>
 
       
     </div>
@@ -265,7 +293,7 @@
     </p>
     <p class="copyright-item">
       <span>原文链接: </span>
-      <a href="http://segmentfault.me/2015/06/01/博客的第一天/">http://segmentfault.me/2015/06/01/博客的第一天/</a>
+      <a href="http://segmentfault.me/2018/03/04/whistle-service-worker/">http://segmentfault.me/2018/03/04/whistle-service-worker/</a>
     </p>
     <p class="copyright-item">
       <span>许可协议: </span>
@@ -303,7 +331,9 @@
         
           <div class="post-tags">
             
-              <a href="/tags/生活/">生活</a>
+              <a href="/tags/前端/">前端</a>
+            
+              <a href="/tags/工具/">工具</a>
             
           </div>
         
@@ -311,12 +341,12 @@
         
   <nav class="post-nav">
     
-      <a class="prev" href="/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/">
-        <i class="iconfont icon-left"></i>
-        <span class="prev-text nav-default">yield from、asyncio 与 aiohttp 在异步IO中的应用</span>
-        <span class="prev-text nav-mobile">上一篇</span>
-      </a>
     
+      <a class="next" href="/2018/02/23/man-in-the-middle/">
+        <span class="next-text nav-default">对 HTTPS 的中间人攻击</span>
+        <span class="prev-text nav-mobile">下一篇</span>
+        <i class="iconfont icon-right"></i>
+      </a>
     
   </nav>
 
@@ -422,9 +452,9 @@
   
   <script type="text/javascript">
     var disqus_config = function () {
-        this.page.url = 'http://segmentfault.me/2015/06/01/博客的第一天/';
-        this.page.identifier = '2015/06/01/博客的第一天/';
-        this.page.title = '博客的第一天';
+        this.page.url = 'http://segmentfault.me/2018/03/04/whistle-service-worker/';
+        this.page.identifier = '2018/03/04/whistle-service-worker/';
+        this.page.title = '四步让享受 Service Worker 带来的快感';
     };
     (function() {
     var d = document, s = d.createElement('script');

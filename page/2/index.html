@@ -221,6 +221,56 @@
     <header class="post-header">
       <h1 class="post-title">
         
+          <a class="post-link" href="/2017/08/27/css-js主域重试/">webpack 项目 css/js主域重试</a>
+        
+      </h1>
+
+      <div class="post-meta">
+        <span class="post-time">
+          2017-08-27
+        </span>
+        
+        
+        <div class="post-visits"
+             data-url="/2017/08/27/css-js主域重试/"
+             data-title="webpack 项目 css/js主域重试">
+            阅读次数
+          </div>
+        
+      </div>
+    </header>
+
+    
+    
+
+    <div class="post-content">
+      
+        
+        
+          
+        
+
+        
+          <p>为了提高网站的访问速度，现在一般会将静态资源放在 CDN 下，而不是放在网站的域名之下。以腾讯课堂为例，其域名为 ke.qq.com，打开控制台，访问 ke.qq.com，我们可以看到 js 文件放在了 CDN 7.url.cn 下，css 文件放在了 CDN 8.url.cn 下。尽管 CDN 的服务可用性一般宣称 99.9% 甚至 99.999%，然而实际上监测结果比该数值要小一些。为了应对这种情况，需要做到当发现 css 或 js 文件从 CDN 加载失败时，能再次从网站的域名加载。</p>
+          <div class="read-more">
+            <a href="/2017/08/27/css-js主域重试/" class="read-more-link">阅读更多</a>
+          </div>
+        
+      
+    </div>
+
+    
+
+    
+
+  </article>
+
+    
+      
+  <article class="post">
+    <header class="post-header">
+      <h1 class="post-title">
+        
           <a class="post-link" href="/2017/07/22/evenEmitter/">深入探究 Node 中的 events.EventEmitter 模块</a>
         
       </h1>
@@ -559,56 +609,6 @@
           <p>最近在做 <a href="https://github.com/Leonard-Peng/HungrySpider" target="_blank" rel="external">黄网嗅探器</a> 的时候，因为单线程版实在太慢，大部分时间都用在了网络 IO上，因而想着利用<strong>生产者-消费者模型</strong>做出多线程版，把网址的生成部分当作生产者线程，网址是否为黄网的检测部分当作消费者线程。不过在实现的过程中，碰到了一个问题：当网址的全部组合已生成完毕后，如何由生产者通知消费者，进而待网址检测完成后终止消费者线程呢？</p>
           <div class="read-more">
             <a href="/2016/11/27/如何终止消费者线程？/" class="read-more-link">阅读更多</a>
-          </div>
-        
-      
-    </div>
-
-    
-
-    
-
-  </article>
-
-    
-      
-  <article class="post">
-    <header class="post-header">
-      <h1 class="post-title">
-        
-          <a class="post-link" href="/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/">yield from、asyncio 与 aiohttp 在异步IO中的应用</a>
-        
-      </h1>
-
-      <div class="post-meta">
-        <span class="post-time">
-          2016-11-17
-        </span>
-        
-        
-        <div class="post-visits"
-             data-url="/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/"
-             data-title="yield from、asyncio 与 aiohttp 在异步IO中的应用">
-            阅读次数
-          </div>
-        
-      </div>
-    </header>
-
-    
-    
-
-    <div class="post-content">
-      
-        
-        
-          
-        
-
-        
-          <p>Python3.3 中引入了 <code>yield from</code> 用于定义生成器;Python3.4 中引入了 <code>asyncio</code>标准库， 从而直接内置了对异步IO的支持。<br>
-          <div class="read-more">
-            <a href="/2016/11/17/yield-from、asyncio-与-aiohttp-在异步IO中的应用/" class="read-more-link">阅读更多</a>
           </div>
         
       
