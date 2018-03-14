@@ -111,7 +111,7 @@ commit 的格式包含 `Header`、`Body`、`Footer` 三个部分，形如：
 
 - 使用 [commitizen](http://commitizen.github.io/cz-cli/) 来进行交互式的 commit 提交，从而减少不规范的情况；
 - 使用 [commitlint](http://marionebl.github.io/commitlint/#/) 来检查不规范的 commit 提交，从而提出不规范的记录；
-- 使用 [conventional-changelog](https://github.com/conventional-changelog/https://github.com/conventional-changelog/conventional-changelog) 来自动地根据 commit 中 `feat`、`fix`、`Performance Improvement` 和 `Breaking Changes` 生成更新说明，而且是增量更新，并不会覆盖已有的文件内容。
+- 使用 [conventional-changelog](https://github.com/conventional-changelog/) 来自动地根据 commit 中 `feat`、`fix`、`Performance Improvement` 和 `Breaking Changes` 生成更新说明，而且是增量更新，并不会覆盖已有的文件内容。
 
 
 这里通过几张图片了解一下：

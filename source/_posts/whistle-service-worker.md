@@ -1,5 +1,5 @@
 ---
-title: 四步让享受 Service Worker 带来的快感
+title: 仅需四步，即可体验 Service Worker 带来的快感
 date: 2018-03-04 10:47:53
 tags:
 	- 工具
